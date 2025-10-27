@@ -1,61 +1,309 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# 🛒 Sistema POS
 
-## About Laravel
+### _Sistema de Punto de Venta Profesional_
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![Livewire](https://img.shields.io/badge/Livewire-3.6-4E56A6?style=for-the-badge&logo=livewire&logoColor=white)](https://livewire.laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind-3.x-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![SQLite](https://img.shields.io/badge/SQLite-3.x-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Un sistema completo de gestión comercial con facturación electrónica, control de inventario y análisis de ventas en tiempo real.**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+[Características](#-características-principales) •
+[Instalación](#-instalación-rápida) •
+[Documentación](#-documentación) •
+[Tecnologías](#️-stack-tecnológico)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+</div>
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## ✨ Características Principales
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 💼 Gestión de Ventas
+- **🎯 Punto de Venta Intuitivo** - Interfaz moderna y rápida para procesar transacciones
+- **📱 Responsive Design** - Funciona perfectamente en tablets y dispositivos móviles
+- **🔍 Búsqueda Inteligente** - Encuentra productos al instante con búsqueda en tiempo real
+- **🧾 Impresión de Tickets** - Sistema de tickets térmicos completamente personalizable
+- **💳 Múltiples Métodos de Pago** - Efectivo, tarjeta, transferencia y pagos combinados
 
-## Laravel Sponsors
+### 📊 Sistema Tributario Avanzado
+- **🏛️ Facturación Electrónica** - Compatible con normativas fiscales
+- **📑 Comprobantes Fiscales** - Facturas, boletas y notas de crédito
+- **🔢 Numeración Automática** - Control secuencial de documentos
+- **💰 Cálculo de Impuestos** - IVA, IGV y otros impuestos configurables
+- **📈 Reportes Fiscales** - Informes detallados para declaraciones
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 📦 Control de Inventario
+- **📊 Stock en Tiempo Real** - Actualización automática de existencias
+- **⚠️ Alertas de Stock Bajo** - Notificaciones inteligentes de reabastecimiento
+- **📝 Movimientos de Inventario** - Historial completo de entradas y salidas
+- **🏷️ Gestión de Categorías** - Organización jerárquica de productos
+- **💵 Control de Precios** - Precios regulares, promocionales y por mayoreo
 
-### Premium Partners
+### 🎯 Sistema de Metas y Objetivos
+- **📈 Objetivos de Ventas** - Define y rastrea metas mensuales/semanales
+- **🏆 Seguimiento de Desempeño** - Indicadores KPI en tiempo real
+- **👥 Metas por Usuario** - Objetivos individuales para tu equipo
+- **📊 Dashboard Analítico** - Visualización clara del progreso
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 🔐 Seguridad y Auditoría
+- **✅ Sistema de Anulaciones** - Control completo de ventas canceladas
+- **📋 Log de Auditoría** - Registro detallado de todas las operaciones
+- **🔒 Motivos de Anulación** - Justificación obligatoria para cancelaciones
+- **👤 Roles y Permisos** - Control granular de acceso con Spatie Permission
+- **🕐 Historial Completo** - Trazabilidad de todas las modificaciones
 
-## Contributing
+### 👥 Gestión de Usuarios
+- **🔑 Autenticación Segura** - Laravel Breeze con validación robusta
+- **👔 Roles Personalizables** - Administrador, Vendedor, Supervisor
+- **🎨 Perfiles de Usuario** - Gestión completa de información personal
+- **📊 Reportes por Vendedor** - Análisis individual de desempeño
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### ⚙️ Configuración Empresarial
+- **🏢 Datos del Negocio** - Información fiscal y comercial
+- **🎨 Personalización de Tickets** - Logo, mensajes y formato
+- **💼 Configuración Tributaria** - Parámetros fiscales personalizables
+- **🌍 Multi-idioma** - Preparado para internacionalización
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🚀 Instalación Rápida
 
-## Security Vulnerabilities
+### Requisitos Previos
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+- PHP >= 8.2
+- Composer
+- Node.js >= 18.x
+- NPM o Yarn
+- SQLite 3.x
+```
 
-## License
+### Instalación en 3 Pasos
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+# 1️⃣ Clonar el repositorio
+git clone https://github.com/Davidkm03/sistema-pos.git
+cd sistema-pos
+
+# 2️⃣ Instalar dependencias y configurar
+composer run setup
+
+# 3️⃣ Sembrar datos de ejemplo (opcional)
+php artisan db:seed
+```
+
+### Iniciar el Servidor
+
+```bash
+# Opción 1: Servidor Laravel simple
+php artisan serve --port=8001
+
+# Opción 2: Entorno completo de desarrollo
+composer run dev
+```
+
+🎉 **¡Listo!** Visita `http://localhost:8001` en tu navegador
+
+### Credenciales por Defecto
+
+```
+📧 Email: admin@example.com
+🔑 Password: password
+```
+
+---
+
+## 🏗️ Stack Tecnológico
+
+### Backend
+- **[Laravel 12.x](https://laravel.com)** - Framework PHP moderno y elegante
+- **[Livewire 3.6](https://livewire.laravel.com)** - Componentes dinámicos sin JavaScript
+- **[Spatie Permission](https://spatie.be/docs/laravel-permission)** - Sistema de roles y permisos
+
+### Frontend
+- **[TailwindCSS 3.x](https://tailwindcss.com)** - Framework CSS utility-first
+- **[Alpine.js](https://alpinejs.dev)** - JavaScript minimalista y reactivo
+- **[Vite](https://vitejs.dev)** - Build tool ultrarrápido
+
+### Base de Datos
+- **[SQLite](https://sqlite.org)** - Base de datos ligera y portable
+- Compatible con **MySQL/PostgreSQL** para producción
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+sistema-pos/
+├── 📱 app/
+│   ├── Livewire/          # Componentes Livewire
+│   ├── Models/            # Modelos Eloquent
+│   ├── Http/Controllers/  # Controladores
+│   └── Helpers/           # Funciones auxiliares
+├── 🗄️ database/
+│   ├── migrations/        # Migraciones de BD
+│   └── seeders/           # Datos de prueba
+├── 🎨 resources/
+│   ├── views/             # Plantillas Blade
+│   ├── css/               # Estilos
+│   └── js/                # Scripts
+├── 🛣️ routes/
+│   ├── web.php            # Rutas web
+│   └── auth.php           # Rutas de autenticación
+└── ⚙️ config/             # Configuración
+```
+
+---
+
+## 📚 Documentación
+
+### Guías Especializadas
+
+- 📄 **[Sistema Tributario](SISTEMA_TRIBUTARIO_README.md)** - Facturación electrónica y configuración fiscal
+- 🚫 **[Sistema de Anulaciones](SISTEMA_ANULACION_README.md)** - Control de cancelaciones y auditoría
+
+### Módulos Principales
+
+#### 🛒 Punto de Venta
+```bash
+Ruta: /pos
+Componente: PosIndex.php
+Descripción: Interfaz principal para realizar ventas
+```
+
+#### 📦 Gestión de Productos
+```bash
+Ruta: /productos
+Componente: ProductManager.php
+Características: CRUD completo, categorías, precios, stock
+```
+
+#### 📊 Reportes de Ventas
+```bash
+Ruta: /ventas
+Componente: SaleManager.php
+Características: Historial, filtros, anulaciones, reimprimir
+```
+
+#### 📈 Dashboard
+```bash
+Ruta: /dashboard
+Vista: dashboard.blade.php
+Características: KPIs, gráficos, metas, ventas del día
+```
+
+---
+
+## 🔧 Configuración Avanzada
+
+### Variables de Entorno
+
+```env
+# Aplicación
+APP_NAME="Sistema POS"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8001
+
+# Base de Datos
+DB_CONNECTION=sqlite
+DB_DATABASE=/absolute/path/to/database.sqlite
+
+# Configuración de Negocio
+BUSINESS_NAME="Tu Negocio"
+BUSINESS_TAX_ID="20123456789"
+BUSINESS_ADDRESS="Tu Dirección"
+```
+
+### Comandos Útiles
+
+```bash
+# Limpiar caché
+php artisan optimize:clear
+
+# Crear usuario administrador
+php artisan make:filament-user
+
+# Backup de base de datos
+cp database/database.sqlite database/backup-$(date +%Y%m%d).sqlite
+
+# Ejecutar tests
+php artisan test
+
+# Formatear código
+./vendor/bin/pint
+```
+
+---
+
+## 🎯 Casos de Uso
+
+### 🏪 Retail y Comercio
+- Tiendas de abarrotes
+- Farmacias
+- Librerías
+- Ferreterías
+
+### 🍽️ Restaurantes y Cafeterías
+- Punto de venta rápido
+- Control de inventario
+- Reportes de ventas
+
+### 👗 Boutiques y Moda
+- Gestión de catálogo
+- Control de tallas
+- Promociones
+
+---
+
+## 🤝 Contribuir
+
+¡Las contribuciones son bienvenidas! Si deseas mejorar el sistema:
+
+1. 🍴 Fork el proyecto
+2. 🌿 Crea una rama feature (`git checkout -b feature/AmazingFeature`)
+3. 💾 Commit tus cambios (`git commit -m 'Add: nueva característica'`)
+4. 📤 Push a la rama (`git push origin feature/AmazingFeature`)
+5. 🔃 Abre un Pull Request
+
+---
+
+## 📝 Roadmap
+
+- [ ] 📱 App móvil nativa (iOS/Android)
+- [ ] 🌐 API REST completa
+- [ ] 📊 Dashboard con gráficos avanzados (Chart.js)
+- [ ] 🔔 Notificaciones en tiempo real
+- [ ] 📧 Envío de tickets por email
+- [ ] 🏦 Integración con pasarelas de pago
+- [ ] 📦 Sistema de órdenes de compra
+- [ ] 👥 CRM de clientes
+- [ ] 📱 WhatsApp Business integration
+
+---
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+
+---
+
+## 👨‍💻 Autor
+
+**Desarrollado con ❤️ por [Davidkm03](https://github.com/Davidkm03)**
+
+---
+
+<div align="center">
+
+### ⭐ Si este proyecto te fue útil, considera darle una estrella
+
+**[⬆ Volver arriba](#-sistema-pos)**
+
+</div>
