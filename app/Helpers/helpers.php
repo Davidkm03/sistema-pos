@@ -406,9 +406,96 @@ if (!function_exists('process_and_save_image')) {
      */
     function process_and_save_image($file, $directory = 'products', $maxWidth = 800, $quality = 85)
     {
-        // Por ahora, usar almacenamiento simple hasta configurar Intervention Image
-        // TODO: Configurar Intervention Image facade en config/app.php para compresión WebP
-        return $file->store($directory, 'public');
+        try {
+            // Generar nombre único
+            $filename = uniqid() . '.jpg';
+            $storagePath = storage_path("app/public/{$directory}");
+            
+            // Crear directorio si no existe
+            if (!file_exists($storagePath)) {
+                mkdir($storagePath, 0775, true);
+            }
+            
+            $filePath = $storagePath . '/' . $filename;
+            
+            // Detectar tipo de imagen
+            $imageInfo = getimagesize($file->getRealPath());
+            $mimeType = $imageInfo['mime'];
+            
+            // Crear imagen desde archivo según tipo
+            switch ($mimeType) {
+                case 'image/jpeg':
+                    $image = imagecreatefromjpeg($file->getRealPath());
+                    break;
+                case 'image/png':
+                    $image = imagecreatefrompng($file->getRealPath());
+                    break;
+                case 'image/gif':
+                    $image = imagecreatefromgif($file->getRealPath());
+                    break;
+                case 'image/webp':
+                    $image = imagecreatefromwebp($file->getRealPath());
+                    break;
+                default:
+                    // Si no se reconoce el tipo, guardar sin procesar
+                    return $file->store($directory, 'public');
+            }
+            
+            if (!$image) {
+                return $file->store($directory, 'public');
+            }
+            
+            // Obtener dimensiones originales
+            $width = imagesx($image);
+            $height = imagesy($image);
+            
+            // Calcular nuevas dimensiones si excede el máximo
+            if ($width > $maxWidth) {
+                $ratio = $maxWidth / $width;
+                $newWidth = $maxWidth;
+                $newHeight = (int)($height * $ratio);
+            } else {
+                $newWidth = $width;
+                $newHeight = $height;
+            }
+            
+            // Crear imagen redimensionada
+            $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
+            
+            // Preservar transparencia para PNG
+            if ($mimeType === 'image/png') {
+                imagealphablending($resizedImage, false);
+                imagesavealpha($resizedImage, true);
+                $transparent = imagecolorallocatealpha($resizedImage, 255, 255, 255, 127);
+                imagefilledrectangle($resizedImage, 0, 0, $newWidth, $newHeight, $transparent);
+            }
+            
+            // Redimensionar
+            imagecopyresampled(
+                $resizedImage,
+                $image,
+                0, 0, 0, 0,
+                $newWidth,
+                $newHeight,
+                $width,
+                $height
+            );
+            
+            // Guardar como JPEG con compresión
+            imagejpeg($resizedImage, $filePath, $quality);
+            
+            // Liberar memoria
+            imagedestroy($image);
+            imagedestroy($resizedImage);
+            
+            return "{$directory}/{$filename}";
+            
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error processing image: ' . $e->getMessage());
+            
+            // Fallback: guardar sin procesar
+            return $file->store($directory, 'public');
+        }
     }
 }
 

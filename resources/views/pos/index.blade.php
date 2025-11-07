@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-4 sm:py-12">
+        <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <!-- Layout de 2 Columnas -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Columna Izquierda - Búsqueda de Productos (60% - 2/3) -->
@@ -83,27 +83,25 @@
                                 Productos Disponibles
                             </h3>
                             
-                            <!-- Grid de productos -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <!-- Grid de productos - Optimizado para móvil -->
+                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                                 @foreach($products as $product)
-                                    <div class="product-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg hover:border-blue-300 transition-all duration-200 cursor-pointer group transform hover:-translate-y-1" 
+                                    <div class="product-card bg-white border border-gray-200 rounded-lg p-2 sm:p-4 hover:shadow-lg hover:border-blue-300 transition-all duration-200 cursor-pointer group transform hover:-translate-y-1" 
                                          data-category="{{ $product->category->name }}"
                                          data-name="{{ $product->name }}"
                                          data-sku="{{ $product->sku }}">
-                                        <!-- Categoría del producto -->
-                                        <div class="flex justify-between items-start mb-2">
-                                            <span class="text-xs px-2 py-1 bg-{{ $product->category->name === 'Bebidas' ? 'blue' : ($product->category->name === 'Snacks' ? 'orange' : ($product->category->name === 'Alimentos' ? 'red' : ($product->category->name === 'Limpieza' ? 'green' : 'gray'))) }}-100 text-{{ $product->category->name === 'Bebidas' ? 'blue' : ($product->category->name === 'Snacks' ? 'orange' : ($product->category->name === 'Alimentos' ? 'red' : ($product->category->name === 'Limpieza' ? 'green' : 'gray'))) }}-800 rounded-full font-medium">
-                                                {{ $product->category->name }}
-                                            </span>
-                                            @if($product->stock <= 10)
-                                                <span class="text-xs px-2 py-1 bg-red-100 text-red-800 rounded-full font-medium">
-                                                    ¡Poco stock!
-                                                </span>
-                                            @endif
-                                        </div>
                                         
-                                        <!-- Imagen del producto -->
-                                        <div class="w-full h-32 bg-white rounded-lg mb-3 flex items-center justify-center border border-gray-200 overflow-hidden p-2">
+                                        <!-- Stock badge solo en móvil -->
+                                        @if($product->stock <= 10)
+                                            <div class="absolute top-1 right-1 sm:relative sm:top-0 sm:right-0 sm:mb-2">
+                                                <span class="text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 bg-red-100 text-red-800 rounded-full font-medium">
+                                                    ¡{{ $product->stock }}!
+                                                </span>
+                                            </div>
+                                        @endif
+                                        
+                                        <!-- Imagen del producto - Más pequeña en móvil -->
+                                        <div class="w-full h-20 sm:h-32 bg-white rounded-lg mb-2 sm:mb-3 flex items-center justify-center border border-gray-200 overflow-hidden p-1 sm:p-2">
                                             @if($product->image)
                                                 <img src="{{ $product->image_url }}" 
                                                      alt="{{ $product->name }}" 
@@ -149,22 +147,18 @@
                                             @endif
                                         </div>
                                         
-                                        <!-- Información del producto -->
-                                        <div class="space-y-2">
-                                            <h4 class="font-semibold text-gray-900 text-sm group-hover:text-blue-600 transition duration-150 line-clamp-2">
+                                        <!-- Información del producto - Compacta para móvil -->
+                                        <div class="space-y-1 sm:space-y-2">
+                                            <h4 class="font-semibold text-gray-900 text-xs sm:text-sm group-hover:text-blue-600 transition duration-150 line-clamp-2 leading-tight">
                                                 {{ $product->name }}
                                             </h4>
-                                            <p class="text-xs text-gray-500 font-mono">{{ $product->sku }}</p>
-                                            <div class="flex items-center justify-between">
-                                                <span class="text-xl font-bold text-green-600">
-                                                    ${{ number_format($product->price, 2) }}
+                                            <div class="flex items-center justify-between gap-1">
+                                                <span class="text-base sm:text-xl font-bold text-green-600">
+                                                    ${{ number_format($product->price, 0) }}
                                                 </span>
-                                                <div class="text-right">
-                                                    <div class="text-xs text-gray-500">Stock:</div>
-                                                    <span class="text-sm font-semibold {{ $product->stock <= 10 ? 'text-red-600' : 'text-gray-700' }}">
-                                                        {{ $product->stock }}
-                                                    </span>
-                                                </div>
+                                                <span class="text-xs {{ $product->stock <= 10 ? 'text-red-600 font-semibold' : 'text-gray-500' }}">
+                                                    {{ $product->stock }}u
+                                                </span>
                                             </div>
                                             <button 
                                                 data-id="{{ $product->id }}"
@@ -172,11 +166,12 @@
                                                 data-price="{{ $product->price }}"
                                                 data-stock="{{ $product->stock }}"
                                                 onclick="addToCart(this)"
-                                                class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2.5 px-3 rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-blue-800 transform hover:scale-105 transition-all duration-150 shadow-md hover:shadow-lg">
-                                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0 0M6 12h6m0 0h6"></path>
+                                                class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 sm:py-2.5 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold hover:from-blue-700 hover:to-blue-800 active:scale-95 transition-all duration-150 shadow-md touch-manipulation">
+                                                <svg class="w-3 h-3 sm:w-4 sm:h-4 inline sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                                 </svg>
-                                                Agregar al Carrito
+                                                <span class="hidden sm:inline">Agregar</span>
+                                                <span class="sm:hidden">+</span>
                                             </button>
                                         </div>
                                     </div>
