@@ -11,6 +11,7 @@ class BusinessSetting extends Model
     protected $fillable = [
         'user_id',
         'business_name',
+        'logo_path',
         'business_logo',
         'business_address',
         'business_phone',
