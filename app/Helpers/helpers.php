@@ -406,36 +406,9 @@ if (!function_exists('process_and_save_image')) {
      */
     function process_and_save_image($file, $directory = 'products', $maxWidth = 800, $quality = 85)
     {
-        try {
-            // Verificar si Intervention Image está disponible
-            if (!class_exists(\Intervention\Image\Laravel\Facades\Image::class)) {
-                // Fallback: guardar sin procesar
-                return $file->store($directory, 'public');
-            }
-            
-            // Generar nombre único para el archivo
-            $filename = \Illuminate\Support\Str::random(40) . '.webp';
-            $path = $directory . '/' . $filename;
-            
-            // Leer la imagen original
-            $image = \Intervention\Image\Laravel\Facades\Image::read($file);
-            
-            // Redimensionar si es necesario (manteniendo aspecto)
-            if ($image->width() > $maxWidth) {
-                $image->scale(width: $maxWidth);
-            }
-            
-            // Convertir a WebP y guardar
-            $encoded = $image->toWebp($quality);
-            \Illuminate\Support\Facades\Storage::disk('public')->put($path, $encoded);
-            
-            return $path;
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error processing image: ' . $e->getMessage());
-            
-            // Fallback: guardar sin procesar
-            return $file->store($directory, 'public');
-        }
+        // Por ahora, usar almacenamiento simple hasta configurar Intervention Image
+        // TODO: Configurar Intervention Image facade en config/app.php para compresión WebP
+        return $file->store($directory, 'public');
     }
 }
 
