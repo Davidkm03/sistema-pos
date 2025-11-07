@@ -8,6 +8,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
+use App\Services\ProductImageAnalyzer;
 
 class ProductManager extends Component
 {
@@ -204,6 +205,74 @@ class ProductManager extends Component
     public function updatingSearch()
     {
         $this->resetPage();
+    }
+
+    /**
+     * Analizar imagen de producto con IA
+     */
+    public function analyzeImage()
+    {
+        // Validar que haya una imagen
+        $this->validate([
+            'image' => 'required|image|max:5120', // Max 5MB
+        ]);
+
+        try {
+            // Convertir imagen a base64
+            $imageBase64 = base64_encode(file_get_contents($this->image->getRealPath()));
+
+            // Analizar con IA
+            $analyzer = new ProductImageAnalyzer();
+            
+            if (!$analyzer->isAvailable()) {
+                session()->flash('error', '⚠️ Servicio de IA no configurado. Agrega tu API key de OpenAI en el archivo .env');
+                return;
+            }
+
+            $result = $analyzer->analyzeProductImage($imageBase64);
+
+            if ($result) {
+                // Auto-completar campos
+                $this->name = $result['nombre'] ?? '';
+                
+                // Buscar o sugerir categoría
+                if (!empty($result['categoria_sugerida'])) {
+                    $category = Category::where('name', 'like', '%' . $result['categoria_sugerida'] . '%')->first();
+                    if ($category) {
+                        $this->category_id = $category->id;
+                    }
+                }
+                
+                // Sugerir precio si viene
+                if (!empty($result['precio_estimado'])) {
+                    $this->price = $result['precio_estimado'];
+                }
+                
+                // Si viene SKU/código de barras
+                if (!empty($result['codigo_barras'])) {
+                    $this->sku = $result['codigo_barras'];
+                }
+
+                // Mensaje de éxito con información de confianza
+                $confianza = $result['confianza'] ?? 'media';
+                $emoji = $confianza === 'alta' ? '✅' : ($confianza === 'media' ? '⚠️' : '❓');
+                
+                session()->flash('success', "{$emoji} Producto identificado con confianza {$confianza}. Revisa y ajusta la información si es necesario.");
+                
+                // Información adicional en descripción o nota
+                if (!empty($result['descripcion'])) {
+                    session()->flash('ai_description', $result['descripcion']);
+                }
+            } else {
+                session()->flash('error', '❌ No se pudo analizar la imagen. Intenta con otra foto más clara.');
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Error analyzing image in ProductManager', [
+                'error' => $e->getMessage()
+            ]);
+            session()->flash('error', '❌ Error al procesar la imagen: ' . $e->getMessage());
+        }
     }
 
     /**

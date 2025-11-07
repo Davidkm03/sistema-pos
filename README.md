@@ -44,6 +44,7 @@
 - **📝 Movimientos de Inventario** - Historial completo de entradas y salidas
 - **🏷️ Gestión de Categorías** - Organización jerárquica de productos
 - **💵 Control de Precios** - Precios regulares, promocionales y por mayoreo
+- **🤖 Análisis de Productos con IA** - Toma una foto y la IA identifica el producto automáticamente
 
 ### 🎯 Sistema de Metas y Objetivos
 - **📈 Objetivos de Ventas** - Define y rastrea metas mensuales/semanales
@@ -201,6 +202,55 @@ Características: KPIs, gráficos, metas, ventas del día
 ---
 
 ## 🔧 Configuración Avanzada
+
+### 🤖 Análisis de Productos con IA
+
+El sistema incluye una funcionalidad innovadora de **análisis de imágenes con Inteligencia Artificial** que te permite agregar productos tomándoles una foto:
+
+#### ¿Cómo funciona?
+
+1. **📸 Toma una foto** del producto desde tu celular o sube una imagen
+2. **🤖 La IA analiza** la imagen y extrae:
+   - Nombre del producto
+   - Descripción detallada
+   - Categoría sugerida
+   - Precio estimado
+   - Código de barras (si es visible)
+3. **✨ Auto-completa** todos los campos del formulario automáticamente
+
+#### Configuración
+
+Para habilitar esta funcionalidad, necesitas una API key de OpenAI:
+
+```bash
+# 1. Obtén tu API key en: https://platform.openai.com/api-keys
+# 2. Agrega la clave en tu archivo .env:
+
+OPENAI_API_KEY=sk-your-api-key-here
+```
+
+#### Características
+
+- **📱 Compatible con móviles** - Usa la cámara directamente desde tu dispositivo
+- **⚡ Rápido y preciso** - Resultados en segundos usando GPT-4 Vision
+- **💰 Económico** - Usa el modelo `gpt-4o-mini` optimizado para costos
+- **🎯 Inteligente** - Identifica productos, marcas, tamaños y características
+- **✅ Nivel de confianza** - Te indica qué tan segura es la identificación
+
+#### Ejemplo de Uso
+
+```php
+// El sistema automáticamente:
+// - Identifica: "Coca-Cola 1.5L"
+// - Categoriza: "Bebidas"
+// - Estima precio: $3,500
+// - Extrae código de barras si es visible
+// - Genera descripción: "Bebida gaseosa sabor cola, botella PET 1.5 litros"
+```
+
+> **💡 Tip**: Funciona mejor con fotos claras, buena iluminación y el producto bien centrado en la imagen.
+
+---
 
 ### Variables de Entorno
 

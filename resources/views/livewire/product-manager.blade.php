@@ -160,14 +160,54 @@
                 {{-- Image --}}
                 <div class="md:col-span-2 lg:col-span-3">
                     <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Imagen</label>
-                    <input type="file"
-                           id="image"
-                           wire:model="image"
-                           accept="image/*"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('image') border-red-500 @enderror">
+                    
+                    <div class="flex flex-col space-y-3">
+                        {{-- File input con opción de cámara --}}
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="file"
+                                   id="image"
+                                   wire:model="image"
+                                   accept="image/*"
+                                   capture="environment"
+                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('image') border-red-500 @enderror">
+                            
+                            {{-- Botón para analizar con IA --}}
+                            @if($image)
+                                <button type="button"
+                                        wire:click="analyzeImage"
+                                        wire:loading.attr="disabled"
+                                        class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-md hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 whitespace-nowrap">
+                                    <span wire:loading.remove wire:target="analyzeImage">🤖 Analizar con IA</span>
+                                    <span wire:loading wire:target="analyzeImage">⏳ Analizando...</span>
+                                </button>
+                            @endif
+                        </div>
+                        
+                        {{-- Preview de la imagen --}}
+                        @if($image)
+                            <div class="mt-2">
+                                <img src="{{ $image->temporaryUrl() }}" 
+                                     alt="Preview" 
+                                     class="h-32 w-auto object-contain rounded-lg border border-gray-300">
+                            </div>
+                        @endif
+                        
+                        {{-- Descripción sugerida por IA --}}
+                        @if(session()->has('ai_description'))
+                            <div class="mt-2 p-3 bg-purple-50 border border-purple-200 rounded-md">
+                                <p class="text-xs font-semibold text-purple-800 mb-1">💡 Descripción sugerida por IA:</p>
+                                <p class="text-sm text-purple-700">{{ session('ai_description') }}</p>
+                            </div>
+                        @endif
+                    </div>
+                    
                     @error('image')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
+                    
+                    <p class="mt-1 text-xs text-gray-500">
+                        📸 En móvil: selecciona "Tomar foto" para usar la cámara. Luego presiona "Analizar con IA" para auto-completar los datos del producto.
+                    </p>
                 </div>
             </div>
 
