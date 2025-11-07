@@ -92,6 +92,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('users.index');
         })->name('users.index');
     });
+    
+    // Rutas de Administración de Roles y Permisos - Solo Super Admin
+    Route::middleware(['role:super-admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/roles', [App\Http\Controllers\RolePermissionController::class, 'index'])->name('roles.index');
+        Route::get('/roles/{role}/edit', [App\Http\Controllers\RolePermissionController::class, 'edit'])->name('roles.edit');
+        Route::put('/roles/{role}', [App\Http\Controllers\RolePermissionController::class, 'update'])->name('roles.update');
+        Route::post('/roles', [App\Http\Controllers\RolePermissionController::class, 'store'])->name('roles.store');
+        Route::delete('/roles/{role}', [App\Http\Controllers\RolePermissionController::class, 'destroy'])->name('roles.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';
