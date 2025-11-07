@@ -225,7 +225,7 @@ class ProductManager extends Component
             $analyzer = new ProductImageAnalyzer();
             
             if (!$analyzer->isAvailable()) {
-                session()->flash('error', '⚠️ Servicio de IA no configurado. Agrega tu API key de OpenAI en el archivo .env');
+                session()->flash('error', 'Servicio de IA no configurado. Agrega tu API key de OpenAI en el archivo .env');
                 return;
             }
 
@@ -255,23 +255,22 @@ class ProductManager extends Component
 
                 // Mensaje de éxito con información de confianza
                 $confianza = $result['confianza'] ?? 'media';
-                $emoji = $confianza === 'alta' ? '✅' : ($confianza === 'media' ? '⚠️' : '❓');
                 
-                session()->flash('success', "{$emoji} Producto identificado con confianza {$confianza}. Revisa y ajusta la información si es necesario.");
+                session()->flash('success', "Producto identificado con confianza {$confianza}. Revisa y ajusta la información si es necesario.");
                 
                 // Información adicional en descripción o nota
                 if (!empty($result['descripcion'])) {
                     session()->flash('ai_description', $result['descripcion']);
                 }
             } else {
-                session()->flash('error', '❌ No se pudo analizar la imagen. Intenta con otra foto más clara.');
+                session()->flash('error', 'No se pudo analizar la imagen. Intenta con otra foto más clara.');
             }
 
         } catch (\Exception $e) {
             \Log::error('Error analyzing image in ProductManager', [
                 'error' => $e->getMessage()
             ]);
-            session()->flash('error', '❌ Error al procesar la imagen: ' . $e->getMessage());
+            session()->flash('error', 'Error al procesar la imagen: ' . $e->getMessage());
         }
     }
 

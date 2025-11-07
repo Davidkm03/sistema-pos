@@ -159,55 +159,109 @@
 
                 {{-- Image --}}
                 <div class="md:col-span-2 lg:col-span-3">
-                    <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Imagen</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Imagen del Producto</label>
                     
                     <div class="flex flex-col space-y-3">
-                        {{-- File input con opción de cámara --}}
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <input type="file"
-                                   id="image"
-                                   wire:model="image"
-                                   accept="image/*"
-                                   capture="environment"
-                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('image') border-red-500 @enderror">
-                            
-                            {{-- Botón para analizar con IA --}}
-                            @if($image)
-                                <button type="button"
-                                        wire:click="analyzeImage"
-                                        wire:loading.attr="disabled"
-                                        class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-md hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 whitespace-nowrap">
-                                    <span wire:loading.remove wire:target="analyzeImage">🤖 Analizar con IA</span>
-                                    <span wire:loading wire:target="analyzeImage">⏳ Analizando...</span>
-                                </button>
-                            @endif
+                        {{-- Botones para subir/tomar foto --}}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {{-- Botón para tomar foto (móvil) --}}
+                            <label for="image-camera" class="cursor-pointer">
+                                <div class="flex items-center justify-center px-4 py-3 border-2 border-dashed border-blue-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-blue-700">Tomar Foto</span>
+                                </div>
+                                <input type="file"
+                                       id="image-camera"
+                                       wire:model="image"
+                                       accept="image/*"
+                                       capture="environment"
+                                       class="hidden">
+                            </label>
+
+                            {{-- Botón para subir desde galería --}}
+                            <label for="image-gallery" class="cursor-pointer">
+                                <div class="flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-50 transition-colors">
+                                    <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700">Subir Imagen</span>
+                                </div>
+                                <input type="file"
+                                       id="image-gallery"
+                                       wire:model="image"
+                                       accept="image/*"
+                                       class="hidden">
+                            </label>
                         </div>
-                        
-                        {{-- Preview de la imagen --}}
+
+                        {{-- Preview y botón de análisis con IA --}}
                         @if($image)
-                            <div class="mt-2">
-                                <img src="{{ $image->temporaryUrl() }}" 
-                                     alt="Preview" 
-                                     class="h-32 w-auto object-contain rounded-lg border border-gray-300">
+                            <div class="border-2 border-gray-200 rounded-lg p-4 bg-gray-50">
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    {{-- Preview de la imagen --}}
+                                    <div class="flex-shrink-0">
+                                        <img src="{{ $image->temporaryUrl() }}" 
+                                             alt="Preview" 
+                                             class="h-32 w-32 object-cover rounded-lg border-2 border-gray-300 shadow-sm">
+                                    </div>
+                                    
+                                    {{-- Botón de análisis --}}
+                                    <div class="flex-1 flex flex-col justify-center space-y-2">
+                                        <div class="flex items-center text-sm text-green-600">
+                                            <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            Imagen cargada correctamente
+                                        </div>
+                                        <button type="button"
+                                                wire:click="analyzeImage"
+                                                wire:loading.attr="disabled"
+                                                class="inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 shadow-md transform transition hover:scale-105">
+                                            <svg wire:loading.remove wire:target="analyzeImage" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                            </svg>
+                                            <svg wire:loading wire:target="analyzeImage" class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            <span wire:loading.remove wire:target="analyzeImage" class="font-semibold">Analizar con IA</span>
+                                            <span wire:loading wire:target="analyzeImage" class="font-semibold">Analizando...</span>
+                                        </button>
+                                        <p class="text-xs text-gray-500 text-center">
+                                            La IA identificará el producto y completará los campos automáticamente
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         @endif
                         
                         {{-- Descripción sugerida por IA --}}
                         @if(session()->has('ai_description'))
-                            <div class="mt-2 p-3 bg-purple-50 border border-purple-200 rounded-md">
-                                <p class="text-xs font-semibold text-purple-800 mb-1">💡 Descripción sugerida por IA:</p>
-                                <p class="text-sm text-purple-700">{{ session('ai_description') }}</p>
+                            <div class="p-4 bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-300 rounded-lg shadow-sm">
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z"></path>
+                                    </svg>
+                                    <div class="flex-1">
+                                        <p class="text-xs font-bold text-purple-900 mb-1">Información detectada por IA:</p>
+                                        <p class="text-sm text-purple-800">{{ session('ai_description') }}</p>
+                                    </div>
+                                </div>
                             </div>
                         @endif
                     </div>
                     
                     @error('image')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-2 text-sm text-red-600 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            {{ $message }}
+                        </p>
                     @enderror
-                    
-                    <p class="mt-1 text-xs text-gray-500">
-                        📸 En móvil: selecciona "Tomar foto" para usar la cámara. Luego presiona "Analizar con IA" para auto-completar los datos del producto.
-                    </p>
                 </div>
             </div>
 
