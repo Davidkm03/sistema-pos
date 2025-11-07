@@ -227,7 +227,7 @@
                                     @if($product->image)
                                         <img src="{{ asset('storage/' . $product->image) }}" 
                                              alt="{{ $product->name }}" 
-                                             class="w-10 h-10 rounded-lg object-cover">
+                                             class="w-10 h-10 rounded-lg object-contain bg-white border border-gray-200">
                                     @else
                                         <div class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
                                             <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

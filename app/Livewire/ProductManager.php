@@ -91,13 +91,18 @@ class ProductManager extends Component
 
         // Handle image upload
         if ($this->image) {
-            $imagePath = $this->image->store('products', 'public');
+            $imagePath = process_and_save_image($this->image, 'products', 800, 85);
             $validatedData['image'] = $imagePath;
         }
 
         if ($this->editingId) {
             // Update existing product
             $product = Product::find($this->editingId);
+            
+            // Delete old image if uploading a new one
+            if ($this->image && $product->image) {
+                delete_image($product->image);
+            }
             
             // Remove image from validated data if no new image was uploaded
             if (!$this->image) {

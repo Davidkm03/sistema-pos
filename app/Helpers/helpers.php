@@ -389,3 +389,63 @@ if (!function_exists('get_tax_id_types')) {
         ];
     }
 }
+
+// ==========================================
+// FUNCIONES DE PROCESAMIENTO DE IMÁGENES
+// ==========================================
+
+if (!function_exists('process_and_save_image')) {
+    /**
+     * Procesar imagen: convertir a WebP y comprimir
+     * 
+     * @param \Illuminate\Http\UploadedFile $file Archivo subido
+     * @param string $directory Directorio donde guardar (ej: 'products')
+     * @param int $maxWidth Ancho máximo (opcional)
+     * @param int $quality Calidad de compresión (0-100)
+     * @return string|null Ruta relativa del archivo guardado
+     */
+    function process_and_save_image($file, $directory = 'products', $maxWidth = 800, $quality = 85)
+    {
+        try {
+            // Generar nombre único para el archivo
+            $filename = \Illuminate\Support\Str::random(40) . '.webp';
+            $path = $directory . '/' . $filename;
+            
+            // Leer la imagen original
+            $image = \Intervention\Image\Laravel\Facades\Image::read($file);
+            
+            // Redimensionar si es necesario (manteniendo aspecto)
+            if ($image->width() > $maxWidth) {
+                $image->scale(width: $maxWidth);
+            }
+            
+            // Convertir a WebP y guardar
+            $encoded = $image->toWebp($quality);
+            \Illuminate\Support\Facades\Storage::disk('public')->put($path, $encoded);
+            
+            return $path;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error processing image: ' . $e->getMessage());
+            
+            // Fallback: guardar sin procesar
+            return $file->store($directory, 'public');
+        }
+    }
+}
+
+if (!function_exists('delete_image')) {
+    /**
+     * Eliminar imagen del storage
+     * 
+     * @param string|null $path Ruta de la imagen
+     * @return bool
+     */
+    function delete_image($path)
+    {
+        if (!$path) {
+            return false;
+        }
+        
+        return \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
+    }
+}

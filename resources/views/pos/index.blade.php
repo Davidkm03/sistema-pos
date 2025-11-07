@@ -103,11 +103,11 @@
                                         </div>
                                         
                                         <!-- Imagen del producto -->
-                                        <div class="w-full h-32 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg mb-3 flex items-center justify-center border border-gray-200 overflow-hidden">
+                                        <div class="w-full h-32 bg-white rounded-lg mb-3 flex items-center justify-center border border-gray-200 overflow-hidden p-2">
                                             @if($product->image)
                                                 <img src="{{ $product->image_url }}" 
                                                      alt="{{ $product->name }}" 
-                                                     class="w-full h-full object-cover"
+                                                     class="w-full h-full object-contain"
                                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                                 <div style="display:none;" class="w-full h-full flex items-center justify-center">
                                                     @if($product->category->name === 'Bebidas')
@@ -709,8 +709,8 @@
                     ${product.stock <= 10 ? '<span class="text-xs px-2 py-1 bg-red-100 text-red-800 rounded-full font-medium">¡Poco stock!</span>' : ''}
                 </div>
                 
-                <div class="w-full h-32 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg mb-3 flex items-center justify-center border border-gray-200 overflow-hidden">
-                    ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-cover">` : categoryIcon}
+                <div class="w-full h-32 bg-white rounded-lg mb-3 flex items-center justify-center border border-gray-200 overflow-hidden p-2">
+                    ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-contain">` : categoryIcon}
                 </div>
                 
                 <div class="space-y-2">

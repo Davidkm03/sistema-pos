@@ -35,7 +35,7 @@
                         @if(isset($product['image']) && $product['image'])
                             <img src="{{ asset('storage/' . $product['image']) }}" 
                                  alt="{{ $product['name'] }}" 
-                                 class="w-full h-full object-cover rounded-md">
+                                 class="w-full h-full object-contain rounded-md bg-white border border-gray-200">
                         @else
                             <div class="w-full h-full bg-gray-300 rounded-md flex items-center justify-center">
                                 <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
