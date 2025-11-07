@@ -41,9 +41,18 @@ return new class extends Migration
 
         // Agregar campos de documento a sales
         Schema::table('sales', function (Blueprint $table) {
+            // Agregar document_type si no existe
+            if (!Schema::hasColumn('sales', 'document_type')) {
+                $table->enum('document_type', ['receipt', 'invoice'])->default('receipt')->after('status');
+            }
+            
             // Solo agregar invoice_number si no existe
             if (!Schema::hasColumn('sales', 'invoice_number')) {
                 $table->unsignedInteger('invoice_number')->nullable()->after('receipt_number');
+            }
+            
+            // Crear índices solo si las columnas existen
+            if (Schema::hasColumn('sales', 'document_type') && Schema::hasColumn('sales', 'invoice_number')) {
                 $table->index(['document_type', 'invoice_number']);
             }
         });
@@ -72,9 +81,26 @@ return new class extends Migration
         });
 
         Schema::table('sales', function (Blueprint $table) {
-            $table->dropIndex(['document_type', 'receipt_number']);
-            $table->dropIndex(['document_type', 'invoice_number']);
-            $table->dropColumn(['document_type', 'receipt_number', 'invoice_number']);
+            // Verificar que existan las columnas antes de eliminar índices
+            if (Schema::hasColumn('sales', 'document_type') && Schema::hasColumn('sales', 'receipt_number')) {
+                $table->dropIndex(['document_type', 'receipt_number']);
+            }
+            if (Schema::hasColumn('sales', 'document_type') && Schema::hasColumn('sales', 'invoice_number')) {
+                $table->dropIndex(['document_type', 'invoice_number']);
+            }
+            
+            // Eliminar columnas si existen
+            $columnsToRemove = [];
+            if (Schema::hasColumn('sales', 'document_type')) {
+                $columnsToRemove[] = 'document_type';
+            }
+            if (Schema::hasColumn('sales', 'invoice_number')) {
+                $columnsToRemove[] = 'invoice_number';
+            }
+            
+            if (!empty($columnsToRemove)) {
+                $table->dropColumn($columnsToRemove);
+            }
         });
     }
 };
