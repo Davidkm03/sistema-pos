@@ -85,10 +85,17 @@ class BusinessSetting extends Model
             return null;
         }
 
+        // Si ya es una URL completa, retornarla
         if (str_starts_with($this->business_logo, 'http')) {
             return $this->business_logo;
         }
 
+        // Si empieza con 'logos/', asegurar que sea accesible vía storage
+        if (str_starts_with($this->business_logo, 'logos/')) {
+            return asset('storage/' . $this->business_logo);
+        }
+
+        // Fallback a Storage::url()
         return Storage::url($this->business_logo);
     }
 

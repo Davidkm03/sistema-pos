@@ -6,6 +6,7 @@ use App\Models\BusinessSetting;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class BusinessSettingsManager extends Component
 {
@@ -131,10 +132,21 @@ class BusinessSettingsManager extends Component
     public function removeLogo()
     {
         if ($this->existing_logo) {
-            Storage::delete($this->existing_logo);
+            Storage::disk('public')->delete($this->existing_logo);
         }
         $this->existing_logo = null;
         $this->business_logo = null;
+        
+        // Actualizar en la base de datos
+        $settings = BusinessSetting::where('user_id', auth()->id())->first();
+        if ($settings) {
+            $settings->update(['business_logo' => null]);
+        }
+        
+        $this->dispatch('notify', 
+            type: 'success',
+            message: 'Logo eliminado exitosamente'
+        );
     }
 
     public function save()
@@ -183,10 +195,19 @@ class BusinessSettingsManager extends Component
         if ($this->business_logo) {
             // Eliminar logo anterior si existe
             if ($this->existing_logo) {
-                Storage::delete($this->existing_logo);
+                Storage::disk('public')->delete($this->existing_logo);
             }
-            // Guardar nuevo logo
-            $data['business_logo'] = $this->business_logo->store('logos', 'public');
+            
+            // Guardar nuevo logo con compresión
+            try {
+                // Usar helper de compresión de imágenes
+                $logoPath = process_and_save_image($this->business_logo, 'logos', 400, 90);
+                $data['business_logo'] = $logoPath;
+            } catch (\Exception $e) {
+                Log::error('Error saving business logo: ' . $e->getMessage());
+                // Fallback: guardar sin compresión
+                $data['business_logo'] = $this->business_logo->store('logos', 'public');
+            }
         } else {
             $data['business_logo'] = $this->existing_logo;
         }
