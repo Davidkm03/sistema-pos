@@ -29,6 +29,21 @@ class PosController extends Controller
 
         return view('pos.index', compact('categories', 'products'));
     }
+
+    public function mobile()
+    {
+        $categories = Category::withCount(['products' => function($query) { 
+            $query->where('stock', '>', 0); 
+        }])->get();
+
+        $products = Product::where('stock', '>', 0)
+            ->with('category')
+            ->orderBy('updated_at', 'desc')
+            ->take(20)
+            ->get();
+
+        return view('pos.mobile', compact('categories', 'products'));
+    }
     
     public function loadMoreProducts(Request $request)
     {

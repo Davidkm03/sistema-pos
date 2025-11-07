@@ -15,6 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas de POS - Accesibles por Admin, Supervisor y Cajero
     Route::middleware(['permission:access-pos'])->group(function () {
         Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+        Route::get('/pos/mobile', [PosController::class, 'mobile'])->name('pos.mobile');
         Route::get('/pos/load-more', [PosController::class, 'loadMoreProducts'])->name('pos.load-more');
         Route::post('/pos/procesar-venta', [PosController::class, 'procesarVenta'])
             ->middleware('permission:process-sales')
