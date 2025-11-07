@@ -407,6 +407,12 @@ if (!function_exists('process_and_save_image')) {
     function process_and_save_image($file, $directory = 'products', $maxWidth = 800, $quality = 85)
     {
         try {
+            // Verificar si Intervention Image está disponible
+            if (!class_exists(\Intervention\Image\Laravel\Facades\Image::class)) {
+                // Fallback: guardar sin procesar
+                return $file->store($directory, 'public');
+            }
+            
             // Generar nombre único para el archivo
             $filename = \Illuminate\Support\Str::random(40) . '.webp';
             $path = $directory . '/' . $filename;
