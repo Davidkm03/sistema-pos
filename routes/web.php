@@ -66,6 +66,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/reportes', function () {
             return view('reports.index');
         })->name('reports.index');
+        
+        Route::get('/reportes/periodo', function () {
+            $fechaDesde = request('fecha_desde');
+            $fechaHasta = request('fecha_hasta');
+            
+            $ventas = \App\Models\Sale::whereBetween('created_at', [
+                $fechaDesde . ' 00:00:00',
+                $fechaHasta . ' 23:59:59'
+            ])->get();
+            
+            return response()->json([
+                'total_ventas' => $ventas->count(),
+                'total_ingresos' => $ventas->sum('total')
+            ]);
+        })->name('reports.periodo');
     });
     
     // Rutas de Metas - Requiere permiso view-goals

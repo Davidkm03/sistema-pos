@@ -27,24 +27,26 @@
             ->orderBy('total_amount', 'desc')
             ->get();
             
-        // Ventas de los últimos 7 días
-        $ventasUltimos7Dias = \Illuminate\Support\Facades\DB::table('sales')
-            ->select(
-                \Illuminate\Support\Facades\DB::raw('DATE(created_at) as fecha'),
-                \Illuminate\Support\Facades\DB::raw('COUNT(*) as total_ventas'),
-                \Illuminate\Support\Facades\DB::raw('SUM(total) as total_ingresos')
-            )
-            ->where('created_at', '>=', \Carbon\Carbon::now()->subDays(7))
-            ->groupBy(\Illuminate\Support\Facades\DB::raw('DATE(created_at)'))
-            ->orderBy('fecha', 'asc')
-            ->get();
+        // Ventas de los últimos 7 días (SIEMPRE 7 días, con o sin ventas)
+        $ventasUltimos7Dias = collect();
+        for ($i = 6; $i >= 0; $i--) {
+            $fecha = \Carbon\Carbon::now()->subDays($i)->format('Y-m-d');
             
-        // Ventas por método de pago
-        $ventasPorMetodo = \Illuminate\Support\Facades\DB::table('sales')
+            $ventasDelDia = \App\Models\Sale::whereDate('created_at', $fecha)->get();
+            
+            $ventasUltimos7Dias->push((object)[
+                'fecha' => $fecha,
+                'total_ventas' => $ventasDelDia->count(),
+                'total_ingresos' => $ventasDelDia->sum('total')
+            ]);
+        }
+            
+        // Ventas por método de pago (desde payment_details)
+        $ventasPorMetodo = \Illuminate\Support\Facades\DB::table('payment_details')
             ->select(
                 'payment_method',
-                \Illuminate\Support\Facades\DB::raw('COUNT(*) as total_ventas'),
-                \Illuminate\Support\Facades\DB::raw('SUM(total) as total_ingresos')
+                \Illuminate\Support\Facades\DB::raw('COUNT(DISTINCT sale_id) as total_ventas'),
+                \Illuminate\Support\Facades\DB::raw('SUM(amount) as total_ingresos')
             )
             ->groupBy('payment_method')
             ->get();
@@ -153,9 +155,45 @@
                         </div>
                     </div>
                 </div>
-                <div class="p-6">
+                <div class="p-6" x-data="{ 
+                    loading: false, 
+                    hasResults: false,
+                    totalVentas: 0,
+                    totalIngresos: 0,
+                    async generarReporte() {
+                        const fechaDesde = this.$refs.fechaDesde.value;
+                        const fechaHasta = this.$refs.fechaHasta.value;
+                        
+                        if (!fechaDesde || !fechaHasta) {
+                            alert('Por favor selecciona ambas fechas');
+                            return;
+                        }
+                        
+                        if (fechaDesde > fechaHasta) {
+                            alert('La fecha inicial no puede ser mayor a la fecha final');
+                            return;
+                        }
+                        
+                        this.loading = true;
+                        this.hasResults = false;
+                        
+                        try {
+                            const response = await fetch(`{{ route('reports.periodo') }}?fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}`);
+                            const data = await response.json();
+                            
+                            this.totalVentas = data.total_ventas;
+                            this.totalIngresos = data.total_ingresos;
+                            this.hasResults = true;
+                        } catch (error) {
+                            alert('Error al generar el reporte');
+                            console.error(error);
+                        } finally {
+                            this.loading = false;
+                        }
+                    }
+                }">
                     <!-- Formulario de Fechas -->
-                    <form class="mb-6">
+                    <form @submit.prevent="generarReporte" class="mb-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
@@ -166,6 +204,7 @@
                                 </label>
                                 <input type="date" 
                                        name="fecha_desde"
+                                       x-ref="fechaDesde"
                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-all font-semibold">
                             </div>
                             <div>
@@ -177,23 +216,25 @@
                                 </label>
                                 <input type="date" 
                                        name="fecha_hasta"
+                                       x-ref="fechaHasta"
                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-all font-semibold">
                             </div>
                             <div class="flex items-end">
                                 <button type="submit" 
+                                        :disabled="loading"
                                         style="background: linear-gradient(135deg, #7C3AED 0%, #A855F7 100%) !important;"
-                                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl font-bold hover:from-violet-700 hover:to-purple-800 focus:ring-4 focus:ring-violet-200 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:scale-95">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-violet-600 to-purple-700 text-white rounded-xl font-bold hover:from-violet-700 hover:to-purple-800 focus:ring-4 focus:ring-violet-200 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <svg class="w-5 h-5" :class="{ 'animate-spin': loading }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                     </svg>
-                                    Generar Reporte
+                                    <span x-text="loading ? 'Generando...' : 'Generar Reporte'"></span>
                                 </button>
                             </div>
                         </div>
                     </form>
 
                     <!-- Resultado del Reporte -->
-                    <div class="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-6 border-2 border-violet-100">
+                    <div x-show="!hasResults" class="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-6 border-2 border-violet-100">
                         <div class="text-center">
                             <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-violet-100 to-purple-100 rounded-full flex items-center justify-center">
                                 <svg class="w-10 h-10 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,6 +243,37 @@
                             </div>
                             <h4 class="text-lg font-black text-gray-900 mb-2">Selecciona un rango de fechas</h4>
                             <p class="text-gray-600 font-medium">Los resultados aparecerán aquí una vez generes el reporte</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Resultados Dinámicos -->
+                    <div x-show="hasResults" x-cloak class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gradient-to-br from-violet-600 to-purple-700 rounded-xl p-6 text-white shadow-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-violet-200 text-sm font-bold mb-1">Total de Ventas</p>
+                                    <p class="text-3xl font-black" x-text="totalVentas"></p>
+                                </div>
+                                <div class="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
+                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-6 text-white shadow-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-emerald-100 text-sm font-bold mb-1">Ingresos Totales</p>
+                                    <p class="text-3xl font-black">$<span x-text="parseFloat(totalIngresos).toFixed(2)"></span></p>
+                                </div>
+                                <div class="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
+                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -413,21 +485,31 @@
                                 label: 'Número de Ventas',
                                 data: totalesVentas,
                                 borderColor: 'rgb(59, 130, 246)',
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.15)',
                                 borderWidth: 3,
                                 fill: true,
                                 tension: 0.4,
-                                yAxisID: 'y'
+                                yAxisID: 'y',
+                                pointBackgroundColor: 'rgb(59, 130, 246)',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
                             },
                             {
                                 label: 'Ingresos ($)',
                                 data: totalesIngresos,
-                                borderColor: 'rgb(34, 197, 94)',
-                                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                                borderColor: 'rgb(29, 78, 216)',
+                                backgroundColor: 'rgba(29, 78, 216, 0.1)',
                                 borderWidth: 3,
                                 fill: true,
                                 tension: 0.4,
-                                yAxisID: 'y1'
+                                yAxisID: 'y1',
+                                pointBackgroundColor: 'rgb(29, 78, 216)',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
                             }
                         ]
                     },
@@ -510,8 +592,43 @@
             // ========================================
             const metodosPagoData = @json($ventasPorMetodo);
             
-            const metodos = metodosPagoData.map(m => m.payment_method === 'efectivo' ? 'Efectivo' : 'Tarjeta');
+            // Mapear nombres de métodos de pago correctamente
+            const paymentMethodNames = {
+                'efectivo': 'Efectivo',
+                'tarjeta_debito': 'Tarjeta Débito',
+                'tarjeta_credito': 'Tarjeta Crédito',
+                'transferencia': 'Transferencia',
+                'nequi': 'Nequi',
+                'daviplata': 'Daviplata',
+                'otro': 'Otro'
+            };
+            
+            const metodos = metodosPagoData.map(m => paymentMethodNames[m.payment_method] || m.payment_method);
             const ingresosMetodos = metodosPagoData.map(m => parseFloat(m.total_ingresos));
+            
+            // Colores dinámicos según cantidad de métodos
+            const colorPalette = [
+                'rgba(245, 158, 11, 0.85)',  // Amber
+                'rgba(234, 88, 12, 0.85)',   // Orange
+                'rgba(99, 102, 241, 0.85)',  // Indigo
+                'rgba(16, 185, 129, 0.85)',  // Emerald
+                'rgba(236, 72, 153, 0.85)',  // Pink
+                'rgba(59, 130, 246, 0.85)',  // Blue
+                'rgba(139, 92, 246, 0.85)'   // Violet
+            ];
+            
+            const borderColorPalette = [
+                'rgb(245, 158, 11)',
+                'rgb(234, 88, 12)',
+                'rgb(99, 102, 241)',
+                'rgb(16, 185, 129)',
+                'rgb(236, 72, 153)',
+                'rgb(59, 130, 246)',
+                'rgb(139, 92, 246)'
+            ];
+            
+            const backgroundColors = metodosPagoData.map((_, index) => colorPalette[index % colorPalette.length]);
+            const borderColors = metodosPagoData.map((_, index) => borderColorPalette[index % borderColorPalette.length]);
             
             const metodosPagoCtx = document.getElementById('metodosPagoChart');
             if (metodosPagoCtx) {
@@ -521,15 +638,10 @@
                         labels: metodos,
                         datasets: [{
                             data: ingresosMetodos,
-                            backgroundColor: [
-                                'rgba(34, 197, 94, 0.8)',
-                                'rgba(59, 130, 246, 0.8)'
-                            ],
-                            borderColor: [
-                                'rgb(34, 197, 94)',
-                                'rgb(59, 130, 246)'
-                            ],
-                            borderWidth: 2
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 3,
+                            hoverOffset: 8
                         }]
                     },
                     options: {
@@ -583,11 +695,12 @@
                         datasets: [{
                             label: 'Unidades Vendidas',
                             data: cantidadesProductos,
-                            backgroundColor: 'rgba(34, 197, 94, 0.7)',
-                            borderColor: 'rgb(34, 197, 94)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.75)',
+                            borderColor: 'rgb(13, 148, 136)',
                             borderWidth: 2,
-                            borderRadius: 6,
+                            borderRadius: 8,
                             borderSkipped: false,
+                            hoverBackgroundColor: 'rgba(13, 148, 136, 0.9)'
                         }]
                     },
                     options: {
