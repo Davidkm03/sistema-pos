@@ -27,15 +27,21 @@ Una vez conectado por SSH, ejecuta este comando TODO EN UNO:
 cd domains/paginaswebscolombia.com/public_html/sistemapos && \
 echo "📡 Trayendo cambios del repositorio..." && \
 git pull origin main && \
-echo "🎨 Compilando assets..." && \
-npm install && \
-npm run build && \
+echo "🔄 Actualizando permisos de Super Admin..." && \
+php artisan db:seed --class=UpdateSuperAdminPermissionsSeeder && \
 echo "🧹 Limpiando cachés..." && \
 php artisan config:cache && \
 php artisan route:cache && \
 php artisan view:cache && \
+php artisan permission:cache-reset && \
 echo "✅ ¡Deployment completado exitosamente!"
 ```
+
+**IMPORTANTE**: Este deploy incluye la actualización de permisos del Super Admin para que tenga acceso a:
+- ✅ Anulación de ventas
+- ✅ Logs de auditoría
+- ✅ Gestión de metas
+- ✅ Todos los módulos del sistema
 
 ---
 
