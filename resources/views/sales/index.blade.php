@@ -81,10 +81,10 @@
                             </label>
                             <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all font-semibold">
                                 <option value="">Todos</option>
-                                <option value="efectivo">💵 Efectivo</option>
-                                <option value="tarjeta_debito">💳 Tarjeta Débito</option>
-                                <option value="tarjeta_credito">💳 Tarjeta Crédito</option>
-                                <option value="transferencia">📱 Transferencia</option>
+                                <option value="efectivo">Efectivo</option>
+                                <option value="tarjeta_debito">Tarjeta Débito</option>
+                                <option value="tarjeta_credito">Tarjeta Crédito</option>
+                                <option value="transferencia">Transferencia</option>
                             </select>
                         </div>
 
@@ -251,23 +251,23 @@
                                             
                                             switch($paymentMethod) {
                                                 case 'efectivo':
-                                                    $paymentText = '💵 Efectivo';
+                                                    $paymentText = 'Efectivo';
                                                     $paymentGradient = 'from-green-500 to-emerald-500';
                                                     break;
                                                 case 'tarjeta_debito':
-                                                    $paymentText = '� Débito';
+                                                    $paymentText = 'Débito';
                                                     $paymentGradient = 'from-blue-500 to-cyan-500';
                                                     break;
                                                 case 'tarjeta_credito':
-                                                    $paymentText = '💳 Crédito';
+                                                    $paymentText = 'Crédito';
                                                     $paymentGradient = 'from-purple-500 to-pink-500';
                                                     break;
                                                 case 'transferencia':
                                                     $paymentDetail = $sale->paymentDetails->first();
                                                     if ($paymentDetail && $paymentDetail->transfer_type) {
-                                                        $paymentText = '📱 ' . ucfirst($paymentDetail->transfer_type);
+                                                        $paymentText = ucfirst($paymentDetail->transfer_type);
                                                     } else {
-                                                        $paymentText = '� Transferencia';
+                                                        $paymentText = 'Transferencia';
                                                     }
                                                     $paymentGradient = 'from-indigo-500 to-violet-500';
                                                     break;
