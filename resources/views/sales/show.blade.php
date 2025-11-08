@@ -94,27 +94,27 @@
                                 switch($paymentMethod) {
                                     case 'efectivo':
                                         $paymentIcon = '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>';
-                                        $paymentText = '💵 Efectivo';
+                                        $paymentText = 'Efectivo';
                                         $paymentClass = 'bg-green-100 text-green-800';
                                         break;
                                     case 'tarjeta_debito':
                                         $paymentIcon = '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>';
-                                        $paymentText = '💳 Tarjeta Débito';
+                                        $paymentText = 'Tarjeta Débito';
                                         $paymentClass = 'bg-blue-100 text-blue-800';
                                         break;
                                     case 'tarjeta_credito':
                                         $paymentIcon = '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>';
-                                        $paymentText = '💳 Tarjeta Crédito';
+                                        $paymentText = 'Tarjeta Crédito';
                                         $paymentClass = 'bg-purple-100 text-purple-800';
                                         break;
                                     case 'transferencia':
                                         $paymentIcon = '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>';
-                                        $paymentText = '📱 Transferencia';
+                                        $paymentText = 'Transferencia';
                                         $paymentClass = 'bg-indigo-100 text-indigo-800';
                                         // Obtener detalles de transferencia si existen
                                         $paymentDetail = $sale->paymentDetails->first();
                                         if ($paymentDetail && $paymentDetail->transfer_type) {
-                                            $paymentText = '📱 Transferencia - ' . ucfirst($paymentDetail->transfer_type);
+                                            $paymentText = 'Transferencia - ' . ucfirst($paymentDetail->transfer_type);
                                             if ($paymentDetail->transfer_reference) {
                                                 $paymentText .= ' (Ref: ' . $paymentDetail->transfer_reference . ')';
                                             }
@@ -123,13 +123,13 @@
                                     case 'card':
                                     case 'tarjeta':
                                         $paymentIcon = '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>';
-                                        $paymentText = '💳 Tarjeta';
+                                        $paymentText = 'Tarjeta';
                                         $paymentClass = 'bg-blue-100 text-blue-800';
                                         break;
                                     case 'cash':
                                     default:
                                         $paymentIcon = '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>';
-                                        $paymentText = '💵 Efectivo';
+                                        $paymentText = 'Efectivo';
                                         $paymentClass = 'bg-green-100 text-green-800';
                                 }
                             @endphp

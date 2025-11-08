@@ -879,9 +879,9 @@
             const total = getCartTotal();
 
             // Nombre del método de pago para mostrar
-            let paymentMethodName = '💵 Efectivo';
-            if (paymentMethod === 'tarjeta_debito') paymentMethodName = '💳 Tarjeta Débito';
-            else if (paymentMethod === 'tarjeta_credito') paymentMethodName = '💳 Tarjeta Crédito';
+            let paymentMethodName = 'Efectivo';
+            if (paymentMethod === 'tarjeta_debito') paymentMethodName = 'Tarjeta Débito';
+            else if (paymentMethod === 'tarjeta_credito') paymentMethodName = 'Tarjeta Crédito';
             else if (paymentMethod === 'transferencia') {
                 paymentMethodName = `📱 Transferencia${transferType ? ' (' + transferType + ')' : ''}`;
             }

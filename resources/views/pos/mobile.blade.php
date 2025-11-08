@@ -803,7 +803,7 @@
                                 showCancelButton: true,
                                 confirmButtonColor: '#10B981',
                                 cancelButtonColor: '#6B7280',
-                                confirmButtonText: '🖨️ Imprimir',
+                                confirmButtonText: 'Imprimir',
                                 cancelButtonText: 'Cerrar',
                                 reverseButtons: true,
                                 showClass: {
