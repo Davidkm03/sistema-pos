@@ -281,10 +281,12 @@
                     <span class="text-gray-600">Subtotal:</span>
                     <span class="font-semibold" x-text="'$' + cartSubtotal.toLocaleString()"></span>
                 </div>
+                @if(setting('tax_enabled', false))
                 <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">IVA (19%):</span>
+                    <span class="text-gray-600">IVA ({{ setting('tax_rate', 19) }}%):</span>
                     <span class="font-semibold" x-text="'$' + cartTax.toLocaleString()"></span>
                 </div>
+                @endif
                 <div class="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
                     <span>TOTAL:</span>
                     <span class="text-indigo-600" x-text="'$' + cartTotal.toLocaleString()"></span>
@@ -345,10 +347,12 @@
                         <span class="text-gray-600">Subtotal:</span>
                         <span class="font-semibold" x-text="'$' + cartSubtotal.toLocaleString()"></span>
                     </div>
+                    @if(setting('tax_enabled', false))
                     <div class="flex justify-between">
-                        <span class="text-gray-600">IVA (19%):</span>
+                        <span class="text-gray-600">IVA ({{ setting('tax_rate', 19) }}%):</span>
                         <span class="font-semibold" x-text="'$' + cartTax.toLocaleString()"></span>
                     </div>
+                    @endif
                     <div x-show="tipAmount > 0" class="flex justify-between text-indigo-600">
                         <span>Propina:</span>
                         <span class="font-semibold" x-text="'$' + tipAmount.toLocaleString()"></span>

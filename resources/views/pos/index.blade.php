@@ -348,10 +348,12 @@
                                     <span class="text-gray-600 font-semibold">Subtotal:</span>
                                     <span id="cart-subtotal" class="text-lg font-bold text-gray-900">$0</span>
                                 </div>
+                                @if(setting('tax_enabled', false))
                                 <div class="flex justify-between items-center">
-                                    <span class="text-gray-600 font-semibold">IVA (19%):</span>
+                                    <span class="text-gray-600 font-semibold">IVA ({{ setting('tax_rate', 19) }}%):</span>
                                     <span id="cart-tax" class="text-lg font-bold text-gray-900">$0</span>
                                 </div>
+                                @endif
                                 <div class="flex justify-between items-center pt-3 border-t-2 border-gray-200">
                                     <span class="text-xl font-black text-gray-900">TOTAL:</span>
                                     <span id="cart-total" class="text-2xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">$0</span>
@@ -394,6 +396,107 @@
                                         <input type="text" id="transferReference" placeholder="Número de referencia" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium">
                                     </div>
                                 </div>
+
+                                <!-- Monto recibido (solo para efectivo) -->
+                                <div id="cashReceivedSection" class="hidden space-y-3">
+                                    <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Efectivo Recibido
+                                    </label>
+                                    <div class="relative">
+                                        <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-bold text-lg">$</span>
+                                        <input type="number" 
+                                               id="receivedAmount"
+                                               placeholder="0"
+                                               oninput="calculateChange()"
+                                               class="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl text-lg font-semibold focus:border-green-500 focus:ring-2 focus:ring-green-200">
+                                    </div>
+                                    
+                                    <!-- Botones rápidos de montos -->
+                                    <div class="grid grid-cols-4 gap-2">
+                                        <button type="button" onclick="setReceivedAmount(5000)" 
+                                                class="py-2 px-3 bg-green-50 text-green-700 rounded-lg text-sm font-bold hover:bg-green-100 border-2 border-green-200 transition-all active:scale-95">
+                                            $5k
+                                        </button>
+                                        <button type="button" onclick="setReceivedAmount(10000)" 
+                                                class="py-2 px-3 bg-green-50 text-green-700 rounded-lg text-sm font-bold hover:bg-green-100 border-2 border-green-200 transition-all active:scale-95">
+                                            $10k
+                                        </button>
+                                        <button type="button" onclick="setReceivedAmount(20000)" 
+                                                class="py-2 px-3 bg-green-50 text-green-700 rounded-lg text-sm font-bold hover:bg-green-100 border-2 border-green-200 transition-all active:scale-95">
+                                            $20k
+                                        </button>
+                                        <button type="button" onclick="setReceivedAmount(50000)" 
+                                                class="py-2 px-3 bg-green-50 text-green-700 rounded-lg text-sm font-bold hover:bg-green-100 border-2 border-green-200 transition-all active:scale-95">
+                                            $50k
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Cambio -->
+                                    <div id="changeDisplay" class="hidden p-4 bg-green-50 border-2 border-green-200 rounded-xl">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-green-700 font-bold">Cambio:</span>
+                                            <span id="changeAmount" class="text-2xl font-black text-green-600">$0</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="insufficientDisplay" class="hidden p-3 bg-red-50 border-2 border-red-200 rounded-xl">
+                                        <span class="text-red-700 text-sm font-bold">⚠️ Monto insuficiente</span>
+                                    </div>
+                                </div>
+
+                                <!-- Propina opcional -->
+                                <div class="space-y-3 p-4 bg-indigo-50 rounded-xl border-2 border-indigo-200">
+                                    <label class="block text-sm font-bold text-gray-700 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                                        </svg>
+                                        Propina (Opcional)
+                                    </label>
+                                    <div class="grid grid-cols-4 gap-2">
+                                        <button type="button" onclick="setTipPercent(0)" 
+                                                id="tip-0"
+                                                class="py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-white text-gray-700 border-gray-300 hover:bg-indigo-50">
+                                            Sin propina
+                                        </button>
+                                        <button type="button" onclick="setTipPercent(5)" 
+                                                id="tip-5"
+                                                class="py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-white text-gray-700 border-gray-300 hover:bg-indigo-50">
+                                            5%
+                                        </button>
+                                        <button type="button" onclick="setTipPercent(10)" 
+                                                id="tip-10"
+                                                class="py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-white text-gray-700 border-gray-300 hover:bg-indigo-50">
+                                            10%
+                                        </button>
+                                        <button type="button" onclick="setTipPercent(15)" 
+                                                id="tip-15"
+                                                class="py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-white text-gray-700 border-gray-300 hover:bg-indigo-50">
+                                            15%
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Propina personalizada -->
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">Propina personalizada</label>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 font-bold">$</span>
+                                            <input type="number" 
+                                                   id="customTip"
+                                                   placeholder="0"
+                                                   oninput="setCustomTip()"
+                                                   class="w-full pl-8 pr-4 py-2 border-2 border-gray-300 rounded-lg text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                                        </div>
+                                    </div>
+
+                                    <!-- Mostrar propina si existe -->
+                                    <div id="tipDisplay" class="hidden flex justify-between items-center pt-2 border-t-2 border-indigo-200">
+                                        <span class="text-indigo-700 font-bold">Propina:</span>
+                                        <span id="tipAmount" class="text-lg font-black text-indigo-600">$0</span>
+                                    </div>
+                                </div>
                                 
                                 <button onclick="processSale()" 
                                         style="background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;"
@@ -421,17 +524,125 @@
         // Carrito de compras
         let cart = [];
         let currentProductsOffset = 12; // Contador de productos cargados
+        let tipPercent = 0;
+        let customTipAmount = 0;
 
         // Manejar cambio de método de pago
         function handlePaymentMethodChange() {
             const paymentMethod = document.getElementById('paymentMethod').value;
             const transferDetails = document.getElementById('transferDetails');
+            const cashReceivedSection = document.getElementById('cashReceivedSection');
 
             if (paymentMethod === 'transferencia') {
                 transferDetails.classList.remove('hidden');
+                cashReceivedSection.classList.add('hidden');
+            } else if (paymentMethod === 'efectivo') {
+                transferDetails.classList.add('hidden');
+                cashReceivedSection.classList.remove('hidden');
             } else {
                 transferDetails.classList.add('hidden');
+                cashReceivedSection.classList.add('hidden');
             }
+        }
+
+        // Establecer monto recibido
+        function setReceivedAmount(amount) {
+            document.getElementById('receivedAmount').value = amount;
+            calculateChange();
+        }
+
+        // Calcular cambio
+        function calculateChange() {
+            const receivedAmount = parseFloat(document.getElementById('receivedAmount').value) || 0;
+            const total = getCartTotal() + getTipAmount();
+            const change = receivedAmount - total;
+            
+            const changeDisplay = document.getElementById('changeDisplay');
+            const insufficientDisplay = document.getElementById('insufficientDisplay');
+            const changeAmountEl = document.getElementById('changeAmount');
+            
+            if (receivedAmount > 0) {
+                if (change >= 0) {
+                    changeDisplay.classList.remove('hidden');
+                    insufficientDisplay.classList.add('hidden');
+                    changeAmountEl.textContent = '$' + change.toLocaleString();
+                } else {
+                    changeDisplay.classList.add('hidden');
+                    insufficientDisplay.classList.remove('hidden');
+                }
+            } else {
+                changeDisplay.classList.add('hidden');
+                insufficientDisplay.classList.add('hidden');
+            }
+        }
+
+        // Establecer porcentaje de propina
+        function setTipPercent(percent) {
+            tipPercent = percent;
+            customTipAmount = 0;
+            document.getElementById('customTip').value = '';
+            
+            // Actualizar estilos de botones
+            [0, 5, 10, 15].forEach(p => {
+                const btn = document.getElementById(`tip-${p}`);
+                if (p === percent) {
+                    btn.className = 'py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-indigo-600 text-white border-indigo-600';
+                } else {
+                    btn.className = 'py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-white text-gray-700 border-gray-300 hover:bg-indigo-50';
+                }
+            });
+            
+            updateTipDisplay();
+            calculateChange();
+            updateCartDisplay();
+        }
+
+        // Establecer propina personalizada
+        function setCustomTip() {
+            const customValue = parseFloat(document.getElementById('customTip').value) || 0;
+            customTipAmount = customValue;
+            tipPercent = 0;
+            
+            // Resetear botones
+            [0, 5, 10, 15].forEach(p => {
+                const btn = document.getElementById(`tip-${p}`);
+                btn.className = 'py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-white text-gray-700 border-gray-300 hover:bg-indigo-50';
+            });
+            
+            updateTipDisplay();
+            calculateChange();
+            updateCartDisplay();
+        }
+
+        // Obtener monto de propina
+        function getTipAmount() {
+            if (customTipAmount > 0) {
+                return customTipAmount;
+            }
+            if (tipPercent > 0) {
+                return Math.round(getCartTotal() * (tipPercent / 100));
+            }
+            return 0;
+        }
+
+        // Actualizar display de propina
+        function updateTipDisplay() {
+            const tipAmount = getTipAmount();
+            const tipDisplay = document.getElementById('tipDisplay');
+            const tipAmountEl = document.getElementById('tipAmount');
+            
+            if (tipAmount > 0) {
+                tipDisplay.classList.remove('hidden');
+                tipAmountEl.textContent = '$' + tipAmount.toLocaleString();
+            } else {
+                tipDisplay.classList.add('hidden');
+            }
+        }
+
+        // Obtener total del carrito
+        function getCartTotal() {
+            const totalText = document.getElementById('cart-total').textContent;
+            return parseFloat(totalText.replace(/[^0-9]/g, '')) || 0;
         }
 
         // Agregar producto al carrito
@@ -572,8 +783,10 @@
             
             // Calcular subtotal, IVA y total
             const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-            const tax = subtotal * 0.19; // IVA 19%
-            const total = subtotal + tax;
+            const taxEnabled = {{ setting('tax_enabled', false) ? 'true' : 'false' }};
+            const tax = taxEnabled ? subtotal * {{ setting('tax_rate', 19) / 100 }} : 0;
+            const tipAmount = getTipAmount();
+            const total = subtotal + tax + tipAmount;
             
             // Actualizar totales
             if (cartSubtotal) {
