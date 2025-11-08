@@ -1,307 +1,268 @@
-<nav x-data="{ open: false }" class="bg-white shadow-sm border-b border-gray-200">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center mr-8">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
-                        @if(setting('business_logo'))
-                            <img src="{{ setting()->logo_url }}" alt="{{ setting('business_name') }}" class="h-10 w-auto transition-transform group-hover:scale-105">
-                        @else
-                            <div class="flex items-center gap-2">
-                                <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg" 
-                                     style="background: linear-gradient(135deg, {{ setting('primary_color', '#3B82F6') }} 0%, {{ setting('secondary_color', '#10B981') }} 100%);">
-                                    {{ substr(setting('business_name', 'POS'), 0, 1) }}
-                                </div>
-                                <span class="text-lg font-bold text-gray-800 group-hover:text-gray-900 transition-colors">
-                                    {{ setting('business_name', config('app.name', 'POS')) }}
-                                </span>
-                            </div>
-                        @endif
-                    </a>
-                </div>
+<nav x-data="{ open: false, salesOpen: false, adminOpen: false }" class="relative z-50">
+    <!-- Mobile Menu Button -->
+    <button @click="open = !open" class="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-2xl border-2 border-white/30 hover:scale-110 transition-transform">
+        <svg x-show="!open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <svg x-show="open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+    </button>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-1 sm:flex sm:items-center">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        Dashboard
-                    </x-nav-link>
-                    
-                    @can('access-pos')
-                    <x-nav-link :href="route('pos.index')" :active="request()->routeIs('pos.*')">
-                        POS
-                    </x-nav-link>
-                    @endcan
-                    
-                    @can('view-products')
-                    <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                        Productos
-                    </x-nav-link>
-                    @endcan
-                    
-                    @can('view-inventory')
-                    <x-nav-link :href="route('inventory.index')" :active="request()->routeIs('inventory.*')">
-                        Inventario
-                    </x-nav-link>
-                    @endcan
-                    
-                    @canany(['view-sales', 'view-all-sales'])
-                    <x-dropdown align="top" width="48">
-                        <x-slot name="trigger">
-                            <button class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-700 hover:text-gray-900 focus:outline-none transition ease-in-out duration-150">
-                                <span>Ventas</span>
-                                <svg class="ms-1 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            <x-dropdown-link :href="route('sales.index')">
-                                Ver Ventas
-                            </x-dropdown-link>
-
-                            @canany(['cancel-own-sales', 'cancel-any-sales'])
-                            <x-dropdown-link :href="route('sales.manager')">
-                                Gestión de Ventas
-                            </x-dropdown-link>
-                            @endcanany
-
-                            @can('view-audit-log')
-                            <x-dropdown-link :href="route('sales.audit')">
-                                Log de Auditoría
-                            </x-dropdown-link>
-                            @endcan
-                        </x-slot>
-                    </x-dropdown>
-                    @endcanany
-
-                    @can('view-reports')
-                    <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
-                        Reportes
-                    </x-nav-link>
-                    @endcan
-                    
-                    @can('view-goals')
-                    <x-nav-link :href="route('goals.index')" :active="request()->routeIs('goals.*')">
-                        Metas
-                    </x-nav-link>
-                    @endcan
-                    
-                    <x-nav-link :href="route('settings.index')" :active="request()->routeIs('settings.*')">
-                        Configuración
-                    </x-nav-link>
-                    
-                    @role('Admin')
-                    <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
-                        Usuarios
-                    </x-nav-link>
-                    @endrole
-                    
-                    @role('super-admin')
-                    <x-dropdown align="top" width="48">
-                        <x-slot name="trigger">
-                            <button class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-700 hover:text-gray-900 focus:outline-none transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                </svg>
-                                <span>Admin</span>
-                                <svg class="ms-1 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            <x-dropdown-link :href="route('admin.roles.index')">
-                                <div class="flex items-center">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                                    </svg>
-                                    Gestión de Roles
-                                </div>
-                            </x-dropdown-link>
-                        </x-slot>
-                    </x-dropdown>
-                    @endrole
-                </div>
-            </div>
-
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="64">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center gap-3 px-4 py-2 border border-gray-200 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 focus:outline-none transition-all duration-200">
-                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm" 
-                                 style="background: linear-gradient(135deg, {{ setting('primary_color', '#3B82F6') }} 0%, {{ setting('secondary_color', '#10B981') }} 100%);">
-                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                            </div>
-                            <div class="text-left">
-                                <div class="font-semibold">{{ Auth::user()->name }}</div>
-                                <div class="text-xs text-gray-500">{{ Auth::user()->getRoleNames()->first() ?? 'Usuario' }}</div>
-                            </div>
-                            <svg class="fill-current h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <!-- User Info Header -->
-                        <div class="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" 
-                                     style="background: linear-gradient(135deg, {{ setting('primary_color', '#3B82F6') }} 0%, {{ setting('secondary_color', '#10B981') }} 100%);">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                </div>
-                                <div>
-                                    <div class="font-semibold text-gray-900">{{ Auth::user()->name }}</div>
-                                    <div class="text-xs text-gray-600">{{ Auth::user()->email }}</div>
-                                    <div class="text-xs font-medium text-blue-600 mt-1">
-                                        {{ Auth::user()->getRoleNames()->first() ?? 'Sin rol' }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <x-dropdown-link :href="route('profile.edit')">
-                            Mi Perfil
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <div class="border-t border-gray-100"></div>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();"
-                                    class="text-red-600 hover:bg-red-50">
-                                Cerrar Sesión
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
+    <!-- Mobile Overlay -->
+    <div x-show="open" 
+         @click="open = false"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+         style="display: none;">
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            
+    <!-- Sidebar -->
+    <div x-show="open || window.innerWidth >= 1024"
+         @resize.window="if (window.innerWidth >= 1024) open = false"
+         x-transition:enter="lg:transition-none transition ease-out duration-300"
+         x-transition:enter-start="lg:transform-none -translate-x-full"
+         x-transition:enter-end="lg:transform-none translate-x-0"
+         x-transition:leave="lg:transition-none transition ease-in duration-200"
+         x-transition:leave-start="lg:transform-none translate-x-0"
+         x-transition:leave-end="lg:transform-none -translate-x-full"
+         class="fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-gray-900 via-blue-900 to-indigo-900 shadow-2xl border-r-4 border-blue-400 flex flex-col z-50"
+         style="display: none;"
+         x-init="if (window.innerWidth >= 1024) $el.style.display = 'flex'">
+        
+        <!-- Logo / Header -->
+        <div class="px-6 py-6 border-b-2 border-white/20">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
+                @if(setting('business_logo'))
+                    <img src="{{ setting()->logo_url }}" alt="{{ setting('business_name') }}" class="h-12 w-auto transition-transform group-hover:scale-110 drop-shadow-xl">
+                @else
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-2xl transform group-hover:rotate-12 transition-all duration-300" 
+                             style="background: linear-gradient(135deg, {{ setting('primary_color', '#3B82F6') }} 0%, {{ setting('secondary_color', '#10B981') }} 100%);">
+                            {{ substr(setting('business_name', 'POS'), 0, 1) }}
+                        </div>
+                        <div>
+                            <div class="text-lg font-black text-white group-hover:text-blue-200 transition-colors drop-shadow-lg">
+                                {{ setting('business_name', config('app.name', 'POS')) }}
+                            </div>
+                            <div class="text-xs font-semibold text-blue-300">Sistema POS</div>
+                        </div>
+                    </div>
+                @endif
+            </a>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+            <!-- Dashboard -->
+            <a href="{{ route('dashboard') }}" 
+               @click="open = false"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+
             @can('access-pos')
-            <x-responsive-nav-link :href="route('pos.index')" :active="request()->routeIs('pos.*')">
-                POS
-            </x-responsive-nav-link>
+            <!-- POS -->
+            <a href="{{ route('pos.index') }}" 
+               @click="open = false"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('pos.*') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                <span>Punto de Venta</span>
+            </a>
             @endcan
-            
+
             @can('view-products')
-            <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                Productos
-            </x-responsive-nav-link>
+            <!-- Productos -->
+            <a href="{{ route('products.index') }}" 
+               @click="open = false"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('products.*') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                </svg>
+                <span>Productos</span>
+            </a>
             @endcan
-            
+
             @can('view-inventory')
-            <x-responsive-nav-link :href="route('inventory.index')" :active="request()->routeIs('inventory.*')">
-                Inventario
-            </x-responsive-nav-link>
+            <!-- Inventario -->
+            <a href="{{ route('inventory.index') }}" 
+               @click="open = false"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('inventory.*') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                </svg>
+                <span>Inventario</span>
+            </a>
             @endcan
-            
+
             @canany(['view-sales', 'view-all-sales'])
-            <x-responsive-nav-link :href="route('sales.index')" :active="request()->routeIs('sales.index')">
-                Ventas
-            </x-responsive-nav-link>
-
-            @canany(['cancel-own-sales', 'cancel-any-sales'])
-            <x-responsive-nav-link :href="route('sales.manager')" :active="request()->routeIs('sales.manager')">
-                → Gestión de Ventas
-            </x-responsive-nav-link>
-            @endcanany
-
-            @can('view-audit-log')
-            <x-responsive-nav-link :href="route('sales.audit')" :active="request()->routeIs('sales.audit')">
-                → Log de Auditoría
-            </x-responsive-nav-link>
-            @endcan
+            <!-- Ventas Dropdown -->
+            <div class="space-y-1">
+                <button @click="salesOpen = !salesOpen" 
+                        class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('sales.*') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Ventas</span>
+                    </div>
+                    <svg class="w-4 h-4 transition-transform duration-200" :class="salesOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                
+                <div x-show="salesOpen" x-collapse class="ml-4 space-y-1">
+                    <a href="{{ route('sales.index') }}" 
+                       @click="open = false"
+                       class="flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('sales.index') ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white hover:bg-white/10' }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        Ver Ventas
+                    </a>
+                    
+                    @canany(['cancel-own-sales', 'cancel-any-sales'])
+                    <a href="{{ route('sales.manager') }}" 
+                       @click="open = false"
+                       class="flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('sales.manager') ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white hover:bg-white/10' }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                        </svg>
+                        Gestión
+                    </a>
+                    @endcanany
+                    
+                    @can('view-audit-log')
+                    <a href="{{ route('sales.audit') }}" 
+                       @click="open = false"
+                       class="flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('sales.audit') ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white hover:bg-white/10' }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Auditoría
+                    </a>
+                    @endcan
+                </div>
+            </div>
             @endcanany
 
             @can('view-reports')
-            <x-responsive-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
-                Reportes
-            </x-responsive-nav-link>
+            <!-- Reportes -->
+            <a href="{{ route('reports.index') }}" 
+               @click="open = false"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('reports.*') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span>Reportes</span>
+            </a>
             @endcan
-            
-            {{-- Metas - Admin, Supervisor y Cajero pueden ver --}}
+
             @can('view-goals')
-            <x-responsive-nav-link :href="route('goals.index')" :active="request()->routeIs('goals.*')">
-                Metas
-            </x-responsive-nav-link>
+            <!-- Metas -->
+            <a href="{{ route('goals.index') }}" 
+               @click="open = false"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('goals.*') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                </svg>
+                <span>Metas</span>
+            </a>
             @endcan
-            
-            <!-- Configuración General -->
-            <x-responsive-nav-link :href="route('settings.index')" :active="request()->routeIs('settings.*')">
-                ⚙️ Configuración
-            </x-responsive-nav-link>
-            
+
+            <!-- Configuración -->
+            <a href="{{ route('settings.index') }}" 
+               @click="open = false"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('settings.*') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span>Configuración</span>
+            </a>
+
             @role('Admin')
-            <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
-                Usuarios
-            </x-responsive-nav-link>
+            <!-- Usuarios -->
+            <a href="{{ route('users.index') }}" 
+               @click="open = false"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('users.*') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+                <span>Usuarios</span>
+            </a>
             @endrole
-            
+
             @role('super-admin')
-            <x-responsive-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')">
-                <div class="flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            <!-- Super Admin Dropdown -->
+            <div class="space-y-1">
+                <button @click="adminOpen = !adminOpen" 
+                        class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('admin.*') ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <span>Super Admin</span>
+                    </div>
+                    <svg class="w-4 h-4 transition-transform duration-200" :class="adminOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
-                    Super Admin - Roles
+                </button>
+                
+                <div x-show="adminOpen" x-collapse class="ml-4 space-y-1">
+                    <a href="{{ route('admin.roles.index') }}" 
+                       @click="open = false"
+                       class="flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.roles.*') ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white hover:bg-white/10' }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        Gestión de Roles
+                    </a>
                 </div>
-            </x-responsive-nav-link>
+            </div>
             @endrole
         </div>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                <div class="text-xs text-blue-600 mt-1">
-                    <span class="font-semibold">Rol:</span> {{ Auth::user()->getRoleNames()->first() ?? 'Sin rol' }}
+        <!-- User Section at Bottom -->
+        <div class="px-3 py-4 border-t-2 border-white/20">
+            <div class="flex items-center gap-3 px-4 py-3 bg-white/10 rounded-xl border-2 border-white/20 backdrop-blur-sm">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg border-2 border-white/30" 
+                     style="background: linear-gradient(135deg, {{ setting('primary_color', '#3B82F6') }} 0%, {{ setting('secondary_color', '#10B981') }} 100%);">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                 </div>
+                <div class="flex-1 min-w-0">
+                    <div class="font-black text-white text-sm truncate">{{ Auth::user()->name }}</div>
+                    <div class="text-xs font-semibold text-blue-200 truncate">{{ Auth::user()->getRoleNames()->first() ?? 'Usuario' }}</div>
+                </div>
+                <a href="{{ route('profile.edit') }}" class="text-white/80 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </a>
             </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
+            
+            <!-- Logout Button -->
+            <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                @csrf
+                <button type="submit" 
+                        class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-red-400 hover:text-white hover:bg-red-600/20 border-2 border-transparent hover:border-red-400/50 transition-all duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Cerrar Sesión
+                </button>
+            </form>
         </div>
     </div>
 </nav>

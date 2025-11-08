@@ -17,6 +17,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
         Route::get('/pos/mobile', [PosController::class, 'mobile'])->name('pos.mobile');
         Route::get('/pos/load-more', [PosController::class, 'loadMoreProducts'])->name('pos.load-more');
+        Route::post('/pos/search', [PosController::class, 'searchProducts'])->name('pos.search');
         Route::post('/pos/procesar-venta', [PosController::class, 'procesarVenta'])
             ->middleware('permission:process-sales')
             ->name('pos.procesar-venta');

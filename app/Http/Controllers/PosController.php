@@ -15,8 +15,13 @@ use Illuminate\Support\Facades\Auth;
 
 class PosController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Detectar si es dispositivo móvil
+        if ($this->isMobileDevice($request)) {
+            return redirect()->route('pos.mobile');
+        }
+
         $categories = Category::withCount(['products' => function($query) { 
             $query->where('stock', '>', 0); 
         }])->get();
@@ -28,6 +33,33 @@ class PosController extends Controller
             ->get();
 
         return view('pos.index', compact('categories', 'products'));
+    }
+
+    /**
+     * Detectar si el dispositivo es móvil
+     */
+    private function isMobileDevice(Request $request): bool
+    {
+        $userAgent = $request->header('User-Agent');
+        
+        // Lista de patrones de user agents móviles
+        $mobileKeywords = [
+            'Mobile', 'Android', 'iPhone', 'iPad', 'iPod', 
+            'BlackBerry', 'Windows Phone', 'Opera Mini', 
+            'IEMobile', 'webOS'
+        ];
+        
+        foreach ($mobileKeywords as $keyword) {
+            if (stripos($userAgent, $keyword) !== false) {
+                // Excluir tablets si lo deseas (opcional)
+                // if (stripos($userAgent, 'iPad') !== false) {
+                //     return false;
+                // }
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     public function mobile()
@@ -43,6 +75,52 @@ class PosController extends Controller
             ->get();
 
         return view('pos.mobile', compact('categories', 'products'));
+    }
+    
+    /**
+     * Buscar productos para el POS móvil
+     */
+    public function searchProducts(Request $request)
+    {
+        $search = $request->input('search', '');
+        $categoryId = $request->input('category_id');
+        
+        $query = Product::where('stock', '>', 0)
+            ->with('category');
+        
+        // Filtrar por búsqueda
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%")
+                  ->orWhere('barcode', 'like', "%{$search}%");
+            });
+        }
+        
+        // Filtrar por categoría
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+        
+        $products = $query->orderBy('name')
+                         ->limit(50)
+                         ->get();
+        
+        return response()->json([
+            'success' => true,
+            'products' => $products->map(function($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'sku' => $product->sku,
+                    'price' => $product->price,
+                    'stock' => $product->stock,
+                    'min_stock' => $product->min_stock,
+                    'category_name' => $product->category->name ?? 'Sin categoría',
+                    'image' => $product->image,
+                ];
+            })
+        ]);
     }
     
     public function loadMoreProducts(Request $request)

@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#4F46E5">
@@ -10,6 +12,12 @@
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Animate.css for SweetAlert2 animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <style>
         /* Variables CSS para mobile */
@@ -44,17 +52,6 @@
             margin: 8px auto;
         }
         
-        /* Thumb zone highlight (solo para debug) */
-        .thumb-zone-easy {
-            /* Verde: Zona fácil de alcanzar con el pulgar */
-        }
-        .thumb-zone-moderate {
-            /* Amarillo: Zona moderada */
-        }
-        .thumb-zone-hard {
-            /* Rojo: Zona difícil */
-        }
-        
         /* Tap highlight optimization */
         * {
             -webkit-tap-highlight-color: rgba(79, 70, 229, 0.1);
@@ -63,6 +60,21 @@
         /* Touch action optimization */
         .touch-optimized {
             touch-action: manipulation;
+        }
+        
+        /* Fix para x-cloak (evitar parpadeo de Alpine.js) */
+        [x-cloak] { 
+            display: none !important; 
+        }
+        
+        /* Asegurar opacidad completa en botones importantes */
+        .bg-indigo-600 {
+            background-color: #4F46E5 !important;
+            opacity: 1 !important;
+        }
+        
+        .text-white {
+            color: #ffffff !important;
         }
     </style>
 </head>
@@ -106,8 +118,8 @@
           style="padding-top: calc(var(--header-height) + var(--safe-area-inset-top)); 
                  padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-inset-bottom));">
         
-        <!-- Tab: Vender (por defecto) -->
-        <div x-show="activeTab === 'sell'" class="h-full overflow-y-auto hide-scrollbar pb-24">
+        <!-- Vista de Vender (siempre visible) -->
+        <div class="h-full overflow-y-auto hide-scrollbar pb-24">
             <!-- Categorías horizontales -->
             <div class="bg-white border-b border-gray-200 sticky top-0 z-10">
                 <div class="flex gap-2 px-4 py-3 overflow-x-auto hide-scrollbar">
@@ -129,16 +141,18 @@
             
             <!-- Grid de productos -->
             <div class="p-4">
-                <h3 class="text-sm font-semibold text-gray-700 mb-3">Productos Recientes</h3>
+                <h3 class="text-sm font-semibold text-gray-700 mb-3">Productos Disponibles</h3>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     @foreach($products as $product)
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden touch-optimized smooth-transition active:scale-95">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col"
+                         x-show="selectedCategory === null || selectedCategory === {{ $product->category_id }}">
                         <!-- Imagen del producto -->
                         <div class="aspect-square bg-gray-100 relative">
                             @if($product->image)
                                 <img src="{{ asset('storage/' . $product->image) }}" 
                                      alt="{{ $product->name }}"
-                                     class="w-full h-full object-contain">
+                                     class="w-full h-full object-contain"
+                                     loading="lazy">
                             @else
                                 <div class="flex items-center justify-center h-full">
                                     <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,91 +163,37 @@
                             
                             <!-- Badge de stock bajo -->
                             @if($product->stock <= $product->min_stock)
-                            <div class="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                                Stock: {{ $product->stock }}
+                            <div class="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">
+                                ¡{{ $product->stock }}!
                             </div>
                             @endif
                         </div>
                         
                         <!-- Info del producto -->
-                        <div class="p-2">
+                        <div class="p-3 flex-1">
                             <h4 class="text-sm font-medium text-gray-900 line-clamp-2 mb-1" style="min-height: 2.5rem;">
                                 {{ $product->name }}
                             </h4>
                             <p class="text-lg font-bold text-indigo-600">
                                 ${{ number_format($product->price, 0) }}
                             </p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Stock: {{ $product->stock }}
+                            </p>
                         </div>
                         
-                        <!-- Botón agregar -->
-                        <button @click="addToCart({{ $product->id }}, '{{ $product->name }}', {{ $product->price }}, '{{ $product->image }}')" 
-                                class="w-full bg-indigo-600 text-white py-2 text-sm font-medium touch-optimized smooth-transition active:bg-indigo-700">
-                            <span class="hidden sm:inline">Agregar</span>
-                            <span class="sm:hidden">+</span>
+                        <!-- Botón agregar - SIEMPRE VISIBLE -->
+                        <button @click="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }}, '{{ $product->image }}')" 
+                                type="button"
+                                style="background-color: #4F46E5 !important; color: white !important; opacity: 1 !important;"
+                                class="w-full bg-indigo-600 text-white py-3 text-sm font-bold touch-optimized smooth-transition active:bg-indigo-700 hover:bg-indigo-700 flex items-center justify-center gap-2 opacity-100 border-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: white !important;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            <span style="color: white !important;">AGREGAR</span>
                         </button>
                     </div>
                     @endforeach
-                </div>
-            </div>
-        </div>
-        
-        <!-- Tab: Órdenes -->
-        <div x-show="activeTab === 'orders'" class="h-full flex items-center justify-center">
-            <div class="text-center text-gray-500">
-                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <p>Órdenes del día</p>
-                <p class="text-sm mt-1">Próximamente</p>
-            </div>
-        </div>
-        
-        <!-- Tab: Inventario -->
-        <div x-show="activeTab === 'inventory'" class="h-full flex items-center justify-center">
-            <div class="text-center text-gray-500">
-                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                </svg>
-                <p>Inventario</p>
-                <p class="text-sm mt-1">Próximamente</p>
-            </div>
-        </div>
-        
-        <!-- Tab: Reportes -->
-        <div x-show="activeTab === 'reports'" class="h-full flex items-center justify-center">
-            <div class="text-center text-gray-500">
-                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                </svg>
-                <p>Reportes</p>
-                <p class="text-sm mt-1">Próximamente</p>
-            </div>
-        </div>
-        
-        <!-- Tab: Más -->
-        <div x-show="activeTab === 'more'" class="h-full overflow-y-auto hide-scrollbar">
-            <div class="p-4">
-                <h3 class="text-lg font-semibold mb-4">Más opciones</h3>
-                <div class="space-y-2">
-                    <a href="{{ route('settings.index') }}" class="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-200 touch-optimized">
-                        <svg class="w-6 h-6 text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                        <span class="font-medium">Configuración</span>
-                    </a>
-                    <a href="{{ route('profile.edit') }}" class="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-200 touch-optimized">
-                        <svg class="w-6 h-6 text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                        <span class="font-medium">Mi Perfil</span>
-                    </a>
-                    <a href="{{ route('pos.index') }}" class="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-200 touch-optimized">
-                        <svg class="w-6 h-6 text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                        <span class="font-medium">POS Desktop</span>
-                    </a>
                 </div>
             </div>
         </div>
@@ -241,9 +201,10 @@
     
     <!-- Carrito Bottom Sheet -->
     <div x-show="cart.length > 0" 
-         class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t-2 border-indigo-600 rounded-t-2xl shadow-2xl smooth-transition"
+         x-cloak
+         class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t-2 border-indigo-600 rounded-t-2xl shadow-2xl smooth-transition opacity-100"
          :class="cartExpanded ? 'h-[70vh]' : 'h-auto'"
-         style="padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-inset-bottom));">
+         style="padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-inset-bottom)); background-color: #ffffff !important;">
         
         <!-- Handle para drag -->
         <div @click="cartExpanded = !cartExpanded" class="cursor-pointer pt-2">
@@ -259,9 +220,16 @@
                 <span class="font-semibold text-gray-900" x-text="cart.length + ' items'"></span>
                 <span class="text-indigo-600 font-bold text-lg" x-text="'$' + cartTotal.toLocaleString()"></span>
             </div>
-            <svg class="w-5 h-5 text-gray-400 smooth-transition" :class="cartExpanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
+            <div class="flex items-center gap-2">
+                <button @click.stop="clearCart()" class="p-1.5 text-red-500 hover:bg-red-50 rounded-full touch-optimized" title="Vaciar carrito">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+                <svg class="w-5 h-5 text-gray-400 smooth-transition" :class="cartExpanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
         </div>
         
         <!-- Contenido del carrito (solo si está expandido) -->
@@ -287,15 +255,19 @@
                     <!-- Controles cantidad -->
                     <div class="flex items-center gap-2">
                         <button @click="updateQuantity(index, item.quantity - 1)" 
-                                class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center touch-optimized active:bg-gray-200">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                type="button"
+                                style="background-color: #F3F4F6 !important; opacity: 1 !important;"
+                                class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center touch-optimized active:bg-gray-200 border-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #374151 !important;">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
                             </svg>
                         </button>
-                        <span class="w-8 text-center font-semibold" x-text="item.quantity"></span>
+                        <span class="w-8 text-center font-semibold" x-text="item.quantity" style="color: #111827 !important;"></span>
                         <button @click="updateQuantity(index, item.quantity + 1)" 
-                                class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center touch-optimized active:bg-indigo-700">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                type="button"
+                                style="background-color: #4F46E5 !important; color: white !important; opacity: 1 !important;"
+                                class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center touch-optimized active:bg-indigo-700 border-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: white !important;">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                             </svg>
                         </button>
@@ -323,10 +295,12 @@
     
     <!-- FAB (Floating Action Button) -->
     <div x-show="cart.length > 0" 
-         class="fixed z-50 touch-optimized"
+         x-cloak
+         class="fixed z-50 touch-optimized opacity-100"
          style="bottom: calc(var(--bottom-nav-height) + var(--safe-area-inset-bottom) + 16px); right: 16px;">
         <button @click="openCheckout()" 
-                class="w-14 h-14 bg-indigo-600 rounded-full shadow-lg flex items-center justify-center text-white smooth-transition active:scale-95 hover:bg-indigo-700">
+                class="w-14 h-14 bg-indigo-600 rounded-full shadow-lg flex items-center justify-center text-white smooth-transition active:scale-95 hover:bg-indigo-700 opacity-100"
+                style="background-color: #4F46E5 !important;">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
             </svg>
@@ -507,14 +481,16 @@
             <!-- Botón procesar venta -->
             <div class="px-6 py-4 border-t border-gray-200">
                 <button @click="processSale()" 
+                        type="button"
                         :disabled="!paymentMethod"
                         :class="paymentMethod ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-300 cursor-not-allowed'"
-                        class="w-full py-4 rounded-lg text-white font-bold text-lg touch-optimized smooth-transition">
-                    <span x-show="paymentMethod === 'efectivo'">Cobrar $<span x-text="finalTotal.toLocaleString()"></span></span>
-                    <span x-show="paymentMethod === 'tarjeta'">Procesar Tarjeta</span>
-                    <span x-show="paymentMethod === 'link'">Generar Link de Pago</span>
-                    <span x-show="paymentMethod === 'billetera'">Cobrar con Billetera</span>
-                    <span x-show="!paymentMethod">Selecciona método de pago</span>
+                        :style="paymentMethod ? 'background-color: #4F46E5 !important; color: white !important; opacity: 1 !important;' : 'background-color: #D1D5DB !important; color: #9CA3AF !important; opacity: 1 !important;'"
+                        class="w-full py-4 rounded-lg text-white font-bold text-lg touch-optimized smooth-transition border-0">
+                    <span x-show="paymentMethod === 'efectivo'" style="color: inherit !important;">Cobrar $<span x-text="finalTotal.toLocaleString()"></span></span>
+                    <span x-show="paymentMethod === 'tarjeta'" style="color: inherit !important;">Procesar Tarjeta</span>
+                    <span x-show="paymentMethod === 'link'" style="color: inherit !important;">Generar Link de Pago</span>
+                    <span x-show="paymentMethod === 'billetera'" style="color: inherit !important;">Cobrar con Billetera</span>
+                    <span x-show="!paymentMethod" style="color: inherit !important;">Selecciona método de pago</span>
                 </button>
             </div>
         </div>
@@ -524,51 +500,47 @@
     <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 thumb-zone-easy" 
          style="height: var(--bottom-nav-height); padding-bottom: var(--safe-area-inset-bottom);">
         <div class="flex items-center justify-around h-full">
-            <button @click="activeTab = 'sell'" 
+            <a href="{{ route('pos.mobile') }}" 
                     :class="activeTab === 'sell' ? 'text-indigo-600' : 'text-gray-400'"
-                    class="flex flex-col items-center justify-center flex-1 h-full touch-optimized smooth-transition">
+                    class="flex flex-col items-center justify-center flex-1 h-full touch-optimized smooth-transition relative">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
                 </svg>
-                <span class="text-xs mt-1">Vender</span>
-                <div x-show="cart.length > 0" class="absolute top-1 w-5 h-5 bg-indigo-600 text-white text-xs rounded-full flex items-center justify-center" x-text="cart.length"></div>
-            </button>
+                <span class="text-xs mt-1 font-medium">Vender</span>
+                <div x-show="cart.length > 0" class="absolute top-2 right-8 w-5 h-5 bg-indigo-600 text-white text-xs rounded-full flex items-center justify-center font-bold" x-text="cart.length"></div>
+            </a>
             
-            <button @click="activeTab = 'orders'" 
-                    :class="activeTab === 'orders' ? 'text-indigo-600' : 'text-gray-400'"
-                    class="flex flex-col items-center justify-center flex-1 h-full touch-optimized smooth-transition">
+            <a href="{{ route('sales.index') }}" 
+                    class="flex flex-col items-center justify-center flex-1 h-full touch-optimized smooth-transition text-gray-400 hover:text-indigo-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                <span class="text-xs mt-1">Órdenes</span>
-            </button>
+                <span class="text-xs mt-1">Ventas</span>
+            </a>
             
-            <button @click="activeTab = 'inventory'" 
-                    :class="activeTab === 'inventory' ? 'text-indigo-600' : 'text-gray-400'"
-                    class="flex flex-col items-center justify-center flex-1 h-full touch-optimized smooth-transition">
+            <a href="{{ route('products.index') }}" 
+                    class="flex flex-col items-center justify-center flex-1 h-full touch-optimized smooth-transition text-gray-400 hover:text-indigo-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                 </svg>
-                <span class="text-xs mt-1">Inventario</span>
-            </button>
+                <span class="text-xs mt-1">Productos</span>
+            </a>
             
-            <button @click="activeTab = 'reports'" 
-                    :class="activeTab === 'reports' ? 'text-indigo-600' : 'text-gray-400'"
-                    class="flex flex-col items-center justify-center flex-1 h-full touch-optimized smooth-transition">
+            <a href="{{ route('reports.index') }}" 
+                    class="flex flex-col items-center justify-center flex-1 h-full touch-optimized smooth-transition text-gray-400 hover:text-indigo-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                 </svg>
                 <span class="text-xs mt-1">Reportes</span>
-            </button>
+            </a>
             
-            <button @click="activeTab = 'more'" 
-                    :class="activeTab === 'more' ? 'text-indigo-600' : 'text-gray-400'"
-                    class="flex flex-col items-center justify-center flex-1 h-full touch-optimized smooth-transition">
+            <a href="{{ route('settings.index') }}" 
+                    class="flex flex-col items-center justify-center flex-1 h-full touch-optimized smooth-transition text-gray-400 hover:text-indigo-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                 </svg>
                 <span class="text-xs mt-1">Más</span>
-            </button>
+            </a>
         </div>
     </nav>
     
@@ -614,6 +586,25 @@
                         navigator.vibrate(50);
                     }
                     
+                    // Toast de éxito
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    });
+                    
+                    Toast.fire({
+                        icon: 'success',
+                        title: `${name} agregado`,
+                        text: existing ? `Cantidad: ${existing.quantity}` : 'Añadido al carrito'
+                    });
+                    
                     // Auto-expandir carrito si es el primer item
                     if (this.cart.length === 1) {
                         setTimeout(() => {
@@ -624,7 +615,24 @@
                 
                 updateQuantity(index, newQuantity) {
                     if (newQuantity <= 0) {
+                        const itemName = this.cart[index].name;
                         this.cart.splice(index, 1);
+                        
+                        // Toast de eliminación
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
+                        
+                        Toast.fire({
+                            icon: 'info',
+                            title: 'Producto eliminado',
+                            text: itemName
+                        });
+                        
                         if (this.cart.length === 0) {
                             this.cartExpanded = false;
                         }
@@ -635,6 +643,40 @@
                     if (navigator.vibrate) {
                         navigator.vibrate(30);
                     }
+                },
+                
+                clearCart() {
+                    if (this.cart.length === 0) return;
+                    
+                    Swal.fire({
+                        title: '¿Vaciar carrito?',
+                        text: `Se eliminarán ${this.cart.length} producto(s)`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#EF4444',
+                        cancelButtonColor: '#6B7280',
+                        confirmButtonText: 'Sí, vaciar',
+                        cancelButtonText: 'Cancelar',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.cart = [];
+                            this.cartExpanded = false;
+                            
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true
+                            });
+                            
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Carrito vaciado'
+                            });
+                        }
+                    });
                 },
                 
                 openCheckout() {
@@ -673,25 +715,140 @@
                 
                 processSale() {
                     if (!this.paymentMethod) {
-                        alert('Selecciona un método de pago');
+                        Swal.fire({
+                            title: 'Método de Pago',
+                            text: 'Selecciona un método de pago',
+                            icon: 'warning',
+                            confirmButtonColor: '#F59E0B',
+                            showClass: {
+                                popup: 'animate__animated animate__headShake'
+                            }
+                        });
                         return;
                     }
                     
                     if (this.paymentMethod === 'efectivo' && this.receivedAmount < this.finalTotal) {
-                        alert('El monto recibido es insuficiente');
+                        Swal.fire({
+                            title: 'Monto Insuficiente',
+                            text: 'El monto recibido es menor al total de la venta',
+                            icon: 'error',
+                            confirmButtonColor: '#EF4444',
+                            showClass: {
+                                popup: 'animate__animated animate__shakeX'
+                            }
+                        });
                         return;
                     }
                     
-                    // Aquí iría la lógica para guardar la venta
-                    alert(`Venta procesada!\nTotal: $${this.finalTotal.toLocaleString()}\nMétodo: ${this.paymentMethod}`);
+                    // Preparar datos para el backend
+                    const saleData = {
+                        items: this.cart.map(item => ({
+                            product_id: item.id,
+                            quantity: item.quantity,
+                            price: item.price
+                        })),
+                        payment_method: this.paymentMethod === 'tarjeta' ? 'tarjeta_debito' : this.paymentMethod,
+                        customer_id: null, // Por ahora sin cliente
+                    };
                     
-                    // Limpiar carrito y cerrar
-                    this.cart = [];
-                    this.closeCheckout();
-                    
-                    if (navigator.vibrate) {
-                        navigator.vibrate([100, 50, 100, 50, 200]);
+                    // Si es efectivo y hay propina, agregarla como observación
+                    if (this.tipAmount > 0) {
+                        saleData.notes = `Propina: $${this.tipAmount.toLocaleString()}`;
                     }
+                    
+                    // Mostrar loading
+                    Swal.fire({
+                        title: 'Procesando venta...',
+                        html: 'Por favor espera',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    // Hacer petición al backend
+                    fetch('{{ route("pos.procesar-venta") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify(saleData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Cerrar loading
+                            Swal.close();
+                            
+                            // Vibración de éxito
+                            if (navigator.vibrate) {
+                                navigator.vibrate([100, 50, 100, 50, 200]);
+                            }
+                            
+                            // Mostrar éxito con opción de imprimir
+                            Swal.fire({
+                                title: '¡Venta Exitosa! 🎉',
+                                html: `
+                                    <div class="text-left p-4">
+                                        <p class="mb-2"><strong>Ticket:</strong> #${data.sale_id.toString().padStart(6, '0')}</p>
+                                        <p class="mb-2"><strong>Total:</strong> <span class="text-green-600 text-xl font-bold">$${data.total.toLocaleString()}</span></p>
+                                        ${this.paymentMethod === 'efectivo' && this.changeAmount > 0 ? `<p class="mb-2"><strong>Cambio:</strong> <span class="text-blue-600 font-bold">$${this.changeAmount.toLocaleString()}</span></p>` : ''}
+                                        <p class="text-sm text-gray-600 mt-4">¿Desea imprimir el ticket?</p>
+                                    </div>
+                                `,
+                                icon: 'success',
+                                showCancelButton: true,
+                                confirmButtonColor: '#10B981',
+                                cancelButtonColor: '#6B7280',
+                                confirmButtonText: '🖨️ Imprimir',
+                                cancelButtonText: 'Cerrar',
+                                reverseButtons: true,
+                                showClass: {
+                                    popup: 'animate__animated animate__bounceIn'
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Abrir ticket para imprimir
+                                    this.printTicket(data.sale_id);
+                                }
+                            });
+                            
+                            // Limpiar carrito
+                            this.cart = [];
+                            this.closeCheckout();
+                            
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: data.message || 'No se pudo procesar la venta',
+                                icon: 'error',
+                                confirmButtonColor: '#EF4444',
+                                showClass: {
+                                    popup: 'animate__animated animate__shakeX'
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: 'Error de Conexión',
+                            text: 'No se pudo conectar con el servidor. Verifica tu conexión.',
+                            icon: 'error',
+                            confirmButtonColor: '#EF4444',
+                            showClass: {
+                                popup: 'animate__animated animate__shakeX'
+                            }
+                        });
+                    });
+                },
+                
+                printTicket(saleId) {
+                    const ticketUrl = `{{ url('/ventas') }}/${saleId}/ticket?print=1`;
+                    const ticketWindow = window.open(ticketUrl, '_blank', 'width=400,height=600');
                 }
             }
         }

@@ -1,72 +1,103 @@
 <x-app-layout>
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Punto de Venta') }}
-        </h2>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="font-bold text-xl text-gray-800">
+                        {{ __('Punto de Venta') }}
+                    </h2>
+                    <p class="text-xs text-gray-500">Sistema POS Moderno</p>
+                </div>
+            </div>
+            <a href="{{ route('pos.mobile') }}" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-white border-2 border-indigo-200 text-indigo-600 rounded-xl font-semibold hover:bg-indigo-50 transition-all shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                </svg>
+                Versión Móvil
+            </a>
+        </div>
     </x-slot>
 
-    <div class="py-4 sm:py-12">
+    <div class="py-4 sm:py-8">
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <!-- Layout de 2 Columnas -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
                 <!-- Columna Izquierda - Búsqueda de Productos (60% - 2/3) -->
                 <div class="lg:col-span-2">
                     <!-- Búsqueda de Productos -->
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                        <div class="p-6">
-                            <div class="mb-4">
-                                <div class="relative">
-                                    <input type="text" 
-                                           id="searchInput" 
-                                           placeholder="🔍 Buscar productos por nombre o código..."
-                                           class="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                           onkeyup="searchProducts()">
+                    <div class="bg-white overflow-hidden shadow-lg sm:rounded-2xl mb-4 border-2 border-indigo-100">
+                        <div class="p-4 sm:p-6">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
                                 </div>
+                                <input type="text" 
+                                       id="searchInput" 
+                                       placeholder="Buscar productos por nombre o código..."
+                                       class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium text-gray-900 placeholder-gray-400"
+                                       onkeyup="searchProducts()">
                             </div>
                         </div>
                     </div>
 
                     <!-- Filtro por Categorías -->
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                        <div class="p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                                </svg>
-                                Categorías
-                            </h3>
+                    <div class="bg-white overflow-hidden shadow-lg sm:rounded-2xl mb-4 border-2 border-gray-100">
+                        <div class="p-4 sm:p-6">
+                            <div class="flex items-center gap-2 mb-4">
+                                <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg flex items-center justify-center shadow-md">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-bold text-gray-900">
+                                    Categorías
+                                </h3>
+                            </div>
                             
-                            <div class="flex flex-wrap gap-3">
-                                <button onclick="filterByCategory('all')" class="category-btn px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-150 text-sm font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="flex flex-wrap gap-2 sm:gap-3">
+                                <button onclick="filterByCategory('all')" 
+                                        class="category-btn px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-150 text-sm font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:scale-95">
+                                    <svg class="w-4 h-4 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 00-2 2v2a2 2 0 002 2m0 0h14m-14 0a2 2 0 002 2v2a2 2 0 01-2 2"></path>
                                     </svg>
-                                    Todos ({{ $products->count() }})
+                                    Todos <span class="ml-1 bg-white/20 px-2 py-0.5 rounded-full text-xs">({{ $products->count() }})</span>
                                 </button>
                                 @foreach($categories as $category)
-                                    <button onclick="filterByCategory('{{ $category->name }}')" class="category-btn px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-150 text-sm font-medium transform hover:-translate-y-0.5 hover:shadow-md">
+                                    <button onclick="filterByCategory('{{ $category->name }}')" 
+                                            class="category-btn px-4 sm:px-6 py-2.5 sm:py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-xl hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700 transition-all duration-150 text-sm font-semibold transform hover:-translate-y-0.5 hover:shadow-md active:scale-95">
                                         @if($category->name === 'Bebidas')
-                                            <svg class="w-4 h-4 inline mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 inline mr-1.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
                                         @elseif($category->name === 'Snacks')
-                                            <svg class="w-4 h-4 inline mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 inline mr-1.5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                                             </svg>
                                         @elseif($category->name === 'Alimentos')
-                                            <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 inline mr-1.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z"></path>
                                             </svg>
                                         @elseif($category->name === 'Limpieza')
-                                            <svg class="w-4 h-4 inline mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 inline mr-1.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
                                             </svg>
                                         @else
-                                            <svg class="w-4 h-4 inline mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 inline mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 00-2 2v2a2 2 0 002 2m0 0h14m-14 0a2 2 0 002 2v2a2 2 0 01-2 2"></path>
                                             </svg>
                                         @endif
-                                        {{ $category->name }} ({{ $category->products_count }})
+                                        {{ $category->name }} <span class="ml-1 text-xs opacity-70">({{ $category->products_count }})</span>
                                     </button>
                                 @endforeach
                             </div>
@@ -74,38 +105,45 @@
                     </div>
 
                     <!-- Grid de Productos -->
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                </svg>
-                                Productos Disponibles
-                            </h3>
+                    <div class="bg-white overflow-hidden shadow-lg sm:rounded-2xl border-2 border-gray-100">
+                        <div class="p-4 sm:p-6">
+                            <div class="flex items-center gap-2 mb-4 sm:mb-6">
+                                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-md">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-bold text-gray-900">
+                                    Productos Disponibles
+                                </h3>
+                            </div>
                             
-                            <!-- Grid de productos - Optimizado para móvil -->
-                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                            <!-- Grid de productos -->
+                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                                 @foreach($products as $product)
-                                    <div class="product-card bg-white border border-gray-200 rounded-lg p-2 sm:p-4 hover:shadow-lg hover:border-blue-300 transition-all duration-200 cursor-pointer group transform hover:-translate-y-1" 
+                                    <div class="product-card bg-white border-2 border-gray-200 rounded-xl p-3 sm:p-4 hover:shadow-xl hover:border-indigo-400 transition-all duration-200 cursor-pointer group transform hover:-translate-y-1 hover:scale-105" 
                                          data-category="{{ $product->category->name }}"
                                          data-name="{{ $product->name }}"
                                          data-sku="{{ $product->sku }}">
                                         
-                                        <!-- Stock badge solo en móvil -->
+                                        <!-- Stock badge -->
                                         @if($product->stock <= 10)
-                                            <div class="absolute top-1 right-1 sm:relative sm:top-0 sm:right-0 sm:mb-2">
-                                                <span class="text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 bg-red-100 text-red-800 rounded-full font-medium">
-                                                    ¡{{ $product->stock }}!
+                                            <div class="mb-2">
+                                                <span class="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-full text-xs font-bold shadow-md">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                                    </svg>
+                                                    ¡Solo {{ $product->stock }}!
                                                 </span>
                                             </div>
                                         @endif
                                         
-                                        <!-- Imagen del producto - Más pequeña en móvil -->
-                                        <div class="w-full h-20 sm:h-32 bg-white rounded-lg mb-2 sm:mb-3 flex items-center justify-center border border-gray-200 overflow-hidden p-1 sm:p-2">
+                                        <!-- Imagen del producto -->
+                                        <div class="w-full aspect-square bg-gray-50 rounded-xl mb-3 flex items-center justify-center border-2 border-gray-100 overflow-hidden p-2 group-hover:border-indigo-200 transition-colors">
                                             @if($product->image)
                                                 <img src="{{ $product->image_url }}" 
                                                      alt="{{ $product->name }}" 
-                                                     class="w-full h-full object-contain"
+                                                     class="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-300"
                                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                                 <div style="display:none;" class="w-full h-full flex items-center justify-center">
                                                     @if($product->category->name === 'Bebidas')
@@ -147,16 +185,16 @@
                                             @endif
                                         </div>
                                         
-                                        <!-- Información del producto - Compacta para móvil -->
-                                        <div class="space-y-1 sm:space-y-2">
-                                            <h4 class="font-semibold text-gray-900 text-xs sm:text-sm group-hover:text-blue-600 transition duration-150 line-clamp-2 leading-tight">
+                                        <!-- Información del producto -->
+                                        <div class="space-y-2">
+                                            <h4 class="font-bold text-gray-900 text-sm group-hover:text-indigo-600 transition duration-150 line-clamp-2 leading-snug">
                                                 {{ $product->name }}
                                             </h4>
-                                            <div class="flex items-center justify-between gap-1">
-                                                <span class="text-base sm:text-xl font-bold text-green-600">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xl sm:text-2xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                                                     ${{ number_format($product->price, 0) }}
                                                 </span>
-                                                <span class="text-xs {{ $product->stock <= 10 ? 'text-red-600 font-semibold' : 'text-gray-500' }}">
+                                                <span class="text-xs px-2 py-1 rounded-lg {{ $product->stock <= 10 ? 'bg-red-100 text-red-700 font-bold' : 'bg-gray-100 text-gray-600' }}">
                                                     {{ $product->stock }}u
                                                 </span>
                                             </div>
@@ -166,12 +204,12 @@
                                                 data-price="{{ $product->price }}"
                                                 data-stock="{{ $product->stock }}"
                                                 onclick="addToCart(this)"
-                                                class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 sm:py-2.5 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold hover:from-blue-700 hover:to-blue-800 active:scale-95 transition-all duration-150 shadow-md touch-manipulation">
-                                                <svg class="w-3 h-3 sm:w-4 sm:h-4 inline sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                style="background-color: #4F46E5 !important; opacity: 1 !important;"
+                                                class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-4 rounded-xl text-sm font-bold hover:from-indigo-700 hover:to-purple-700 active:scale-95 transition-all duration-150 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-0">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: white !important;">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                                 </svg>
-                                                <span class="hidden sm:inline">Agregar</span>
-                                                <span class="sm:hidden">+</span>
+                                                <span style="color: white !important;">AGREGAR</span>
                                             </button>
                                         </div>
                                     </div>
@@ -179,19 +217,23 @@
                             </div>
                             
                             @if(\App\Models\Product::where('stock', '>', 0)->count() == 0)
-                                <div class="text-center py-8">
-                                    <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                    </svg>
-                                    <p class="text-gray-500">No hay productos disponibles</p>
+                                <div class="text-center py-12">
+                                    <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="text-gray-500 font-semibold">No hay productos disponibles</p>
+                                    <p class="text-gray-400 text-sm mt-1">Agrega productos desde el inventario</p>
                                 </div>
                             @endif
                             
                             <!-- Paginación o Ver Más -->
                             @if(\App\Models\Product::where('stock', '>', 0)->count() > 12)
                                 <div class="text-center mt-6">
-                                    <button onclick="loadMoreProducts()" id="loadMoreBtn" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition duration-150 font-medium">
-                                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <button onclick="loadMoreProducts()" id="loadMoreBtn" 
+                                            class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all duration-150 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                         </svg>
                                         <span id="loadMoreText">Ver Más Productos ({{ \App\Models\Product::where('stock', '>', 0)->count() - 12 }} restantes)</span>
@@ -262,30 +304,57 @@
 
                 <!-- Columna Derecha - Carrito de Venta (40% - 1/3) -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg sticky top-4">
-                        <div class="p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5.6M7 13h10M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z"></path>
-                                    </svg>
-                                    Carrito de Venta
+                    <div class="bg-gradient-to-br from-white to-gray-50 overflow-hidden shadow-2xl sm:rounded-2xl sticky top-4 border-2 border-indigo-100">
+                        <!-- Header del carrito con gradiente -->
+                        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 sm:p-6">
+                            <div class="flex items-center justify-between text-white">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold">
+                                            Carrito de Venta
+                                        </h3>
+                                        <p class="text-xs text-indigo-100">Agrega productos</p>
+                                    </div>
                                 </div>
-                                <span id="cart-count" class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                <span id="cart-count" class="w-10 h-10 bg-white text-indigo-600 rounded-full flex items-center justify-center text-lg font-black shadow-lg">
                                     0
                                 </span>
-                            </h3>
-                            
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 sm:p-6">
                             <!-- Contenido del carrito -->
-                            <div id="cart-container" class="mb-6 min-h-[200px]">
+                            <div id="cart-container" class="mb-6 min-h-[200px] max-h-[400px] overflow-y-auto">
                                 <!-- Se llenará con JavaScript -->
+                                <div class="text-center py-12">
+                                    <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="text-gray-400 font-semibold">Carrito vacío</p>
+                                    <p class="text-gray-400 text-sm">Agrega productos para empezar</p>
+                                </div>
                             </div>
                             
                             <!-- Resumen del total -->
-                            <div class="border-t border-gray-200 pt-4 space-y-3">
-                                <div class="flex justify-between text-lg font-semibold">
-                                    <span>Total</span>
-                                    <span id="cart-total" class="text-green-600">$0.00</span>
+                            <div class="border-t-2 border-gray-200 pt-4 space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600 font-semibold">Subtotal:</span>
+                                    <span id="cart-subtotal" class="text-lg font-bold text-gray-900">$0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600 font-semibold">IVA (19%):</span>
+                                    <span id="cart-tax" class="text-lg font-bold text-gray-900">$0</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-3 border-t-2 border-gray-200">
+                                    <span class="text-xl font-black text-gray-900">TOTAL:</span>
+                                    <span id="cart-total" class="text-2xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">$0</span>
                                 </div>
                             </div>
                             
@@ -293,8 +362,13 @@
                             <div class="space-y-3 mt-6">
                                 <!-- Método de pago -->
                                 <div class="mb-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Método de Pago</label>
-                                    <select id="paymentMethod" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="handlePaymentMethodChange()">
+                                    <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                        Método de Pago
+                                    </label>
+                                    <select id="paymentMethod" class="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-semibold text-gray-900 transition-all" onchange="handlePaymentMethodChange()">
                                         <option value="efectivo">💵 Efectivo</option>
                                         <option value="tarjeta_debito">💳 Tarjeta Débito</option>
                                         <option value="tarjeta_credito">💳 Tarjeta Crédito</option>
@@ -303,10 +377,10 @@
                                 </div>
 
                                 <!-- Detalles de Transferencia (oculto por defecto) -->
-                                <div id="transferDetails" class="hidden space-y-3">
+                                <div id="transferDetails" class="hidden space-y-3 p-4 bg-blue-50 rounded-xl border-2 border-blue-200">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Transferencia</label>
-                                        <select id="transferType" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">Tipo de Transferencia</label>
+                                        <select id="transferType" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-semibold">
                                             <option value="">Seleccionar...</option>
                                             <option value="nequi">Nequi</option>
                                             <option value="daviplata">Daviplata</option>
@@ -316,19 +390,21 @@
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Referencia (opcional)</label>
-                                        <input type="text" id="transferReference" placeholder="Número de referencia" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">Referencia (opcional)</label>
+                                        <input type="text" id="transferReference" placeholder="Número de referencia" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium">
                                     </div>
                                 </div>
                                 
-                                <button onclick="processSale()" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition duration-150">
-                                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button onclick="processSale()" 
+                                        style="background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;"
+                                        class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 px-4 rounded-xl font-black text-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-150 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                     </svg>
-                                    Procesar Venta
+                                    PROCESAR VENTA
                                 </button>
-                                <button onclick="clearCart()" class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-200 transition duration-150">
-                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button onclick="clearCart()" class="w-full bg-white border-2 border-gray-200 text-gray-700 py-3 px-4 rounded-xl font-bold hover:bg-gray-50 hover:border-red-300 hover:text-red-600 transition-all duration-150 flex items-center justify-center gap-2 active:scale-95">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                     </svg>
                                     Limpiar Carrito
@@ -486,45 +562,84 @@
             const cartContainer = document.getElementById('cart-container');
             const cartCount = document.getElementById('cart-count');
             const cartTotal = document.getElementById('cart-total');
+            const cartSubtotal = document.getElementById('cart-subtotal');
+            const cartTax = document.getElementById('cart-tax');
             
             // Actualizar contador
             if (cartCount) {
                 cartCount.textContent = cart.length;
             }
             
-            // Actualizar total
+            // Calcular subtotal, IVA y total
+            const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.19; // IVA 19%
+            const total = subtotal + tax;
+            
+            // Actualizar totales
+            if (cartSubtotal) {
+                cartSubtotal.textContent = `$${subtotal.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+            }
+            if (cartTax) {
+                cartTax.textContent = `$${tax.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+            }
             if (cartTotal) {
-                cartTotal.textContent = `$${getCartTotal().toFixed(2)}`;
+                cartTotal.textContent = `$${total.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
             }
             
             // Actualizar contenido del carrito
             if (cartContainer) {
                 if (cart.length === 0) {
                     cartContainer.innerHTML = `
-                        <div class="text-center py-8">
-                            <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5.6M7 13h10M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z"></path>
-                            </svg>
-                            <p class="text-gray-500 text-sm">El carrito está vacío</p>
-                            <p class="text-gray-400 text-xs">Selecciona productos para comenzar</p>
+                        <div class="text-center py-12">
+                            <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                                <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-gray-400 font-semibold">Carrito vacío</p>
+                            <p class="text-gray-400 text-sm">Agrega productos para empezar</p>
                         </div>
                     `;
                 } else {
                     let cartHTML = '<div class="space-y-3">';
                     cart.forEach(item => {
                         cartHTML += `
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                <div class="flex-1">
-                                    <h4 class="font-medium text-gray-900 text-sm">${item.name}</h4>
-                                    <p class="text-xs text-gray-500">$${item.price.toFixed(2)} x ${item.quantity}</p>
+                            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border-2 border-gray-100 hover:border-indigo-200 transition-all">
+                                <div class="flex-1 pr-3">
+                                    <h4 class="font-bold text-gray-900 text-sm mb-1">${item.name}</h4>
+                                    <p class="text-xs text-gray-500 font-semibold">$${item.price.toLocaleString('es-CO')} × ${item.quantity}</p>
+                                    <p class="text-sm font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mt-1">
+                                        $${(item.price * item.quantity).toLocaleString('es-CO')}
+                                    </p>
                                 </div>
-                                <div class="flex items-center space-x-2">
-                                    <input type="number" value="${item.quantity}" min="1" max="${item.stock}" 
-                                           onchange="updateQuantity(${item.id}, this.value)"
-                                           class="w-16 px-2 py-1 border border-gray-300 rounded text-sm">
+                                <div class="flex items-center gap-2">
+                                    <!-- Botón decrementar -->
+                                    <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" 
+                                            class="w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-all active:scale-90"
+                                            ${item.quantity <= 1 ? 'disabled' : ''}>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path>
+                                        </svg>
+                                    </button>
+                                    
+                                    <!-- Cantidad -->
+                                    <span class="w-12 text-center font-black text-gray-900">${item.quantity}</span>
+                                    
+                                    <!-- Botón incrementar -->
+                                    <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" 
+                                            class="w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:bg-green-50 hover:border-green-300 hover:text-green-600 transition-all active:scale-90"
+                                            ${item.quantity >= item.stock ? 'disabled' : ''}>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                    </button>
+                                    
+                                    <!-- Botón eliminar -->
                                     <button onclick="removeFromCart(${item.id})" 
-                                            class="text-red-600 hover:text-red-800 text-xs">
-                                        Quitar
+                                            class="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg hover:from-red-600 hover:to-orange-600 transition-all shadow-md hover:shadow-lg active:scale-90">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
