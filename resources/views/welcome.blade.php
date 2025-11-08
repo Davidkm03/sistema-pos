@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $businessSettings->business_name ?? config('app.name') }}</title>
+    <title>{{ $businessSettings->business_name ?? config('app.name') }} - Sistema POS</title>
     
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
@@ -14,246 +14,199 @@
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-900 min-h-screen">
     
-    <nav class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center gap-3">
-                    @if($businessSettings->logo_url)
-                        <img src="{{ $businessSettings->logo_url }}" alt="{{ $businessSettings->business_name }}" class="h-10 w-10 rounded-lg object-cover">
-                    @else
-                        <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                            <span class="text-white font-bold text-xl">{{ substr($businessSettings->business_name ?? 'T', 0, 1) }}</span>
-                        </div>
-                    @endif
-                    <div>
-                        <h1 class="text-xl font-bold text-gray-900 dark:text-white">{{ $businessSettings->business_name ?? 'Mi Tienda' }}</h1>
-                    </div>
-                </div>
+    <!-- Hero Section -->
+    <div class="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <!-- Decorative background -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div class="relative max-w-4xl w-full">
+            <!-- Main Card -->
+            <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                 
-                <div class="flex items-center gap-3">
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors">Dashboard</a>
-                    @else
-                        <a href="{{ route('login') }}" class="px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium transition-colors">Iniciar Sesión</a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors">Registrarse</a>
-                        @endif
-                    @endauth
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <section class="relative overflow-hidden py-20 sm:py-32">
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 dark:from-blue-600/10 dark:via-purple-600/10 dark:to-pink-600/10"></div>
-        
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto">
-                <span class="inline-block px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-semibold mb-6">
-                    ✨ Bienvenido a {{ $businessSettings->business_name ?? 'Mi Tienda' }}
-                </span>
-                
-                <h1 class="text-5xl sm:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">
-                    Las Mejores <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Ofertas</span> del Momento
-                </h1>
-                
-                <p class="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-                    Descubre nuestros productos destacados y aprovecha increíbles descuentos en artículos seleccionados
-                </p>
-                
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    @auth
-                        <a href="{{ route('pos.index') }}" class="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold text-lg shadow-lg shadow-blue-500/30 transition-all transform hover:scale-105">Ver Productos</a>
-                    @else
-                        <a href="{{ route('register') }}" class="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold text-lg shadow-lg shadow-blue-500/30 transition-all transform hover:scale-105">Comenzar Ahora</a>
-                    @endauth
-                    
-                    <a href="#promociones" class="px-8 py-4 rounded-xl border-2 border-gray-300 dark:border-gray-600 hover:border-blue-600 dark:hover:border-blue-400 text-gray-700 dark:text-gray-200 font-semibold text-lg transition-all">Ver Promociones</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    @if($featuredProducts->count() > 0)
-    <section class="py-16 bg-white dark:bg-gray-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">🌟 Productos Destacados</h2>
-                <p class="text-gray-600 dark:text-gray-400">Los favoritos de nuestros clientes</p>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($featuredProducts as $product)
-                <div class="group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 transform hover:-translate-y-2">
-                    <div class="absolute top-4 right-4 z-10">
-                        <span class="px-3 py-1 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs font-bold shadow-lg">⭐ DESTACADO</span>
-                    </div>
-                    
-                    <div class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600">
-                        <div class="w-full h-full flex items-center justify-center">
-                            <span class="text-6xl font-bold text-gray-400 dark:text-gray-500">{{ substr($product->name, 0, 1) }}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="p-6">
-                        <div class="mb-2">
-                            <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">{{ $product->category->name ?? 'General' }}</span>
-                        </div>
-                        
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">{{ $product->name }}</h3>
-                        
-                        <div class="flex items-baseline gap-2 mb-4">
-                            @if($product->is_on_sale && $product->sale_price)
-                                <span class="text-2xl font-bold text-green-600 dark:text-green-400">\${{ number_format($product->sale_price, 2) }}</span>
-                                <span class="text-sm text-gray-500 line-through">\${{ number_format($product->price, 2) }}</span>
-                            @else
-                                <span class="text-2xl font-bold text-gray-900 dark:text-white">\${{ number_format($product->price, 2) }}</span>
-                            @endif
-                        </div>
-                        
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Stock: <span class="font-semibold">{{ $product->stock }}</span></span>
-                            @if($product->is_on_sale && $product->calculated_discount_percentage)
-                                <span class="px-2 py-1 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-bold">-{{ $product->calculated_discount_percentage }}%</span>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-    @endif
-
-    @if($saleProducts->count() > 0)
-    <section id="promociones" class="py-16 bg-gradient-to-br from-red-50 via-pink-50 to-purple-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <div class="inline-block px-4 py-1.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-sm font-semibold mb-4">🔥 ¡Ofertas Limitadas!</div>
-                <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-3">Productos en Promoción</h2>
-                <p class="text-xl text-gray-600 dark:text-gray-300">Aprovecha estos descuentos increíbles</p>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach($saleProducts as $product)
-                <div class="group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border-2 border-red-200 dark:border-red-800 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                    <div class="absolute top-4 left-4 z-10">
-                        <div class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold shadow-lg transform -rotate-3">
-                            <div class="text-lg leading-none">-{{ $product->calculated_discount_percentage ?? $product->discount_percentage }}%</div>
-                            <div class="text-xs">OFF</div>
-                        </div>
-                    </div>
-                    
-                    <div class="aspect-square bg-gradient-to-br from-red-100 to-pink-100 dark:from-red-900/20 dark:to-pink-900/20">
-                        <div class="w-full h-full flex items-center justify-center">
-                            <span class="text-5xl font-bold text-red-300 dark:text-red-700">{{ substr($product->name, 0, 1) }}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="p-5">
-                        <div class="mb-2">
-                            <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">{{ $product->category->name ?? 'General' }}</span>
-                        </div>
-                        
-                        <h3 class="text-base font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 min-h-[3rem]">{{ $product->name }}</h3>
-                        
-                        <div class="mb-3">
-                            <span class="text-sm text-gray-500 dark:text-gray-400 line-through">\${{ number_format($product->price, 2) }}</span>
-                            <div class="flex items-baseline gap-1">
-                                <span class="text-2xl font-bold text-red-600 dark:text-red-400">\${{ number_format($product->final_price, 2) }}</span>
-                                <span class="text-xs text-gray-600 dark:text-gray-400">Ahorra \${{ number_format($product->discount_amount, 2) }}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="text-sm text-gray-600 dark:text-gray-400">Stock: <span class="font-semibold">{{ $product->stock }}</span></div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-    @endif
-
-    @if($featuredProducts->count() === 0 && $saleProducts->count() === 0)
-    <section class="py-32">
-        <div class="max-w-3xl mx-auto text-center px-4">
-            <div class="inline-block p-6 rounded-full bg-gray-100 dark:bg-gray-800 mb-6">
-                <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                </svg>
-            </div>
-            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Próximamente...</h2>
-            <p class="text-xl text-gray-600 dark:text-gray-300 mb-8">Estamos preparando productos increíbles para ti. ¡Vuelve pronto!</p>
-            @auth
-                <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                    Administrar Productos
-                </a>
-            @endauth
-        </div>
-    </section>
-    @endif
-
-    <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <div class="flex items-center gap-2 mb-4">
+                <!-- Header with Logo -->
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-12 text-center">
+                    <div class="flex justify-center mb-6">
                         @if($businessSettings->logo_url)
-                            <img src="{{ $businessSettings->logo_url }}" alt="{{ $businessSettings->business_name }}" class="h-8 w-8 rounded-lg object-cover">
+                            <div class="h-24 w-24 rounded-2xl bg-white shadow-xl p-3 flex items-center justify-center">
+                                <img src="{{ $businessSettings->logo_url }}" alt="{{ $businessSettings->business_name }}" class="h-full w-full object-contain">
+                            </div>
                         @else
-                            <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                                <span class="text-white font-bold">{{ substr($businessSettings->business_name ?? 'T', 0, 1) }}</span>
+                            <div class="h-24 w-24 rounded-2xl bg-white shadow-xl flex items-center justify-center">
+                                <span class="text-5xl font-bold text-blue-600">{{ substr($businessSettings->business_name ?? 'S', 0, 1) }}</span>
                             </div>
                         @endif
-                        <span class="text-lg font-bold text-gray-900 dark:text-white">{{ $businessSettings->business_name ?? 'Mi Tienda' }}</span>
                     </div>
-                    @if($businessSettings->business_address || $businessSettings->business_phone || $businessSettings->business_email)
-                        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                            @if($businessSettings->business_address)
-                                <p>{{ $businessSettings->business_address }}</p>
-                            @endif
-                            @if($businessSettings->business_phone)
-                                <p>{{ $businessSettings->business_phone }}</p>
-                            @endif
-                            @if($businessSettings->business_email)
-                                <p>{{ $businessSettings->business_email }}</p>
-                            @endif
+                    
+                    <h1 class="text-4xl sm:text-5xl font-bold text-white mb-3">
+                        {{ $businessSettings->business_name ?? 'Sistema POS' }}
+                    </h1>
+                    
+                    <p class="text-blue-100 text-lg font-medium">
+                        Sistema de Punto de Venta Profesional
+                    </p>
+                </div>
+
+                <!-- Content -->
+                <div class="px-8 py-12">
+                    @auth
+                        <!-- Authenticated View -->
+                        <div class="text-center mb-8">
+                            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium mb-6">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                Sesión activa
+                            </div>
+                            
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                                ¡Bienvenido de nuevo!
+                            </h2>
+                            
+                            <p class="text-gray-600 dark:text-gray-300 mb-8">
+                                Accede a tu panel de control para gestionar ventas, inventario y más.
+                            </p>
                         </div>
-                    @endif
+
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-lg shadow-lg shadow-blue-500/30 transition-all transform hover:scale-105">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                                </svg>
+                                Ir al Dashboard
+                            </a>
+                            
+                            <a href="{{ route('pos.index') }}" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border-2 border-gray-300 dark:border-gray-600 hover:border-blue-600 dark:hover:border-blue-400 text-gray-700 dark:text-gray-200 font-semibold text-lg transition-all hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                Punto de Venta
+                            </a>
+                        </div>
+                    @else
+                        <!-- Guest View -->
+                        <div class="text-center mb-8">
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                                Bienvenido al Sistema
+                            </h2>
+                            
+                            <p class="text-gray-600 dark:text-gray-300 mb-8">
+                                Inicie sesión para acceder al panel de administración y gestionar su negocio.
+                            </p>
+                        </div>
+
+                        <div class="flex justify-center mb-8">
+                            <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xl shadow-2xl shadow-blue-500/40 transition-all transform hover:scale-105">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                </svg>
+                                Iniciar Sesión
+                            </a>
+                        </div>
+
+                        <!-- Features Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+                            <div class="text-center">
+                                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-3">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Seguro</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Datos protegidos</p>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mb-3">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Rápido</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Ventas eficientes</p>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 mb-3">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Reportes</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Análisis completo</p>
+                            </div>
+                        </div>
+                    @endauth
                 </div>
-                
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase mb-4">Enlaces Rápidos</h3>
-                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                        @auth
-                            <li><a href="{{ route('dashboard') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Dashboard</a></li>
-                            <li><a href="{{ route('pos.index') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Punto de Venta</a></li>
-                            <li><a href="{{ route('products.index') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Productos</a></li>
-                        @else
-                            <li><a href="{{ route('login') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Iniciar Sesión</a></li>
-                            @if (Route::has('register'))
-                                <li><a href="{{ route('register') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Registrarse</a></li>
-                            @endif
-                        @endauth
-                    </ul>
+
+                <!-- Business Info Footer -->
+                @if($businessSettings->business_address || $businessSettings->business_phone || $businessSettings->business_email)
+                <div class="bg-gray-50 dark:bg-gray-900/50 px-8 py-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-gray-600 dark:text-gray-400">
+                        @if($businessSettings->business_phone)
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                </svg>
+                                <span class="font-medium">{{ $businessSettings->business_phone }}</span>
+                            </div>
+                        @endif
+                        
+                        @if($businessSettings->business_email)
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                <span class="font-medium">{{ $businessSettings->business_email }}</span>
+                            </div>
+                        @endif
+                        
+                        @if($businessSettings->business_address)
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <span class="font-medium">{{ $businessSettings->business_address }}</span>
+                            </div>
+                        @endif
+                    </div>
                 </div>
-                
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase mb-4">Información</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ $businessSettings->receipt_footer ?? '¡Gracias por tu preferencia!' }}</p>
-                </div>
+                @endif
             </div>
-            
-            <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-600 dark:text-gray-400">
+
+            <!-- Footer Note -->
+            <div class="text-center mt-8 text-gray-500 dark:text-gray-400 text-sm">
                 <p>&copy; {{ date('Y') }} {{ $businessSettings->business_name ?? config('app.name') }}. Todos los derechos reservados.</p>
             </div>
         </div>
-    </footer>
+    </div>
+
+    <style>
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+    </style>
 
 </body>
 </html>
