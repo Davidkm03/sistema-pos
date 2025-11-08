@@ -58,7 +58,7 @@ class BusinessSettingsManager extends Component
 
     protected $rules = [
         'business_name' => 'required|string|max:255',
-        'business_logo' => 'nullable|image|max:2048', // max 2MB
+        'business_logo' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048', // max 2MB, formatos permitidos
         'business_address' => 'nullable|string|max:500',
         'business_phone' => 'nullable|string|max:50',
         'business_email' => 'nullable|email|max:255',
@@ -125,7 +125,7 @@ class BusinessSettingsManager extends Component
     public function updatedBusinessLogo()
     {
         $this->validate([
-            'business_logo' => 'image|max:2048',
+            'business_logo' => 'image|mimes:jpeg,jpg,png,webp|max:2048', // 2MB max, formatos seguros
         ]);
     }
 

@@ -6,6 +6,7 @@ use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -44,10 +45,26 @@ class LoginRequest extends FormRequest
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
+            // Registrar intento fallido de login
+            Log::warning('Intento fallido de login', [
+                'email' => $this->input('email'),
+                'ip' => $this->ip(),
+                'user_agent' => $this->userAgent(),
+                'timestamp' => now()->toDateTimeString(),
+                'attempts' => RateLimiter::attempts($this->throttleKey()),
+            ]);
+
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
+
+        // Registrar login exitoso
+        Log::info('Login exitoso', [
+            'email' => $this->input('email'),
+            'ip' => $this->ip(),
+            'timestamp' => now()->toDateTimeString(),
+        ]);
 
         RateLimiter::clear($this->throttleKey());
     }
@@ -64,6 +81,14 @@ class LoginRequest extends FormRequest
         }
 
         event(new Lockout($this));
+
+        // Registrar bloqueo por demasiados intentos
+        Log::warning('Usuario bloqueado por demasiados intentos de login', [
+            'email' => $this->input('email'),
+            'ip' => $this->ip(),
+            'attempts' => RateLimiter::attempts($this->throttleKey()),
+            'timestamp' => now()->toDateTimeString(),
+        ]);
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
 

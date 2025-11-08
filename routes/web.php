@@ -17,9 +17,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
         Route::get('/pos/mobile', [PosController::class, 'mobile'])->name('pos.mobile');
         Route::get('/pos/load-more', [PosController::class, 'loadMoreProducts'])->name('pos.load-more');
-        Route::post('/pos/search', [PosController::class, 'searchProducts'])->name('pos.search');
+        Route::post('/pos/search', [PosController::class, 'searchProducts'])
+            ->middleware('throttle:60,1') // 60 búsquedas por minuto
+            ->name('pos.search');
         Route::post('/pos/procesar-venta', [PosController::class, 'procesarVenta'])
-            ->middleware('permission:process-sales')
+            ->middleware(['permission:process-sales', 'throttle:30,1']) // 30 ventas por minuto
             ->name('pos.procesar-venta');
     });
     

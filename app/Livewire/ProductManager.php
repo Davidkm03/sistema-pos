@@ -56,7 +56,7 @@ class ProductManager extends Component
             'price' => 'required|numeric|min:0',
             'cost' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|max:1024',
+            'image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048', // 2MB máximo
             'tax_type' => 'nullable|in:standard,exempt,excluded,custom',
             'custom_tax_rate' => 'nullable|numeric|min:0|max:100',
         ];
