@@ -41,8 +41,9 @@
             ]);
         }
             
-        // Ventas por método de pago (desde payment_details)
-        $ventasPorMetodo = \Illuminate\Support\Facades\DB::table('payment_details')
+        // Ventas por método de pago (FUSIONAR payment_details + sales.payment_method)
+        // Primero obtener de payment_details (ventas nuevas con pago mixto)
+        $ventasPorMetodoDetails = \Illuminate\Support\Facades\DB::table('payment_details')
             ->select(
                 'payment_method',
                 \Illuminate\Support\Facades\DB::raw('COUNT(DISTINCT sale_id) as total_ventas'),
@@ -50,6 +51,35 @@
             )
             ->groupBy('payment_method')
             ->get();
+            
+        // Luego obtener de sales (ventas sin payment_details)
+        $salesWithoutDetails = \Illuminate\Support\Facades\DB::table('sales')
+            ->whereNotExists(function ($query) {
+                $query->select(\Illuminate\Support\Facades\DB::raw(1))
+                      ->from('payment_details')
+                      ->whereColumn('payment_details.sale_id', 'sales.id');
+            })
+            ->where('status', '!=', 'cancelled')
+            ->get();
+            
+        $ventasPorMetodoSales = $salesWithoutDetails->groupBy('payment_method')->map(function ($group, $method) {
+            return (object)[
+                'payment_method' => $method,
+                'total_ventas' => $group->count(),
+                'total_ingresos' => $group->sum('total')
+            ];
+        })->values();
+        
+        // Fusionar ambas fuentes
+        $ventasPorMetodo = $ventasPorMetodoDetails->concat($ventasPorMetodoSales)
+            ->groupBy('payment_method')
+            ->map(function ($group, $method) {
+                return (object)[
+                    'payment_method' => $method,
+                    'total_ventas' => $group->sum('total_ventas'),
+                    'total_ingresos' => $group->sum('total_ingresos')
+                ];
+            })->values();
     @endphp
 
     {{-- Header Modernizado --}}
