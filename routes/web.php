@@ -74,6 +74,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('quotes.print');
     });
     
+    // Rutas de Clientes - Para crear desde cotizaciones
+    Route::post('/clientes', [\App\Http\Controllers\CustomerController::class, 'store'])
+        ->name('customers.store');
+    
     // Rutas de Reportes - Solo Admin y Supervisor
     Route::middleware(['permission:view-reports'])->group(function () {
         Route::get('/reportes', function () {
