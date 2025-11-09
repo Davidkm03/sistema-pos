@@ -334,7 +334,7 @@
                     <strong>Fecha:</strong> {{ $quote->created_at->format('d/m/Y') }}<br>
                     @if($quote->valid_until)
                     <strong>Válida hasta:</strong> 
-                    <span style="{{ $quote->isExpired() ? 'color: #DC2626; font-weight: bold;' : '' }}">
+                    <span style="{{ $quote->valid_until && $quote->isExpired() ? 'color: #DC2626; font-weight: bold;' : '' }}">
                         {{ $quote->valid_until->format('d/m/Y') }}
                         @if($quote->isExpired())
                         (Vencida)

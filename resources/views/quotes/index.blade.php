@@ -90,7 +90,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 @if($quote->valid_until)
-                                    <span class="{{ $quote->isExpired() ? 'text-red-600 font-semibold' : 'text-gray-500' }}">
+                                    <span class="{{ $quote->valid_until && $quote->isExpired() ? 'text-red-600 font-semibold' : 'text-gray-500' }}">
                                         {{ $quote->valid_until->format('d/m/Y') }}
                                         @if($quote->isExpired())
                                             <span class="text-xs">(Vencida)</span>
