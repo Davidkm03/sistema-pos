@@ -14,15 +14,6 @@ use Illuminate\Support\Facades\Auth;
 
 class QuoteController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:quotes.view')->only(['index', 'show']);
-        $this->middleware('permission:quotes.create')->only(['create', 'store']);
-        $this->middleware('permission:quotes.edit')->only(['edit', 'update']);
-        $this->middleware('permission:quotes.delete')->only('destroy');
-        $this->middleware('permission:quotes.convert')->only('convertToSale');
-    }
-
     /**
      * Display a listing of the resource.
      */
