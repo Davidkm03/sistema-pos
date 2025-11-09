@@ -38,7 +38,7 @@
                                 @if($quote->valid_until)
                                 <p class="text-sm mt-1">
                                     <span class="font-medium">Válida hasta:</span>
-                                    <span class="{{ $quote->isExpired() ? 'text-red-600 font-semibold' : 'text-gray-600' }}">
+                                    <span class="{{ $quote->valid_until && $quote->isExpired() ? 'text-red-600 font-semibold' : 'text-gray-600' }}">
                                         {{ $quote->valid_until->format('d/m/Y') }}
                                         @if($quote->isExpired())
                                             <span class="text-xs">(Vencida)</span>
