@@ -95,11 +95,3 @@ class Quote extends Model
         return 'QT-' . str_pad($number, 5, '0', STR_PAD_LEFT);
     }
 }
-space App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-
-class Quote extends Model
-{
-    //
-}

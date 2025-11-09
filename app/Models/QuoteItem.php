@@ -34,11 +34,3 @@ class QuoteItem extends Model
         return $this->belongsTo(Product::class);
     }
 }
-space App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-
-class QuoteItem extends Model
-{
-    //
-}
