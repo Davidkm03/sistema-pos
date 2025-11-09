@@ -274,7 +274,7 @@
         <div class="watermark">RECHAZADA</div>
         @elseif($quote->status === 'convertida')
         <div class="watermark" style="color: rgba(59, 130, 246, 0.1);">CONVERTIDA</div>
-        @elseif($quote->isExpired())
+        @elseif($quote->valid_until && $quote->isExpired())
         <div class="watermark" style="color: rgba(239, 68, 68, 0.1);">VENCIDA</div>
         @endif
 
