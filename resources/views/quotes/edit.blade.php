@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Editar Cotización {{ $quote->quote_number ?? 'N/A' }}
             </h2>
-            <a href="{{ route('quotes.show', $quote->id) }}" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-lg font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 transition">
+            <a href="{{ route('quotes.show', $quote) }}" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-lg font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 transition">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -27,7 +27,7 @@
             @endif
 
             <div class="bg-white rounded-lg shadow-sm p-6">
-                <form action="{{ route('quotes.update', $quote->id) }}" method="POST" id="quoteForm">
+                <form action="{{ route('quotes.update', $quote) }}" method="POST" id="quoteForm">
                     @csrf
                     @method('PUT')
 
@@ -130,7 +130,7 @@
 
                     <!-- Botones -->
                     <div class="flex justify-end gap-3 mt-6 pt-6 border-t">
-                        <a href="{{ route('quotes.show', $quote->id) }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-semibold">
+                        <a href="{{ route('quotes.show', $quote) }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-semibold">
                             Cancelar
                         </a>
                         <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-semibold">
