@@ -118,7 +118,7 @@
                                 </div>
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-600">IVA (19%):</span>
-                                    <span class="font-semibold" id="tax-display">${{ number_format($quote->tax_amount, 0) }}</span>
+                                    <span class="font-semibold" id="tax-display">${{ number_format($quote->tax, 0) }}</span>
                                 </div>
                                 <div class="flex justify-between text-lg font-bold border-t pt-2">
                                     <span>Total:</span>
