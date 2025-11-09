@@ -61,6 +61,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/ventas/{id}', [PosController::class, 'show'])->name('sales.show');
     });
     
+    // Rutas de Cotizaciones - Requiere permisos específicos
+    Route::middleware(['permission:quotes.view'])->group(function () {
+        Route::resource('cotizaciones', \App\Http\Controllers\QuoteController::class)->names('quotes');
+        
+        // Rutas especiales
+        Route::post('/cotizaciones/{quote}/convertir', [\App\Http\Controllers\QuoteController::class, 'convertToSale'])
+            ->middleware('permission:quotes.convert')
+            ->name('quotes.convert');
+        
+        Route::get('/cotizaciones/{quote}/imprimir', [\App\Http\Controllers\QuoteController::class, 'print'])
+            ->name('quotes.print');
+    });
+    
     // Rutas de Reportes - Solo Admin y Supervisor
     Route::middleware(['permission:view-reports'])->group(function () {
         Route::get('/reportes', function () {
