@@ -570,7 +570,10 @@
                 },
                 
                 get cartTax() {
-                    return Math.round(this.cartSubtotal * 0.19);
+                    const taxEnabled = {{ setting('tax_enabled', false) ? 'true' : 'false' }};
+                    if (!taxEnabled) return 0;
+                    const taxRate = {{ setting('tax_rate', 19) / 100 }};
+                    return Math.round(this.cartSubtotal * taxRate);
                 },
                 
                 get cartTotal() {
