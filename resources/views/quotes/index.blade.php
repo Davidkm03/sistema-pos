@@ -113,7 +113,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end gap-2">
-                                    <a href="{{ route('quotes.show', $quote) }}" 
+                                    <a href="{{ route('quotes.show', $quote->id) }}" 
                                        class="text-indigo-600 hover:text-indigo-900" title="Ver">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -123,7 +123,7 @@
                                     
                                     @can('quotes.edit')
                                     @if($quote->status === 'pendiente')
-                                    <a href="{{ route('quotes.edit', $quote) }}" 
+                                    <a href="{{ route('quotes.edit', $quote->id) }}" 
                                        class="text-blue-600 hover:text-blue-900" title="Editar">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -132,7 +132,7 @@
                                     @endif
                                     @endcan
                                     
-                                    <a href="{{ route('quotes.print', $quote) }}" 
+                                    <a href="{{ route('quotes.print', $quote->id) }}" 
                                        class="text-green-600 hover:text-green-900" title="Imprimir" target="_blank">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
