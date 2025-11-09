@@ -47,7 +47,7 @@ class QuoteController extends Controller
     public function create()
     {
         $customers = Customer::orderBy('name')->get();
-        $products = Product::where('status', 'active')->orderBy('name')->get();
+        $products = Product::orderBy('name')->get();
         
         return view('quotes.create', compact('customers', 'products'));
     }
@@ -138,7 +138,7 @@ class QuoteController extends Controller
         }
 
         $customers = Customer::orderBy('name')->get();
-        $products = Product::where('status', 'active')->orderBy('name')->get();
+        $products = Product::orderBy('name')->get();
         $quote->load('items.product');
         
         return view('quotes.edit', compact('quote', 'customers', 'products'));
