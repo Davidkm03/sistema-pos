@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -21,6 +22,9 @@ class CustomerController extends Controller
         ]);
 
         try {
+            // Agregar empresa_id del usuario autenticado
+            $validated['empresa_id'] = Auth::user()->empresa_id;
+            
             $customer = Customer::create($validated);
 
             if ($request->expectsJson()) {
