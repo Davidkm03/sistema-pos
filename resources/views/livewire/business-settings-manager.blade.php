@@ -507,6 +507,151 @@
                                 </div>
                             </div>
 
+                            <!-- CONFIGURACIÓN SMTP (Solo Super Admin) -->
+                            @if($isSuperAdmin)
+                            <div class="border-t pt-6 mt-6">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <h3 class="text-lg font-semibold text-purple-700">📧 Configuración SMTP (Super Admin)</h3>
+                                </div>
+
+                                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+                                    <p class="text-sm text-purple-800 font-medium mb-2">⚡ Configuración Global</p>
+                                    <p class="text-xs text-purple-700">
+                                        Esta configuración SMTP es global y será utilizada por todas las empresas del sistema para enviar correos electrónicos (cotizaciones, notificaciones, etc.).
+                                    </p>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <!-- Servidor SMTP -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                📡 Servidor SMTP (Host)
+                                            </label>
+                                            <input type="text" 
+                                                   wire:model="smtp_host"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                                                   placeholder="smtp.gmail.com">
+                                            <p class="text-xs text-gray-500 mt-1">Ejemplo: smtp.gmail.com, smtp-mail.outlook.com</p>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                🔌 Puerto
+                                            </label>
+                                            <input type="number" 
+                                                   wire:model="smtp_port"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                                                   placeholder="587">
+                                            <p class="text-xs text-gray-500 mt-1">Común: 587 (TLS) o 465 (SSL)</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Usuario y Contraseña -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                👤 Usuario SMTP
+                                            </label>
+                                            <input type="text" 
+                                                   wire:model="smtp_username"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                                                   placeholder="tu-email@gmail.com">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                🔑 Contraseña SMTP
+                                            </label>
+                                            <input type="password" 
+                                                   wire:model="smtp_password"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                                                   placeholder="••••••••••••••••">
+                                            <p class="text-xs text-gray-500 mt-1">Para Gmail: usa App Password</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Encriptación -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            🔐 Encriptación
+                                        </label>
+                                        <select wire:model="smtp_encryption" 
+                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                            <option value="tls">TLS (Recomendado)</option>
+                                            <option value="ssl">SSL</option>
+                                            <option value="">Ninguna</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Email Remitente -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                📮 Email Remitente
+                                            </label>
+                                            <input type="email" 
+                                                   wire:model="smtp_from_address"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                                                   placeholder="noreply@miempresa.com">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                ✍️ Nombre del Remitente
+                                            </label>
+                                            <input type="text" 
+                                                   wire:model="smtp_from_name"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                                                   placeholder="Mi Empresa">
+                                        </div>
+                                    </div>
+
+                                    <!-- Ayuda Gmail -->
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                        <p class="font-semibold text-sm text-blue-800 mb-2">📘 Configuración para Gmail:</p>
+                                        <ul class="text-xs space-y-1 text-blue-700">
+                                            <li><strong>Host:</strong> smtp.gmail.com</li>
+                                            <li><strong>Port:</strong> 587</li>
+                                            <li><strong>Encryption:</strong> TLS</li>
+                                            <li><strong>Contraseña:</strong> Generar "App Password" en Google Account → Security → 2-Step Verification → App passwords</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Ayuda Otros Proveedores -->
+                                    <details class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                        <summary class="font-semibold text-sm text-gray-800 cursor-pointer">📚 Otros Proveedores Comunes</summary>
+                                        <div class="mt-3 space-y-2 text-xs text-gray-700">
+                                            <div>
+                                                <strong class="text-gray-900">Outlook/Hotmail:</strong>
+                                                <ul class="list-disc list-inside ml-2">
+                                                    <li>Host: smtp-mail.outlook.com</li>
+                                                    <li>Port: 587 | Encryption: TLS</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <strong class="text-gray-900">Yahoo:</strong>
+                                                <ul class="list-disc list-inside ml-2">
+                                                    <li>Host: smtp.mail.yahoo.com</li>
+                                                    <li>Port: 587 | Encryption: TLS</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <strong class="text-gray-900">SendGrid:</strong>
+                                                <ul class="list-disc list-inside ml-2">
+                                                    <li>Host: smtp.sendgrid.net</li>
+                                                    <li>Port: 587 | Username: apikey</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </details>
+                                </div>
+                            </div>
+                            @endif
+
                             <!-- Botón Guardar -->
                             <div class="pt-4">
                                 <button type="submit"

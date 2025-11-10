@@ -59,9 +59,19 @@ class BusinessSettingsManager extends Component
     public $require_discount_reason = true;
     public $require_reason_from = 5;
 
+    // Propiedades SMTP (solo super-admin)
+    public $smtp_host;
+    public $smtp_port = 587;
+    public $smtp_username;
+    public $smtp_password;
+    public $smtp_encryption = 'tls';
+    public $smtp_from_address;
+    public $smtp_from_name;
+
     // Control
     public $settings_id;
     public $existing_logo;
+    public $isSuperAdmin = false;
 
     protected $rules = [
         'business_name' => 'required|string|max:255',
@@ -84,6 +94,9 @@ class BusinessSettingsManager extends Component
 
     public function mount()
     {
+        // Verificar si es super-admin
+        $this->isSuperAdmin = auth()->user()->hasRole('super-admin');
+        
         $settings = BusinessSetting::where('user_id', auth()->id())->first();
 
         if ($settings) {
@@ -130,6 +143,17 @@ class BusinessSettingsManager extends Component
             $this->max_discount_admin = $settings->max_discount_admin ?? 100;
             $this->require_discount_reason = $settings->require_discount_reason ?? true;
             $this->require_reason_from = $settings->require_reason_from ?? 5;
+
+            // Cargar configuración SMTP (solo super-admin)
+            if ($this->isSuperAdmin) {
+                $this->smtp_host = $settings->smtp_host;
+                $this->smtp_port = $settings->smtp_port ?? 587;
+                $this->smtp_username = $settings->smtp_username;
+                $this->smtp_password = $settings->smtp_password;
+                $this->smtp_encryption = $settings->smtp_encryption ?? 'tls';
+                $this->smtp_from_address = $settings->smtp_from_address;
+                $this->smtp_from_name = $settings->smtp_from_name;
+            }
         } else {
             // Valores por defecto
             $this->business_name = 'Mi Tienda';
@@ -216,6 +240,17 @@ class BusinessSettingsManager extends Component
             'require_discount_reason' => $this->require_discount_reason,
             'require_reason_from' => $this->require_reason_from,
         ];
+
+        // Agregar configuración SMTP si es super-admin
+        if ($this->isSuperAdmin) {
+            $data['smtp_host'] = $this->smtp_host;
+            $data['smtp_port'] = $this->smtp_port;
+            $data['smtp_username'] = $this->smtp_username;
+            $data['smtp_password'] = $this->smtp_password;
+            $data['smtp_encryption'] = $this->smtp_encryption;
+            $data['smtp_from_address'] = $this->smtp_from_address;
+            $data['smtp_from_name'] = $this->smtp_from_name;
+        }
 
         // Manejar el logo
         if ($this->business_logo) {
