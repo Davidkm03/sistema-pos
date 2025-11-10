@@ -33,6 +33,9 @@ class Sale extends Model
         'tax_amount',
         'retention_amount',
         'tip_amount',
+        'discount_percentage',
+        'discount_amount',
+        'discount_reason',
         'payment_method',
         'status',
         'document_type',
@@ -56,6 +59,8 @@ class Sale extends Model
         'tax_amount' => 'decimal:2',
         'retention_amount' => 'decimal:2',
         'tip_amount' => 'decimal:2',
+        'discount_percentage' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
         'cancelled_at' => 'datetime',
     ];
 

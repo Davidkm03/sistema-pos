@@ -45,6 +45,11 @@ class BusinessSetting extends Model
         'range_from',
         'range_to',
         'resolution_expiry',
+        'max_discount_cashier',
+        'max_discount_seller',
+        'max_discount_admin',
+        'require_discount_reason',
+        'require_reason_from',
     ];
 
     protected $casts = [
@@ -160,6 +165,11 @@ class BusinessSetting extends Model
             'range_from' => null,
             'range_to' => null,
             'resolution_expiry' => null,
+            'max_discount_cashier' => 15,
+            'max_discount_seller' => 10,
+            'max_discount_admin' => 100,
+            'require_discount_reason' => true,
+            'require_reason_from' => 5,
         ];
     }
 

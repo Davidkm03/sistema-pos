@@ -497,6 +497,72 @@
                                         <span id="tipAmount" class="text-lg font-black text-indigo-600">$0</span>
                                     </div>
                                 </div>
+
+                                <!-- Descuento opcional -->
+                                <div class="space-y-3 p-4 bg-orange-50 rounded-xl border-2 border-orange-200">
+                                    <label class="block text-sm font-bold text-gray-700 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                        </svg>
+                                        Descuento (Máx: {{ auth()->user()->getMaxDiscountAllowed() }}%)
+                                    </label>
+                                    <div class="grid grid-cols-4 gap-2">
+                                        <button type="button" onclick="setDiscountPercent(0)" 
+                                                id="discount-0"
+                                                class="py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-white text-gray-700 border-gray-300 hover:bg-orange-50">
+                                            Sin desc.
+                                        </button>
+                                        @if(auth()->user()->getMaxDiscountAllowed() >= 5)
+                                        <button type="button" onclick="setDiscountPercent(5)" 
+                                                id="discount-5"
+                                                class="py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-white text-gray-700 border-gray-300 hover:bg-orange-50">
+                                            5%
+                                        </button>
+                                        @endif
+                                        @if(auth()->user()->getMaxDiscountAllowed() >= 10)
+                                        <button type="button" onclick="setDiscountPercent(10)" 
+                                                id="discount-10"
+                                                class="py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-white text-gray-700 border-gray-300 hover:bg-orange-50">
+                                            10%
+                                        </button>
+                                        @endif
+                                        @if(auth()->user()->getMaxDiscountAllowed() >= 15)
+                                        <button type="button" onclick="setDiscountPercent(15)" 
+                                                id="discount-15"
+                                                class="py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-white text-gray-700 border-gray-300 hover:bg-orange-50">
+                                            15%
+                                        </button>
+                                        @endif
+                                    </div>
+                                    
+                                    <!-- Descuento personalizado -->
+                                    <div>
+                                        <label class="block text-xs text-gray-600 mb-1">Descuento personalizado (%)</label>
+                                        <input type="number" 
+                                               id="customDiscount"
+                                               placeholder="0"
+                                               min="0"
+                                               max="{{ auth()->user()->getMaxDiscountAllowed() }}"
+                                               oninput="setCustomDiscount()"
+                                               class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200">
+                                    </div>
+
+                                    <!-- Razón del descuento (condicional) -->
+                                    <div id="discountReasonContainer" class="hidden">
+                                        <label class="block text-xs text-gray-600 mb-1">Razón del descuento *</label>
+                                        <input type="text" 
+                                               id="discountReason"
+                                               placeholder="Ej: Cliente frecuente, promoción"
+                                               maxlength="255"
+                                               class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200">
+                                    </div>
+
+                                    <!-- Mostrar descuento si existe -->
+                                    <div id="discountDisplay" class="hidden flex justify-between items-center pt-2 border-t-2 border-orange-200">
+                                        <span class="text-orange-700 font-bold">Descuento:</span>
+                                        <span id="discountAmount" class="text-lg font-black text-orange-600">$0</span>
+                                    </div>
+                                </div>
                                 
                                 <button onclick="processSale()" 
                                         style="background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;"
@@ -638,6 +704,123 @@
                 tipDisplay.classList.add('hidden');
             }
         }
+
+        // Variables para descuento
+        let discountPercent = 0;
+        let customDiscountPercent = 0;
+        const maxDiscountAllowed = {{ auth()->user()->getMaxDiscountAllowed() }};
+        const requireReasonFrom = {{ setting('require_reason_from', 5) }};
+
+        // Establecer porcentaje de descuento
+        function setDiscountPercent(percent) {
+            if (percent > maxDiscountAllowed) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Descuento no permitido',
+                    text: `Tu límite de descuento es ${maxDiscountAllowed}%`,
+                    confirmButtonColor: '#EF4444'
+                });
+                return;
+            }
+
+            discountPercent = percent;
+            customDiscountPercent = 0;
+            document.getElementById('customDiscount').value = '';
+            
+            // Actualizar estilos de botones
+            [0, 5, 10, 15].forEach(p => {
+                const btn = document.getElementById(`discount-${p}`);
+                if (btn) {
+                    if (p === percent) {
+                        btn.className = 'py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-orange-600 text-white border-orange-600';
+                    } else {
+                        btn.className = 'py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-white text-gray-700 border-gray-300 hover:bg-orange-50';
+                    }
+                }
+            });
+            
+            updateDiscountDisplay();
+            updateDiscountReasonVisibility();
+            updateCartDisplay();
+        }
+
+        // Establecer descuento personalizado
+        function setCustomDiscount() {
+            const customValue = parseFloat(document.getElementById('customDiscount').value) || 0;
+            
+            if (customValue > maxDiscountAllowed) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Descuento no permitido',
+                    text: `Tu límite de descuento es ${maxDiscountAllowed}%`,
+                    confirmButtonColor: '#EF4444'
+                });
+                document.getElementById('customDiscount').value = maxDiscountAllowed;
+                customDiscountPercent = maxDiscountAllowed;
+            } else {
+                customDiscountPercent = customValue;
+            }
+            
+            discountPercent = 0;
+            
+            // Resetear botones
+            [0, 5, 10, 15].forEach(p => {
+                const btn = document.getElementById(`discount-${p}`);
+                if (btn) {
+                    btn.className = 'py-2 px-2 rounded-lg text-xs font-bold transition-all border-2 bg-white text-gray-700 border-gray-300 hover:bg-orange-50';
+                }
+            });
+            
+            updateDiscountDisplay();
+            updateDiscountReasonVisibility();
+            updateCartDisplay();
+        }
+
+        // Obtener porcentaje de descuento
+        function getDiscountPercent() {
+            if (customDiscountPercent > 0) {
+                return customDiscountPercent;
+            }
+            return discountPercent;
+        }
+
+        // Obtener monto de descuento
+        function getDiscountAmount() {
+            const percent = getDiscountPercent();
+            if (percent > 0) {
+                const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+                return Math.round((subtotal * percent) / 100);
+            }
+            return 0;
+        }
+
+        // Actualizar display de descuento
+        function updateDiscountDisplay() {
+            const discountAmount = getDiscountAmount();
+            const discountDisplay = document.getElementById('discountDisplay');
+            const discountAmountEl = document.getElementById('discountAmount');
+            
+            if (discountAmount > 0) {
+                discountDisplay.classList.remove('hidden');
+                discountAmountEl.textContent = '-$' + discountAmount.toLocaleString() + ' (' + getDiscountPercent() + '%)';
+            } else {
+                discountDisplay.classList.add('hidden');
+            }
+        }
+
+        // Mostrar/ocultar razón del descuento
+        function updateDiscountReasonVisibility() {
+            const percent = getDiscountPercent();
+            const container = document.getElementById('discountReasonContainer');
+            
+            if (percent >= requireReasonFrom) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+                document.getElementById('discountReason').value = '';
+            }
+        }
+
 
         // Obtener total del carrito
         function getCartTotal() {
@@ -781,12 +964,13 @@
                 cartCount.textContent = cart.length;
             }
             
-            // Calcular subtotal, IVA y total
+            // Calcular subtotal, IVA, descuento, propina y total
             const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
             const taxEnabled = {{ setting('tax_enabled', false) ? 'true' : 'false' }};
             const tax = taxEnabled ? subtotal * {{ setting('tax_rate', 19) / 100 }} : 0;
+            const discountAmount = getDiscountAmount();
             const tipAmount = getTipAmount();
-            const total = subtotal + tax + tipAmount;
+            const total = subtotal + tax - discountAmount + tipAmount;
             
             // Actualizar totales
             if (cartSubtotal) {

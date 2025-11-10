@@ -168,6 +168,8 @@ class PosController extends Controller
             'transfer_reference' => 'nullable|string',
             'customer_id' => 'nullable|exists:customers,id',
             'tip_amount' => 'nullable|numeric|min:0',
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
+            'discount_reason' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ]);
         
@@ -176,6 +178,23 @@ class PosController extends Controller
 
             // Obtener configuración de negocio
             $businessSettings = \App\Models\BusinessSetting::current();
+            
+            // Validar límite de descuento según rol del usuario
+            $discountPercentage = $request->discount_percentage ?? 0;
+            if ($discountPercentage > 0) {
+                $maxDiscount = Auth::user()->getMaxDiscountAllowed();
+                
+                if ($discountPercentage > $maxDiscount) {
+                    throw new \Exception("No tienes autorización para dar un descuento mayor al {$maxDiscount}%");
+                }
+                
+                // Validar que se proporcione una razón si es requerida
+                if ($businessSettings->require_discount_reason && 
+                    $discountPercentage >= $businessSettings->require_reason_from &&
+                    empty($request->discount_reason)) {
+                    throw new \Exception("Debes proporcionar una razón para descuentos del {$businessSettings->require_reason_from}% o más");
+                }
+            }
 
             // Determinar tipo de documento según configuración
             $billingType = $businessSettings->billing_type ?? 'simple_receipt';
@@ -200,6 +219,9 @@ class PosController extends Controller
                 'user_id' => Auth::id(),
                 'total' => 0,
                 'tip_amount' => $request->tip_amount ?? 0,
+                'discount_percentage' => $discountPercentage,
+                'discount_amount' => 0, // Se calculará después
+                'discount_reason' => $request->discount_reason,
                 'payment_method' => $request->payment_method,
                 'status' => 'completada',
                 'document_type' => $documentType,
@@ -219,7 +241,7 @@ class PosController extends Controller
                 ]);
             }
             
-            $total = 0;
+            $subtotal = 0;
             $tipAmount = $request->tip_amount ?? 0;
             
             // Procesar cada item de la venta
@@ -231,8 +253,8 @@ class PosController extends Controller
                     throw new \Exception("Stock insuficiente para {$product->name}");
                 }
                 
-                $subtotal = $item['price'] * $item['quantity'];
-                $total += $subtotal;
+                $itemSubtotal = $item['price'] * $item['quantity'];
+                $subtotal += $itemSubtotal;
                 
                 // Crear el item de venta
                 SaleItem::create([
@@ -240,18 +262,28 @@ class PosController extends Controller
                     'product_id' => $product->id,
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
-                    'subtotal' => $subtotal,
+                    'subtotal' => $itemSubtotal,
                 ]);
                 
                 // Actualizar stock
                 $product->decrement('stock', $item['quantity']);
             }
             
-            // Sumar propina al total
-            $total += $tipAmount;
+            // Calcular descuento
+            $discountAmount = 0;
+            if ($discountPercentage > 0) {
+                $discountAmount = ($subtotal * $discountPercentage) / 100;
+            }
             
-            // Actualizar total de la venta
-            $sale->update(['total' => $total]);
+            // Calcular total: subtotal - descuento + propina
+            $total = $subtotal - $discountAmount + $tipAmount;
+            
+            // Actualizar total y descuento de la venta
+            $sale->update([
+                'subtotal' => $subtotal,
+                'discount_amount' => $discountAmount,
+                'total' => $total
+            ]);
 
             // Si hay un PaymentDetail, actualizar su monto
             if ($request->payment_method === 'transferencia') {
@@ -267,6 +299,9 @@ class PosController extends Controller
                 'success' => true,
                 'message' => 'Venta procesada exitosamente',
                 'sale_id' => $sale->id,
+                'subtotal' => $subtotal,
+                'discount_amount' => $discountAmount,
+                'tip_amount' => $tipAmount,
                 'total' => $total
             ]);
             

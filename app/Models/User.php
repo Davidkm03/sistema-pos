@@ -71,4 +71,30 @@ class User extends Authenticatable
     {
         return $this->hasRole('super-admin');
     }
+
+    /**
+     * Obtener el descuento máximo que puede aplicar este usuario
+     */
+    public function getMaxDiscountAllowed(): float
+    {
+        $settings = BusinessSetting::current();
+
+        // Super admin o Admin tienen descuento ilimitado (100%)
+        if ($this->hasRole(['super-admin', 'Admin'])) {
+            return (float) ($settings->max_discount_admin ?? 100);
+        }
+
+        // Cajero
+        if ($this->hasRole('Cajero')) {
+            return (float) ($settings->max_discount_cashier ?? 15);
+        }
+
+        // Vendedor
+        if ($this->hasRole('Vendedor')) {
+            return (float) ($settings->max_discount_seller ?? 10);
+        }
+
+        // Por defecto, sin descuento
+        return 0;
+    }
 }
