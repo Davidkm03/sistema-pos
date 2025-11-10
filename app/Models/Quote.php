@@ -97,10 +97,17 @@ class Quote extends Model
         };
     }
 
-    // Generar número de cotización
+    // Generar número de cotización único por empresa
     public static function generateQuoteNumber()
     {
-        $lastQuote = self::orderBy('id', 'desc')->first();
+        $empresaId = auth()->user()->empresa_id;
+        
+        // Obtener la última cotización de esta empresa
+        $lastQuote = self::withoutGlobalScopes()
+            ->where('empresa_id', $empresaId)
+            ->orderBy('id', 'desc')
+            ->first();
+        
         $number = $lastQuote ? intval(substr($lastQuote->quote_number, 3)) + 1 : 1;
         return 'QT-' . str_pad($number, 5, '0', STR_PAD_LEFT);
     }

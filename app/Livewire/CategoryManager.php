@@ -25,8 +25,26 @@ class CategoryManager extends Component
      */
     protected function rules()
     {
+        $empresaId = Auth::user()->empresa_id;
+        
         return [
-            'name' => 'required|string|max:100|unique:categories,name,' . ($this->editingId ?? 'NULL'),
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                function ($attribute, $value, $fail) use ($empresaId) {
+                    $query = Category::where('name', $value)
+                        ->where('empresa_id', $empresaId);
+                    
+                    if ($this->editingId) {
+                        $query->where('id', '!=', $this->editingId);
+                    }
+                    
+                    if ($query->exists()) {
+                        $fail('Ya existe una categoría con este nombre en esta empresa.');
+                    }
+                },
+            ],
             'description' => 'nullable|string|max:500',
         ];
     }

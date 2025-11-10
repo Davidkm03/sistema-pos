@@ -49,10 +49,26 @@ class ProductManager extends Component
      */
     protected function rules()
     {
+        $empresaId = auth()->user()->empresa_id;
+        
         $rules = [
             'name' => 'required|min:3|max:200',
             'category_id' => 'required|exists:categories,id',
-            'sku' => 'required|unique:products,sku',
+            'sku' => [
+                'required',
+                function ($attribute, $value, $fail) use ($empresaId) {
+                    $query = Product::where('sku', $value)
+                        ->where('empresa_id', $empresaId);
+                    
+                    if ($this->editingId) {
+                        $query->where('id', '!=', $this->editingId);
+                    }
+                    
+                    if ($query->exists()) {
+                        $fail('El SKU ya existe en esta empresa.');
+                    }
+                },
+            ],
             'price' => 'required|numeric|min:0',
             'cost' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
@@ -60,11 +76,6 @@ class ProductManager extends Component
             'tax_type' => 'nullable|in:standard,exempt,excluded,custom',
             'custom_tax_rate' => 'nullable|numeric|min:0|max:100',
         ];
-
-        // If editing, exclude current product ID from SKU uniqueness validation
-        if ($this->editingId) {
-            $rules['sku'] = 'required|unique:products,sku,' . $this->editingId;
-        }
 
         return $rules;
     }
