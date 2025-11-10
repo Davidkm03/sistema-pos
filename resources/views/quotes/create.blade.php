@@ -16,9 +16,41 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if(session('error'))
-                <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg">
-                    {{ session('error') }}
-                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: '{{ session('error') }}',
+                            confirmButtonColor: '#EF4444',
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp'
+                            }
+                        });
+                    });
+                </script>
+            @endif
+
+            @if($errors->any())
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Errores de validación',
+                            html: `
+                                <ul class="text-left text-sm">
+                                    @foreach($errors->all() as $error)
+                                        <li class="text-red-600">• {{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            `,
+                            confirmButtonColor: '#EF4444'
+                        });
+                    });
+                </script>
             @endif
 
             <form action="{{ route('quotes.store') }}" method="POST" id="quoteForm">
@@ -158,12 +190,40 @@
             
             if (existing) {
                 existing.quantity++;
+                
+                // Animación de feedback
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                });
+                
+                Toast.fire({
+                    icon: 'info',
+                    title: `Cantidad actualizada: ${existing.quantity}`
+                });
             } else {
                 quoteItems.push({
                     product_id: productId,
                     name: productName,
                     price: productPrice,
                     quantity: 1
+                });
+                
+                // Animación de éxito
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                });
+                
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Producto agregado'
                 });
             }
 
@@ -172,16 +232,86 @@
 
         function updateQuantity(index, newQuantity) {
             if (newQuantity <= 0) {
-                quoteItems.splice(index, 1);
+                Swal.fire({
+                    title: '¿Eliminar producto?',
+                    text: "Se eliminará este producto de la cotización",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#EF4444',
+                    cancelButtonColor: '#6B7280',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        quoteItems.splice(index, 1);
+                        updateQuoteDisplay();
+                        
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true,
+                        });
+                        
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Producto eliminado'
+                        });
+                    } else {
+                        // Restaurar la cantidad
+                        document.querySelectorAll('.quantity-input')[index].value = quoteItems[index].quantity;
+                    }
+                });
             } else {
                 quoteItems[index].quantity = parseInt(newQuantity);
+                updateQuoteDisplay();
             }
-            updateQuoteDisplay();
         }
 
         function removeItem(index) {
-            quoteItems.splice(index, 1);
-            updateQuoteDisplay();
+            const itemName = quoteItems[index].name;
+            
+            Swal.fire({
+                title: '¿Eliminar producto?',
+                text: `¿Deseas eliminar "${itemName}" de la cotización?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    quoteItems.splice(index, 1);
+                    updateQuoteDisplay();
+                    
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                    });
+                    
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Producto eliminado'
+                    });
+                }
+            });
         }
 
         function updateQuoteDisplay() {
@@ -193,27 +323,47 @@
             document.querySelectorAll('.item-input').forEach(el => el.remove());
 
             if (quoteItems.length === 0) {
-                container.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No hay items agregados</p>';
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p class="mt-2 text-sm text-gray-500">No hay items agregados</p>
+                        <p class="text-xs text-gray-400">Selecciona productos del panel izquierdo</p>
+                    </div>
+                `;
                 submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
             } else {
                 submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                
                 container.innerHTML = quoteItems.map((item, index) => `
-                    <div class="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-2 p-3 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-200 hover:shadow-md transition">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-semibold text-gray-900 truncate">${item.name}</p>
-                            <p class="text-xs text-gray-500">$${item.price.toLocaleString()} c/u</p>
+                            <p class="text-xs text-gray-500">$${item.price.toLocaleString('es-CO')} c/u</p>
+                            <p class="text-xs font-semibold text-indigo-600 mt-1">Subtotal: $${(item.price * item.quantity).toLocaleString('es-CO')}</p>
                         </div>
-                        <div class="flex items-center gap-1">
+                        <div class="flex items-center gap-1 bg-white rounded-lg border border-gray-200 p-1">
                             <button type="button" onclick="updateQuantity(${index}, ${item.quantity - 1})"
-                                    class="w-6 h-6 bg-gray-200 rounded hover:bg-gray-300">-</button>
+                                    class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-600 rounded transition font-bold">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                </svg>
+                            </button>
                             <input type="number" value="${item.quantity}" min="1"
                                    onchange="updateQuantity(${index}, this.value)"
-                                   class="w-12 text-center border-gray-300 rounded py-1 text-sm">
+                                   class="quantity-input w-14 text-center border-0 bg-transparent py-1 text-sm font-semibold text-gray-900 focus:ring-0">
                             <button type="button" onclick="updateQuantity(${index}, ${item.quantity + 1})"
-                                    class="w-6 h-6 bg-gray-200 rounded hover:bg-gray-300">+</button>
+                                    class="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-green-100 text-gray-700 hover:text-green-600 rounded transition font-bold">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </button>
                         </div>
                         <button type="button" onclick="removeItem(${index})"
-                                class="text-red-600 hover:text-red-800">
+                                class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition" title="Eliminar">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                             </svg>
@@ -239,25 +389,50 @@
             const tax = taxEnabled ? Math.round(subtotal * taxRate) : 0;
             const total = subtotal + tax;
 
-            document.getElementById('subtotalDisplay').textContent = '$' + subtotal.toLocaleString();
+            document.getElementById('subtotalDisplay').textContent = '$' + subtotal.toLocaleString('es-CO');
             if (taxEnabled) {
-                document.getElementById('taxDisplay').textContent = '$' + tax.toLocaleString();
+                document.getElementById('taxDisplay').textContent = '$' + tax.toLocaleString('es-CO');
             }
-            document.getElementById('totalDisplay').textContent = '$' + total.toLocaleString();
+            document.getElementById('totalDisplay').textContent = '$' + total.toLocaleString('es-CO');
         }
 
         // Búsqueda de productos
         document.getElementById('productSearch').addEventListener('input', function(e) {
             const search = e.target.value.toLowerCase();
-            document.querySelectorAll('.product-card').forEach(card => {
+            const cards = document.querySelectorAll('.product-card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
                 const name = card.dataset.name.toLowerCase();
-                card.style.display = name.includes(search) ? 'block' : 'none';
+                const isVisible = name.includes(search);
+                card.style.display = isVisible ? 'block' : 'none';
+                if (isVisible) visibleCount++;
             });
+            
+            // Mensaje si no hay resultados
+            const grid = document.getElementById('productsGrid');
+            let noResults = grid.querySelector('.no-results');
+            
+            if (visibleCount === 0 && !noResults) {
+                noResults = document.createElement('div');
+                noResults.className = 'no-results col-span-full text-center py-8';
+                noResults.innerHTML = `
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="mt-2 text-sm text-gray-500">No se encontraron productos</p>
+                    <p class="text-xs text-gray-400">Intenta con otro término de búsqueda</p>
+                `;
+                grid.appendChild(noResults);
+            } else if (visibleCount > 0 && noResults) {
+                noResults.remove();
+            }
         });
 
         // Modal de nuevo cliente
         function openCustomerModal() {
             document.getElementById('customerModal').classList.remove('hidden');
+            document.getElementById('customerForm').querySelector('input[name="name"]').focus();
         }
 
         function closeCustomerModal() {
@@ -271,9 +446,24 @@
 
             // Validación básica
             if (!formData.get('name')) {
-                alert('El nombre es requerido');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'El nombre del cliente es requerido',
+                    confirmButtonColor: '#EF4444'
+                });
                 return;
             }
+
+            // Mostrar loading
+            Swal.fire({
+                title: 'Guardando cliente...',
+                html: 'Por favor espera',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
 
             fetch('{{ route('customers.store') }}', {
                 method: 'POST',
@@ -292,16 +482,63 @@
                     closeCustomerModal();
                     
                     // Mensaje de éxito
-                    alert('Cliente creado exitosamente');
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Cliente creado!',
+                        text: 'El cliente ha sido agregado exitosamente',
+                        confirmButtonColor: '#10B981',
+                        timer: 2500,
+                        timerProgressBar: true,
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
+                    });
                 } else {
-                    alert('Error al crear cliente: ' + (data.message || 'Error desconocido'));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Error al crear cliente',
+                        confirmButtonColor: '#EF4444'
+                    });
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al crear cliente. Por favor intenta de nuevo.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al crear cliente. Por favor intenta de nuevo.',
+                    confirmButtonColor: '#EF4444'
+                });
             });
         }
+
+        // Validación antes de enviar
+        document.getElementById('quoteForm').addEventListener('submit', function(e) {
+            if (quoteItems.length === 0) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    text: 'Debes agregar al menos un producto a la cotización',
+                    confirmButtonColor: '#F59E0B'
+                });
+                return false;
+            }
+        });
+
+        // Cerrar modal con ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('customerModal');
+                if (!modal.classList.contains('hidden')) {
+                    closeCustomerModal();
+                }
+            }
+        });
     </script>
     @endpush
 
