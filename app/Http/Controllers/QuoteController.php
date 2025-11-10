@@ -129,8 +129,9 @@ class QuoteController extends Controller
     public function show(Quote $quote)
     {
         $quote->load(['customer', 'user', 'items.product', 'convertedSale']);
+        $businessSettings = BusinessSetting::current();
         
-        return view('quotes.show', compact('quote'));
+        return view('quotes.show', compact('quote', 'businessSettings'));
     }
 
     /**
