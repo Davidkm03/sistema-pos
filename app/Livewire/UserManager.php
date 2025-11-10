@@ -54,11 +54,24 @@ class UserManager extends Component
                 return;
             }
 
+            // SECURITY: Admin no puede asignar rol super-admin
+            $selectedRole = Role::findOrFail($this->role_id);
+            if (!$currentUser->hasRole('super-admin') && $selectedRole->name === 'super-admin') {
+                $this->dispatch('user-error', message: 'No tienes permiso para asignar el rol de Super Admin');
+                return;
+            }
+
             if ($this->editingId) {
                 $user = User::findOrFail($this->editingId);
                 
                 if (!$currentUser->hasRole('super-admin') && $user->empresa_id !== $currentUser->empresa_id) {
                     $this->dispatch('user-error', message: 'No tienes permiso para editar este usuario');
+                    return;
+                }
+
+                // SECURITY: Admin no puede editar usuarios con rol super-admin
+                if (!$currentUser->hasRole('super-admin') && $user->hasRole('super-admin')) {
+                    $this->dispatch('user-error', message: 'No tienes permiso para editar usuarios Super Admin');
                     return;
                 }
                 
@@ -104,6 +117,12 @@ class UserManager extends Component
             $this->dispatch('user-error', message: 'No tienes permiso para editar este usuario');
             return;
         }
+
+        // SECURITY: Admin no puede editar usuarios super-admin
+        if (!auth()->user()->hasRole('super-admin') && $user->hasRole('super-admin')) {
+            $this->dispatch('user-error', message: 'No tienes permiso para editar usuarios Super Admin');
+            return;
+        }
         
         $this->editingId = $user->id;
         $this->name = $user->name;
@@ -119,6 +138,12 @@ class UserManager extends Component
             
             if (!auth()->user()->hasRole('super-admin') && $user->empresa_id !== auth()->user()->empresa_id) {
                 $this->dispatch('user-error', message: 'No tienes permiso para eliminar este usuario');
+                return;
+            }
+
+            // SECURITY: Admin no puede eliminar usuarios super-admin
+            if (!auth()->user()->hasRole('super-admin') && $user->hasRole('super-admin')) {
+                $this->dispatch('user-error', message: 'No tienes permiso para eliminar usuarios Super Admin');
                 return;
             }
             
@@ -171,7 +196,13 @@ class UserManager extends Component
         }
 
         $users = $query->paginate(10);
-        $roles = Role::all();
+        
+        // SECURITY: Admin solo puede ver roles Cajero y Supervisor
+        if ($currentUser->hasRole('super-admin')) {
+            $roles = Role::all();
+        } else {
+            $roles = Role::whereIn('name', ['Cajero', 'Supervisor'])->get();
+        }
         
         if ($currentUser->hasRole('super-admin')) {
             $empresas = \App\Models\Empresa::orderBy('nombre')->get();
