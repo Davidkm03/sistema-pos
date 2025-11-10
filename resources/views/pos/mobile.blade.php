@@ -842,16 +842,7 @@
                 requireReasonFrom: {{ setting('require_reason_from', 5) }},
                 searchQuery: '',
                 filteredProducts: [],
-                allProducts: @json($products->map(function($p) {
-                    return [
-                        'id' => $p->id,
-                        'name' => $p->name,
-                        'sku' => $p->sku,
-                        'price' => $p->price,
-                        'stock' => $p->stock,
-                        'image' => $p->image,
-                    ];
-                })),
+                allProducts: @json($productsForJS),
                 
                 get cartSubtotal() {
                     return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);

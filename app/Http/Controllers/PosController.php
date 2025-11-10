@@ -74,8 +74,21 @@ class PosController extends Controller
             ->orderBy('updated_at', 'desc')
             ->take(20)
             ->get();
+        
+        // Mapear productos para Alpine.js (evitar problemas de sintaxis en Blade)
+        $productsForJS = $products->map(function($p) {
+            return [
+                'id' => $p->id,
+                'name' => $p->name,
+                'sku' => $p->sku,
+                'price' => (float) $p->price,
+                'stock' => $p->stock,
+                'image' => $p->image,
+                'category_id' => $p->category_id,
+            ];
+        });
 
-        return view('pos.mobile', compact('categories', 'products'));
+        return view('pos.mobile', compact('categories', 'products', 'productsForJS'));
     }
     
     /**
