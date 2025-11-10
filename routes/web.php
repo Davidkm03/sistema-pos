@@ -63,19 +63,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Rutas de Cotizaciones - Requiere permisos específicos
     Route::middleware(['permission:quotes.view'])->group(function () {
-        Route::resource('cotizaciones', \App\Http\Controllers\QuoteController::class)->names('quotes');
+        Route::resource('quotes', \App\Http\Controllers\QuoteController::class);
         
         // Rutas especiales
-        Route::post('/cotizaciones/{quote}/convertir', [\App\Http\Controllers\QuoteController::class, 'convertToSale'])
+        Route::post('/quotes/{quote}/convert', [\App\Http\Controllers\QuoteController::class, 'convertToSale'])
             ->middleware('permission:quotes.convert')
             ->name('quotes.convert');
         
-        Route::get('/cotizaciones/{quote}/imprimir', [\App\Http\Controllers\QuoteController::class, 'print'])
+        Route::get('/quotes/{quote}/print', [\App\Http\Controllers\QuoteController::class, 'print'])
             ->name('quotes.print');
     });
     
     // Rutas de Clientes - Para crear desde cotizaciones
-    Route::post('/clientes', [\App\Http\Controllers\CustomerController::class, 'store'])
+    Route::post('/customers', [\App\Http\Controllers\CustomerController::class, 'store'])
         ->name('customers.store');
     
     // Rutas de Reportes - Solo Admin y Supervisor

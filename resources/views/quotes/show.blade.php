@@ -34,7 +34,9 @@
                         <div class="flex justify-between items-start mb-6">
                             <div>
                                 <h3 class="text-2xl font-bold text-gray-900">{{ $quote->quote_number }}</h3>
+                                @if($quote->created_at)
                                 <p class="text-sm text-gray-500 mt-1">Creada: {{ $quote->created_at->format('d/m/Y H:i') }}</p>
+                                @endif
                                 @if($quote->valid_until)
                                 <p class="text-sm mt-1">
                                     <span class="font-medium">Válida hasta:</span>
@@ -143,9 +145,11 @@
                         @if($quote->status === 'convertida' && $quote->convertedSale)
                         <div class="mt-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
                             <h4 class="font-semibold text-gray-900 mb-2">Convertida a Venta</h4>
+                            @if($quote->converted_at)
                             <p class="text-sm text-gray-700">
                                 Convertida el {{ $quote->converted_at->format('d/m/Y H:i') }}
                             </p>
+                            @endif
                             <a href="{{ route('sales.show', $quote->converted_to_sale_id) }}" 
                                class="inline-flex items-center mt-2 text-sm text-blue-600 hover:text-blue-800">
                                 Ver venta #{{ $quote->converted_to_sale_id }}
@@ -223,11 +227,13 @@
 
                         <div class="pt-4 border-t border-gray-200">
                             <p class="text-xs text-gray-500">
-                                <span class="font-medium">Creado por:</span> {{ $quote->user->name }}
+                                <span class="font-medium">Creado por:</span> {{ $quote->user->name ?? 'N/A' }}
                             </p>
+                            @if($quote->created_at)
                             <p class="text-xs text-gray-500 mt-1">
                                 {{ $quote->created_at->format('d/m/Y H:i') }}
                             </p>
+                            @endif
                         </div>
                     </div>
                 </div>
