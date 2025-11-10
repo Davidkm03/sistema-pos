@@ -108,6 +108,17 @@ class InventoryManager extends Component
         // Get all products for the dropdown
         $products = Product::orderBy('name')->get();
 
+        // Get products with low stock (less than or equal to 10)
+        $lowStockProducts = Product::where('stock', '<=', 10)
+            ->where('stock', '>', 0)
+            ->orderBy('stock', 'asc')
+            ->get();
+
+        // Get products out of stock
+        $outOfStockProducts = Product::where('stock', 0)
+            ->orderBy('name')
+            ->get();
+
         // Get inventory movements with related data, paginated
         $movements = InventoryMovement::with(['product', 'user'])
             ->orderBy('created_at', 'desc')
@@ -116,6 +127,8 @@ class InventoryManager extends Component
         return view('livewire.inventory-manager', [
             'products' => $products,
             'movements' => $movements,
+            'lowStockProducts' => $lowStockProducts,
+            'outOfStockProducts' => $outOfStockProducts,
         ]);
     }
 }

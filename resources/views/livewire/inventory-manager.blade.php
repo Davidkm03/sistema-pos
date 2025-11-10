@@ -1,5 +1,58 @@
 <div class="max-w-7xl mx-auto space-y-6">
     
+    {{-- ALERTAS DE STOCK BAJO Y AGOTADO --}}
+    @if($outOfStockProducts->count() > 0)
+    <div class="bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-300 rounded-2xl p-5 shadow-lg">
+        <div class="flex items-start gap-4">
+            <div class="flex-shrink-0">
+                <div class="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="flex-1">
+                <h4 class="text-lg font-black text-red-900 mb-2">⚠️ Productos Agotados ({{ $outOfStockProducts->count() }})</h4>
+                <p class="text-sm text-red-700 mb-3 font-semibold">Los siguientes productos NO tienen stock disponible:</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    @foreach($outOfStockProducts as $product)
+                    <div class="bg-white rounded-lg px-3 py-2 border-2 border-red-200 flex items-center justify-between">
+                        <span class="font-bold text-gray-900 text-sm">{{ $product->name }}</span>
+                        <span class="bg-red-600 text-white text-xs px-2 py-1 rounded-full font-black">0 unidades</span>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if($lowStockProducts->count() > 0)
+    <div class="bg-gradient-to-r from-yellow-50 to-orange-100 border-2 border-orange-300 rounded-2xl p-5 shadow-lg">
+        <div class="flex items-start gap-4">
+            <div class="flex-shrink-0">
+                <div class="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="flex-1">
+                <h4 class="text-lg font-black text-orange-900 mb-2">⚡ Stock Bajo ({{ $lowStockProducts->count() }})</h4>
+                <p class="text-sm text-orange-700 mb-3 font-semibold">Productos con 10 unidades o menos:</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    @foreach($lowStockProducts as $product)
+                    <div class="bg-white rounded-lg px-3 py-2 border-2 border-orange-200 flex items-center justify-between">
+                        <span class="font-bold text-gray-900 text-sm">{{ $product->name }}</span>
+                        <span class="bg-orange-600 text-white text-xs px-2 py-1 rounded-full font-black">{{ $product->stock }} unidades</span>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+    
     {{-- SECCIÓN 1 - FORMULARIO DE MOVIMIENTO DE INVENTARIO --}}
     <div class="bg-gradient-to-br from-white to-gray-50 shadow-2xl rounded-2xl border-2 border-blue-100 overflow-hidden">
         <div class="px-6 py-5 bg-gradient-to-r from-blue-600 to-cyan-600">
