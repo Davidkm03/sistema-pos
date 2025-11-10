@@ -72,6 +72,7 @@ class GoalManager extends Component
             } else {
                 // Create new goal
                 Goal::create([
+                    'empresa_id' => Auth::user()->empresa_id,
                     'name' => $this->name,
                     'target_amount' => $this->target_amount,
                     'start_date' => $this->start_date,
