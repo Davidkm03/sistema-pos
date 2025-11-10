@@ -165,7 +165,9 @@ class PosController extends Controller
             'payment_method' => 'required|string|in:efectivo,tarjeta_debito,tarjeta_credito,transferencia',
             'transfer_type' => 'nullable|string',
             'transfer_reference' => 'nullable|string',
-            'customer_id' => 'nullable|exists:customers,id'
+            'customer_id' => 'nullable|exists:customers,id',
+            'tip_amount' => 'nullable|numeric|min:0',
+            'notes' => 'nullable|string',
         ]);
         
         try {
@@ -201,6 +203,7 @@ class PosController extends Controller
                 'document_type' => $documentType,
                 'receipt_number' => $receiptNumber,
                 'invoice_number' => $invoiceNumber,
+                'notes' => $request->notes,
             ]);
             
             // Si es transferencia, guardar los detalles adicionales
@@ -215,6 +218,7 @@ class PosController extends Controller
             }
             
             $total = 0;
+            $tipAmount = $request->tip_amount ?? 0;
             
             // Procesar cada item de la venta
             foreach ($request->items as $item) {
@@ -240,6 +244,9 @@ class PosController extends Controller
                 // Actualizar stock
                 $product->decrement('stock', $item['quantity']);
             }
+            
+            // Sumar propina al total
+            $total += $tipAmount;
             
             // Actualizar total de la venta
             $sale->update(['total' => $total]);

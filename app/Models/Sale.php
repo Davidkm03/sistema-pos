@@ -648,13 +648,16 @@ class Sale extends Model
     // ==========================================
 
     /**
-     * Obtener el siguiente número de recibo
+     * Obtener el siguiente número de recibo (por empresa)
      */
     public static function getNextReceiptNumber(): int
     {
         $settings = BusinessSetting::current();
+        $empresaId = auth()->user()->empresa_id;
 
-        $lastSale = self::where('document_type', 'receipt')
+        $lastSale = self::withoutGlobalScopes()
+                        ->where('empresa_id', $empresaId)
+                        ->where('document_type', 'receipt')
                         ->whereNotNull('receipt_number')
                         ->orderByRaw('CAST(receipt_number AS INTEGER) DESC')
                         ->first();
@@ -667,18 +670,21 @@ class Sale extends Model
     }
 
     /**
-     * Obtener el siguiente número de factura (validando rango DIAN)
+     * Obtener el siguiente número de factura (validando rango DIAN) por empresa
      */
     public static function getNextInvoiceNumber(): int
     {
         $settings = BusinessSetting::current();
+        $empresaId = auth()->user()->empresa_id;
 
         // Verificar que la configuración de facturación esté completa
         if (!$settings->range_from || !$settings->range_to) {
             throw new \Exception('La configuración de facturación no está completa. Configure el rango autorizado por la DIAN.');
         }
 
-        $lastInvoice = self::where('document_type', 'invoice')
+        $lastInvoice = self::withoutGlobalScopes()
+                          ->where('empresa_id', $empresaId)
+                          ->where('document_type', 'invoice')
                           ->whereNotNull('invoice_number')
                           ->orderByRaw('CAST(invoice_number AS INTEGER) DESC')
                           ->first();

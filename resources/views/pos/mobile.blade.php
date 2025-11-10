@@ -756,9 +756,10 @@
                         })),
                         payment_method: this.paymentMethod === 'tarjeta' ? 'tarjeta_debito' : this.paymentMethod,
                         customer_id: null, // Por ahora sin cliente
+                        tip_amount: this.tipAmount, // Agregar propina
                     };
                     
-                    // Si es efectivo y hay propina, agregarla como observación
+                    // Si hay propina, agregarla también como observación
                     if (this.tipAmount > 0) {
                         saleData.notes = `Propina: $${this.tipAmount.toLocaleString()}`;
                     }
