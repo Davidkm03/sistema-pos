@@ -5,7 +5,32 @@ namespace App\Livewire;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Hash;
+use Illumina    /**
+     * Delete user
+     */
+    public function delete($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            
+            // Validar que el usuario pertenezca a la misma empresa (excepto super-admin)
+            if (!auth()->user()->hasRole('super-admin') && $user->empresa_id !== auth()->user()->empresa_id) {
+                $this->dispatch('user-error', message: 'No tienes permiso para eliminar este usuario');
+                return;
+            }
+            
+            // Prevent deleting own account
+            if ($user->id === auth()->user()->id) {
+                $this->dispatch('user-error', message: 'No puedes eliminar tu propia cuenta');
+                return;
+            }
+            
+            $user->delete();
+            $this->dispatch('user-deleted');
+        } catch (\Exception $e) {
+            $this->dispatch('user-error', message: 'Error al eliminar usuario: ' . $e->getMessage());
+        }
+    }ash;
 use Spatie\Permission\Models\Role;
 
 class UserManager extends Component
@@ -54,9 +79,24 @@ class UserManager extends Component
         $this->validate();
 
         try {
+            $currentUser = auth()->user();
+            
+            // Validar que Admin solo pueda crear/editar usuarios de su empresa
+            if (!$currentUser->hasRole('super-admin') && $this->empresa_id != $currentUser->empresa_id) {
+                $this->dispatch('user-error', message: 'Solo puedes gestionar usuarios de tu empresa');
+                return;
+            }
+
             if ($this->editingId) {
                 // Update existing user
                 $user = User::findOrFail($this->editingId);
+                
+                // Validar que el usuario a editar pertenezca a la misma empresa
+                if (!$currentUser->hasRole('super-admin') && $user->empresa_id !== $currentUser->empresa_id) {
+                    $this->dispatch('user-error', message: 'No tienes permiso para editar este usuario');
+                    return;
+                }
+                
                 $user->name = $this->name;
                 $user->email = $this->email;
                 $user->empresa_id = $this->empresa_id;
@@ -101,6 +141,12 @@ class UserManager extends Component
     public function edit($id)
     {
         $user = User::findOrFail($id);
+        
+        // Validar que el usuario pertenezca a la misma empresa (excepto super-admin)
+        if (!auth()->user()->hasRole('super-admin') && $user->empresa_id !== auth()->user()->empresa_id) {
+            $this->dispatch('user-error', message: 'No tienes permiso para editar este usuario');
+            return;
+        }
         
         $this->editingId = $user->id;
         $this->name = $user->name;
@@ -162,8 +208,16 @@ class UserManager extends Component
      */
     public function render()
     {
+        $currentUser = auth()->user();
+        
         // Build query for users
         $query = User::with('roles', 'empresa');
+
+        // Filtrar por empresa: Solo super-admin puede ver todos los usuarios
+        // Los demás solo ven usuarios de su empresa
+        if (!$currentUser->hasRole('super-admin')) {
+            $query->where('empresa_id', $currentUser->empresa_id);
+        }
 
         // Apply search filter if search term exists
         if ($this->search) {
@@ -180,7 +234,17 @@ class UserManager extends Component
         $roles = Role::all();
         
         // Get all empresas for the form dropdown
-        $empresas = \App\Models\Empresa::orderBy('nombre')->get();
+        // Super-admin puede asignar cualquier empresa, Admin solo su empresa
+        if ($currentUser->hasRole('super-admin')) {
+            $empresas = \App\Models\Empresa::orderBy('nombre')->get();
+        } else {
+            // Admin solo puede asignar usuarios a su propia empresa
+            $empresas = \App\Models\Empresa::where('id', $currentUser->empresa_id)->get();
+            // Auto-asignar empresa_id si no está seleccionada
+            if (!$this->empresa_id) {
+                $this->empresa_id = $currentUser->empresa_id;
+            }
+        }
 
         return view('livewire.user-manager', [
             'users' => $users,

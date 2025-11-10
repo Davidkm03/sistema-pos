@@ -143,12 +143,16 @@
                             </label>
                             <select id="empresa_id"
                                     wire:model="empresa_id" 
-                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-semibold @error('empresa_id') border-red-500 ring-2 ring-red-200 @enderror">
+                                    @if(!auth()->user()->hasRole('super-admin')) disabled @endif
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-semibold @error('empresa_id') border-red-500 ring-2 ring-red-200 @enderror @if(!auth()->user()->hasRole('super-admin')) bg-gray-100 cursor-not-allowed @endif">
                                 <option value="">Seleccionar empresa</option>
                                 @foreach($empresas as $empresa)
                                     <option value="{{ $empresa->id }}">{{ $empresa->nombre }}</option>
                                 @endforeach
                             </select>
+                            @if(!auth()->user()->hasRole('super-admin'))
+                                <p class="mt-1 text-xs text-gray-500">Solo puedes gestionar usuarios de tu empresa</p>
+                            @endif
                             @error('empresa_id')
                                 <p class="mt-2 text-sm text-red-600 font-medium flex items-center gap-1">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
