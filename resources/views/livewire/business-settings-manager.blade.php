@@ -397,6 +397,116 @@
                                 @endif
                             </div>
 
+                            <!-- CONFIGURACIÓN DE DESCUENTOS -->
+                            <div class="border-t pt-6 mt-6">
+                                <h3 class="text-lg font-semibold mb-4">💰 Configuración de Descuentos</h3>
+                                <p class="text-sm text-gray-600 mb-4">
+                                    Configura los límites máximos de descuento que puede otorgar cada rol al procesar una venta.
+                                </p>
+
+                                <div class="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-4 mb-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <!-- Descuento Cajero -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                👤 Límite para Cajeros
+                                            </label>
+                                            <div class="relative">
+                                                <input type="number" 
+                                                       wire:model="max_discount_cashier"
+                                                       min="0" 
+                                                       max="100" 
+                                                       step="0.5"
+                                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 pr-8"
+                                                       placeholder="15">
+                                                <span class="absolute right-3 top-2.5 text-gray-500 text-sm">%</span>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-1">Descuento máximo para rol Cajero</p>
+                                        </div>
+
+                                        <!-- Descuento Vendedor -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                🛍️ Límite para Vendedores
+                                            </label>
+                                            <div class="relative">
+                                                <input type="number" 
+                                                       wire:model="max_discount_seller"
+                                                       min="0" 
+                                                       max="100" 
+                                                       step="0.5"
+                                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 pr-8"
+                                                       placeholder="10">
+                                                <span class="absolute right-3 top-2.5 text-gray-500 text-sm">%</span>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-1">Descuento máximo para rol Vendedor</p>
+                                        </div>
+
+                                        <!-- Descuento Admin -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                ⭐ Límite para Administradores
+                                            </label>
+                                            <div class="relative">
+                                                <input type="number" 
+                                                       wire:model="max_discount_admin"
+                                                       min="0" 
+                                                       max="100" 
+                                                       step="0.5"
+                                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 pr-8"
+                                                       placeholder="100">
+                                                <span class="absolute right-3 top-2.5 text-gray-500 text-sm">%</span>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-1">Descuento máximo para rol Admin</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 pt-4 border-t border-orange-200">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <!-- Requerir razón -->
+                                            <div>
+                                                <label class="flex items-center cursor-pointer">
+                                                    <input type="checkbox" 
+                                                           wire:model="require_discount_reason" 
+                                                           class="rounded border-gray-300 text-orange-600 shadow-sm focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 mr-2">
+                                                    <span class="text-sm font-medium">Requerir razón del descuento</span>
+                                                </label>
+                                                <p class="text-xs text-gray-500 mt-1 ml-6">Si está activado, se solicitará una razón al aplicar descuentos</p>
+                                            </div>
+
+                                            <!-- Desde qué porcentaje -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                    Requerir razón desde:
+                                                </label>
+                                                <div class="relative">
+                                                    <input type="number" 
+                                                           wire:model="require_reason_from"
+                                                           min="0" 
+                                                           max="100" 
+                                                           step="1"
+                                                           :disabled="!$wire.require_discount_reason"
+                                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 pr-8 disabled:bg-gray-100"
+                                                           placeholder="5">
+                                                    <span class="absolute right-3 top-2.5 text-gray-500 text-sm">%</span>
+                                                </div>
+                                                <p class="text-xs text-gray-500 mt-1">Se pedirá razón si el descuento es >= este %</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 bg-white border border-orange-300 rounded p-3 text-sm">
+                                        <p class="font-medium mb-1 text-orange-800">ℹ️ Ejemplos de configuración:</p>
+                                        <ul class="list-disc list-inside text-xs space-y-1 text-gray-600">
+                                            <li><strong>Cajero:</strong> 15% - Descuentos pequeños para agilizar ventas</li>
+                                            <li><strong>Vendedor:</strong> 10% - Control moderado para personal de piso</li>
+                                            <li><strong>Admin:</strong> 100% - Control total para gerencia</li>
+                                            <li><strong>Razón desde 5%:</strong> Documentar descuentos significativos</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Botón Guardar -->
                             <div class="pt-4">
                                 <button type="submit"

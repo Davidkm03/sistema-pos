@@ -353,6 +353,10 @@
                         <span class="font-semibold" x-text="'$' + cartTax.toLocaleString()"></span>
                     </div>
                     @endif
+                    <div x-show="discountAmount > 0" class="flex justify-between text-orange-600">
+                        <span>Descuento (<span x-text="discountPercent"></span>%):</span>
+                        <span class="font-semibold">-$<span x-text="discountAmount.toLocaleString()"></span></span>
+                    </div>
                     <div x-show="tipAmount > 0" class="flex justify-between text-indigo-600">
                         <span>Propina:</span>
                         <span class="font-semibold" x-text="'$' + tipAmount.toLocaleString()"></span>
@@ -438,6 +442,58 @@
                 
                 <div x-show="receivedAmount > 0 && changeAmount < 0" class="mt-4 p-3 bg-red-50 border-2 border-red-200 rounded-lg">
                     <span class="text-red-700 text-sm font-medium">⚠️ Monto insuficiente</span>
+                </div>
+            </div>
+            
+            <!-- Descuento -->
+            <div class="px-6 py-4 border-t border-gray-200">
+                <h3 class="text-sm font-semibold text-gray-700 mb-3">Descuento (Opcional)</h3>
+                <div class="grid grid-cols-4 gap-2">
+                    <button @click="setDiscountPercent(0)" 
+                            :class="discountPercent === 0 ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-gray-700 border-gray-300'"
+                            class="py-2 px-3 rounded-lg border-2 text-sm font-medium touch-optimized">
+                        Sin descuento
+                    </button>
+                    <button @click="setDiscountPercent(5)" 
+                            :class="discountPercent === 5 ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-gray-700 border-gray-300'"
+                            class="py-2 px-3 rounded-lg border-2 text-sm font-medium touch-optimized">
+                        5%
+                    </button>
+                    <button @click="setDiscountPercent(10)" 
+                            :class="discountPercent === 10 ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-gray-700 border-gray-300'"
+                            class="py-2 px-3 rounded-lg border-2 text-sm font-medium touch-optimized">
+                        10%
+                    </button>
+                    <button @click="setDiscountPercent(15)" 
+                            :class="discountPercent === 15 ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-gray-700 border-gray-300'"
+                            class="py-2 px-3 rounded-lg border-2 text-sm font-medium touch-optimized">
+                        15%
+                    </button>
+                </div>
+                
+                <!-- Descuento personalizado -->
+                <div class="mt-3">
+                    <label class="block text-xs text-gray-600 mb-1">Descuento personalizado (Máx: {{ auth()->user()->getMaxDiscountAllowed() }}%)</label>
+                    <div class="relative">
+                        <input type="number" 
+                               x-model.number="customDiscount"
+                               @input="setCustomDiscount()"
+                               placeholder="0"
+                               max="{{ auth()->user()->getMaxDiscountAllowed() }}"
+                               step="0.5"
+                               class="w-full pl-4 pr-10 py-2 border-2 border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                               inputmode="decimal">
+                        <span class="absolute right-3 top-2.5 text-gray-400 text-sm">%</span>
+                    </div>
+                </div>
+                
+                <!-- Razón del descuento (si es >= 5%) -->
+                <div x-show="discountPercent >= 5" class="mt-3">
+                    <label class="block text-xs text-gray-600 mb-1">Razón del descuento *</label>
+                    <input type="text" 
+                           x-model="discountReason"
+                           placeholder="Ej: Cliente frecuente, promoción, etc."
+                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200">
                 </div>
             </div>
             
@@ -564,6 +620,11 @@
                 receivedAmount: 0,
                 tipPercent: 0,
                 customTip: 0,
+                discountPercent: 0,
+                customDiscount: 0,
+                discountReason: '',
+                maxDiscount: {{ auth()->user()->getMaxDiscountAllowed() }},
+                requireReasonFrom: {{ setting('require_reason_from', 5) }},
                 
                 get cartSubtotal() {
                     return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -578,6 +639,40 @@
                 
                 get cartTotal() {
                     return this.cartSubtotal + this.cartTax;
+                },
+                
+                get discountAmount() {
+                    if (this.discountPercent > 0) {
+                        return Math.round(this.cartTotal * (this.discountPercent / 100));
+                    }
+                    return 0;
+                },
+                
+                setDiscountPercent(percent) {
+                    if (percent > this.maxDiscount) {
+                        Swal.fire({
+                            title: 'Descuento No Permitido',
+                            text: `Tu límite máximo de descuento es ${this.maxDiscount}%`,
+                            icon: 'warning',
+                            confirmButtonColor: '#F59E0B'
+                        });
+                        return;
+                    }
+                    this.discountPercent = percent;
+                    this.customDiscount = 0;
+                },
+                
+                setCustomDiscount() {
+                    if (this.customDiscount > this.maxDiscount) {
+                        Swal.fire({
+                            title: 'Descuento No Permitido',
+                            text: `Tu límite máximo de descuento es ${this.maxDiscount}%`,
+                            icon: 'warning',
+                            confirmButtonColor: '#F59E0B'
+                        });
+                        this.customDiscount = this.maxDiscount;
+                    }
+                    this.discountPercent = this.customDiscount;
                 },
                 
                 addToCart(id, name, price, image) {
@@ -700,6 +795,9 @@
                     this.receivedAmount = 0;
                     this.tipPercent = 0;
                     this.customTip = 0;
+                    this.discountPercent = 0;
+                    this.customDiscount = 0;
+                    this.discountReason = '';
                 },
                 
                 get tipAmount() {
@@ -710,7 +808,7 @@
                 },
                 
                 get finalTotal() {
-                    return this.cartTotal + this.tipAmount;
+                    return this.cartTotal - this.discountAmount + this.tipAmount;
                 },
                 
                 get changeAmount() {
@@ -747,6 +845,20 @@
                         return;
                     }
                     
+                    // Validar razón de descuento
+                    if (this.discountPercent >= this.requireReasonFrom && !this.discountReason.trim()) {
+                        Swal.fire({
+                            title: 'Razón Requerida',
+                            text: `Debes indicar la razón del descuento cuando es mayor o igual a ${this.requireReasonFrom}%`,
+                            icon: 'warning',
+                            confirmButtonColor: '#F59E0B',
+                            showClass: {
+                                popup: 'animate__animated animate__headShake'
+                            }
+                        });
+                        return;
+                    }
+                    
                     // Preparar datos para el backend
                     const saleData = {
                         items: this.cart.map(item => ({
@@ -756,13 +868,10 @@
                         })),
                         payment_method: this.paymentMethod === 'tarjeta' ? 'tarjeta_debito' : this.paymentMethod,
                         customer_id: null, // Por ahora sin cliente
-                        tip_amount: this.tipAmount, // Agregar propina
+                        tip_amount: this.tipAmount,
+                        discount_percentage: this.discountPercent,
+                        discount_reason: this.discountReason || null,
                     };
-                    
-                    // Si hay propina, agregarla también como observación
-                    if (this.tipAmount > 0) {
-                        saleData.notes = `Propina: $${this.tipAmount.toLocaleString()}`;
-                    }
                     
                     // Mostrar loading
                     Swal.fire({

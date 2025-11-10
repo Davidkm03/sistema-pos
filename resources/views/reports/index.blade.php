@@ -80,6 +80,33 @@
                     'total_ingresos' => $group->sum('total_ingresos')
                 ];
             })->values();
+            
+        // Reportes de descuentos
+        $descuentosOtorgados = \Illuminate\Support\Facades\DB::table('sales')
+            ->select(
+                'users.name as user_name',
+                \Illuminate\Support\Facades\DB::raw('COUNT(sales.id) as total_descuentos'),
+                \Illuminate\Support\Facades\DB::raw('AVG(sales.discount_percentage) as promedio_descuento'),
+                \Illuminate\Support\Facades\DB::raw('SUM(sales.discount_amount) as total_descontado')
+            )
+            ->join('users', 'sales.user_id', '=', 'users.id')
+            ->where('sales.discount_percentage', '>', 0)
+            ->where('sales.status', '!=', 'cancelled')
+            ->groupBy('sales.user_id', 'users.name')
+            ->orderBy('total_descontado', 'desc')
+            ->get();
+            
+        $totalDescuentosOtorgados = \App\Models\Sale::where('discount_percentage', '>', 0)
+            ->where('status', '!=', 'cancelled')
+            ->count();
+            
+        $totalMontoDescontado = \App\Models\Sale::where('discount_percentage', '>', 0)
+            ->where('status', '!=', 'cancelled')
+            ->sum('discount_amount');
+            
+        $promedioDescuento = \App\Models\Sale::where('discount_percentage', '>', 0)
+            ->where('status', '!=', 'cancelled')
+            ->avg('discount_percentage');
     @endphp
 
     {{-- Header Modernizado --}}
@@ -477,6 +504,167 @@
                                 </div>
                                 <h4 class="text-lg font-black text-gray-900 mb-2">No hay datos disponibles</h4>
                                 <p class="text-gray-600 font-medium">No hay datos de ventas por usuario</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SECCIÓN 4 - Descuentos Otorgados -->
+            <div class="mb-8">
+                <div class="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-3xl shadow-2xl border-2 border-orange-100 overflow-hidden">
+                    <div class="p-8">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl shadow-xl flex items-center justify-center">
+                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold">Descuentos Otorgados</h3>
+                                <p class="text-sm text-gray-600">Análisis de descuentos aplicados</p>
+                            </div>
+                        </div>
+
+                        @if($totalDescuentosOtorgados > 0)
+                            <!-- Resumen de descuentos -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <div class="bg-white rounded-xl p-4 border-2 border-orange-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-600 font-medium">Total Descuentos</p>
+                                            <p class="text-2xl font-black text-gray-900">{{ number_format($totalDescuentosOtorgados) }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white rounded-xl p-4 border-2 border-red-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-600 font-medium">Monto Descontado</p>
+                                            <p class="text-2xl font-black text-red-600">${{ number_format($totalMontoDescontado, 0) }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white rounded-xl p-4 border-2 border-yellow-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-600 font-medium">Promedio</p>
+                                            <p class="text-2xl font-black text-yellow-600">{{ number_format($promedioDescuento, 1) }}%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tabla de descuentos por usuario -->
+                            <div class="bg-white rounded-2xl overflow-hidden border-2 border-orange-200 shadow-sm">
+                                <table class="min-w-full divide-y-2 divide-orange-100">
+                                    <thead>
+                                        <tr class="bg-gradient-to-r from-orange-50 to-yellow-50">
+                                            <th class="px-6 py-4 text-left">
+                                                <div class="flex items-center gap-2">
+                                                    <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                    </svg>
+                                                    <span class="text-sm font-black text-gray-900 uppercase tracking-wide">Usuario</span>
+                                                </div>
+                                            </th>
+                                            <th class="px-6 py-4 text-center">
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                                    </svg>
+                                                    <span class="text-sm font-black text-gray-900 uppercase tracking-wide">Descuentos</span>
+                                                </div>
+                                            </th>
+                                            <th class="px-6 py-4 text-center">
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                                    </svg>
+                                                    <span class="text-sm font-black text-gray-900 uppercase tracking-wide">% Promedio</span>
+                                                </div>
+                                            </th>
+                                            <th class="px-6 py-4 text-right">
+                                                <div class="flex items-center justify-end gap-2">
+                                                    <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    <span class="text-sm font-black text-gray-900 uppercase tracking-wide">Total Descontado</span>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-orange-50">
+                                        @foreach($descuentosOtorgados as $index => $descuento)
+                                            <tr class="hover:bg-orange-50 transition-colors group">
+                                                <td class="px-6 py-4">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-bold shadow-lg">
+                                                            {{ substr($descuento->user_name, 0, 1) }}
+                                                        </div>
+                                                        <div>
+                                                            <span class="font-bold text-gray-900">{{ $descuento->user_name }}</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 text-center">
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-orange-100 text-orange-700">
+                                                        {{ number_format($descuento->total_descuentos) }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 text-center">
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-yellow-100 text-yellow-700">
+                                                        {{ number_format($descuento->promedio_descuento, 1) }}%
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 text-right">
+                                                    <span class="font-black text-red-600 text-lg">
+                                                        ${{ number_format($descuento->total_descontado, 0) }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="bg-gradient-to-r from-orange-100 to-yellow-100 font-bold">
+                                            <td class="px-6 py-4" colspan="3">
+                                                <span class="text-gray-900 font-black text-lg">TOTAL GENERAL</span>
+                                            </td>
+                                            <td class="px-6 py-4 text-right">
+                                                <span class="text-red-700 font-black text-xl">
+                                                    ${{ number_format($totalMontoDescontado, 0) }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        @else
+                            <div class="bg-white rounded-2xl p-12 text-center border-2 border-orange-200">
+                                <div class="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-10 h-10 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="text-lg font-black text-gray-900 mb-2">No hay descuentos registrados</h4>
+                                <p class="text-gray-600 font-medium">Aún no se han otorgado descuentos en las ventas</p>
                             </div>
                         @endif
                     </div>

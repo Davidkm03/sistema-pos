@@ -52,6 +52,13 @@ class BusinessSettingsManager extends Component
     public $range_to;
     public $resolution_expiry;
 
+    // Propiedades de descuentos
+    public $max_discount_cashier = 15;
+    public $max_discount_seller = 10;
+    public $max_discount_admin = 100;
+    public $require_discount_reason = true;
+    public $require_reason_from = 5;
+
     // Control
     public $settings_id;
     public $existing_logo;
@@ -111,6 +118,13 @@ class BusinessSettingsManager extends Component
             $this->range_from = $settings->range_from;
             $this->range_to = $settings->range_to;
             $this->resolution_expiry = $settings->resolution_expiry;
+            
+            // Cargar configuración de descuentos
+            $this->max_discount_cashier = $settings->max_discount_cashier ?? 15;
+            $this->max_discount_seller = $settings->max_discount_seller ?? 10;
+            $this->max_discount_admin = $settings->max_discount_admin ?? 100;
+            $this->require_discount_reason = $settings->require_discount_reason ?? true;
+            $this->require_reason_from = $settings->require_reason_from ?? 5;
         } else {
             // Valores por defecto
             $this->business_name = 'Mi Tienda';
@@ -189,6 +203,13 @@ class BusinessSettingsManager extends Component
             'resolution_expiry' => $this->resolution_expiry,
             'tax_id_required' => $this->tax_id_required,
             'business_tax_regime' => $this->business_tax_regime,
+            
+            // Datos de descuentos
+            'max_discount_cashier' => $this->max_discount_cashier,
+            'max_discount_seller' => $this->max_discount_seller,
+            'max_discount_admin' => $this->max_discount_admin,
+            'require_discount_reason' => $this->require_discount_reason,
+            'require_reason_from' => $this->require_reason_from,
         ];
 
         // Manejar el logo
