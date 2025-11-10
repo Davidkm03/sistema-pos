@@ -50,6 +50,13 @@ class BusinessSetting extends Model
         'max_discount_admin',
         'require_discount_reason',
         'require_reason_from',
+        'smtp_host',
+        'smtp_port',
+        'smtp_username',
+        'smtp_password',
+        'smtp_encryption',
+        'smtp_from_address',
+        'smtp_from_name',
     ];
 
     protected $casts = [
