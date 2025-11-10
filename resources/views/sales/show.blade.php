@@ -208,7 +208,113 @@
                 <p class="text-blue-100 text-sm">
                     {{ $sale->items->sum('quantity') }} producto(s)
                 </p>
+                
+                <!-- Desglose de Totales -->
+                <div class="mt-4 pt-4 border-t border-blue-400 space-y-2 text-sm">
+                    <div class="flex justify-between text-blue-100">
+                        <span>Subtotal:</span>
+                        <span class="font-medium">${{ number_format((float) $sale->subtotal, 2) }}</span>
+                    </div>
+                    
+                    @if($sale->tax_amount > 0)
+                    <div class="flex justify-between text-blue-100">
+                        <span>IVA:</span>
+                        <span class="font-medium">${{ number_format((float) $sale->tax_amount, 2) }}</span>
+                    </div>
+                    @endif
+                    
+                    @if($sale->discount_amount > 0)
+                    <div class="flex justify-between text-yellow-200">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+                            </svg>
+                            Descuento:
+                        </span>
+                        <span class="font-medium">-${{ number_format((float) $sale->discount_amount, 2) }}</span>
+                    </div>
+                    @endif
+                    
+                    @if($sale->tip_amount > 0)
+                    <div class="flex justify-between text-green-200">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Propina:
+                        </span>
+                        <span class="font-medium">+${{ number_format((float) $sale->tip_amount, 2) }}</span>
+                    </div>
+                    @endif
+                </div>
             </div>
+
+            <!-- Detalles de Descuento y Propina -->
+            @if($sale->discount_amount > 0 || $sale->tip_amount > 0)
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path>
+                        </svg>
+                        Descuentos y Propinas
+                    </h3>
+                </div>
+                <div class="p-6 space-y-4">
+                    @if($sale->discount_amount > 0)
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3 flex-1">
+                                <h4 class="text-sm font-medium text-yellow-800">Descuento Aplicado</h4>
+                                <div class="mt-2 space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-yellow-700">Porcentaje:</span>
+                                        <span class="font-semibold text-yellow-900">{{ number_format((float) $sale->discount_percentage, 2) }}%</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-yellow-700">Monto:</span>
+                                        <span class="font-semibold text-yellow-900">${{ number_format((float) $sale->discount_amount, 2) }}</span>
+                                    </div>
+                                    @if($sale->discount_reason)
+                                    <div class="mt-2 pt-2 border-t border-yellow-200">
+                                        <p class="text-sm text-yellow-700 font-medium mb-1">Motivo:</p>
+                                        <p class="text-sm text-yellow-800 bg-white rounded px-2 py-1">{{ $sale->discount_reason }}</p>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    
+                    @if($sale->tip_amount > 0)
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3 flex-1">
+                                <h4 class="text-sm font-medium text-green-800">Propina Recibida</h4>
+                                <div class="mt-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-green-700">Monto:</span>
+                                        <span class="font-semibold text-green-900">${{ number_format((float) $sale->tip_amount, 2) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
 
             <!-- Información del Cliente -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
