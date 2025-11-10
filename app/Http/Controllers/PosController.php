@@ -8,6 +8,7 @@ use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Customer;
 use App\Models\TicketSetting;
+use App\Models\BusinessSetting;
 use App\Models\PaymentDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -284,8 +285,9 @@ class PosController extends Controller
                    ->findOrFail($id);
         
         $settings = TicketSetting::getSettings();
+        $businessSettings = BusinessSetting::current();
         
-        return view('sales.ticket', compact('sale', 'settings'));
+        return view('sales.ticket', compact('sale', 'settings', 'businessSettings'));
     }
     
     public function show($id)

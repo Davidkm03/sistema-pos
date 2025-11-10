@@ -191,22 +191,22 @@
             <div class="business-info" style="margin-bottom: 8px;">{{ $settings->ticket_header }}</div>
             @endif
             
-            <div class="business-name">{{ strtoupper($settings->business_name) }}</div>
+            <div class="business-name">{{ strtoupper($businessSettings->business_name ?? 'MI TIENDA') }}</div>
             
-            @if($settings->show_tax_id && $settings->tax_id)
-            <div class="business-info">RFC: {{ $settings->tax_id }}</div>
+            @if($settings->show_tax_id && $businessSettings->business_tax_id)
+            <div class="business-info">NIT/RFC: {{ $businessSettings->business_tax_id }}</div>
             @endif
             
-            @if($settings->show_phone && $settings->phone)
-            <div class="business-info">Tel: {{ $settings->phone }}</div>
+            @if($settings->show_phone && $businessSettings->business_phone)
+            <div class="business-info">Tel: {{ $businessSettings->business_phone }}</div>
             @endif
             
-            @if($settings->show_address && $settings->address)
-            <div class="business-info">{{ $settings->address }}</div>
+            @if($settings->show_address && $businessSettings->business_address)
+            <div class="business-info">{{ $businessSettings->business_address }}</div>
             @endif
             
-            @if($settings->show_email && $settings->email)
-            <div class="business-info">{{ $settings->email }}</div>
+            @if($settings->show_email && $businessSettings->business_email)
+            <div class="business-info">{{ $businessSettings->business_email }}</div>
             @endif
         </div>
 
@@ -214,7 +214,7 @@
         <div class="sale-info">
             <div class="sale-info-row">
                 <span><strong>Ticket:</strong></span>
-                <span>{{ $sale->receipt_number ?? $settings->receipt_prefix . '-' . str_pad($sale->id, $settings->receipt_padding, '0', STR_PAD_LEFT) }}</span>
+                <span>{{ $sale->receipt_number ?? ($businessSettings->receipt_prefix ?? 'RV') . '-' . str_pad($sale->id, 6, '0', STR_PAD_LEFT) }}</span>
             </div>
             <div class="sale-info-row">
                 <span><strong>Fecha:</strong></span>
@@ -272,13 +272,15 @@
         <div class="footer">
             @if($settings->ticket_footer)
             <div class="thank-you">{{ strtoupper($settings->ticket_footer) }}</div>
+            @elseif($businessSettings->receipt_footer)
+            <div class="thank-you">{{ strtoupper($businessSettings->receipt_footer) }}</div>
             @else
             <div class="thank-you">¡GRACIAS POR SU COMPRA!</div>
             @endif
             <div>Conserve este ticket</div>
             <div>como comprobante de compra</div>
             <br>
-            <div>{{ $settings->business_name }}</div>
+            <div>{{ $businessSettings->business_name ?? 'MI TIENDA' }}</div>
             <div>{{ now()->format('d/m/Y H:i:s') }}</div>
         </div>
     </div>

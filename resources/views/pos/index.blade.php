@@ -1125,6 +1125,7 @@
             if (!result.isConfirmed) return;
             
             // Preparar datos para enviar
+            const tipAmount = getTipAmount();
             const saleData = {
                 items: cart.map(item => ({
                     product_id: item.id,
@@ -1134,6 +1135,7 @@
                 payment_method: paymentMethod,
                 transfer_type: transferType,
                 transfer_reference: transferReference,
+                tip_amount: tipAmount,
                 customer_id: null // Por ahora sin cliente específico
             };
             
