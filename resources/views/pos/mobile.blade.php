@@ -252,22 +252,35 @@
                         <p class="text-indigo-600 font-semibold" x-text="'$' + item.price.toLocaleString()"></p>
                     </div>
                     
-                    <!-- Controles cantidad -->
+                    <!-- Controles cantidad mejorados -->
                     <div class="flex items-center gap-2">
                         <button @click="updateQuantity(index, item.quantity - 1)" 
                                 type="button"
                                 style="background-color: #F3F4F6 !important; opacity: 1 !important;"
-                                class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center touch-optimized active:bg-gray-200 border-0">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #374151 !important;">
+                                class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center touch-optimized active:bg-gray-200 border-0 transition-colors duration-150">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #374151 !important;">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
                             </svg>
                         </button>
-                        <span class="w-8 text-center font-semibold" x-text="item.quantity" style="color: #111827 !important;"></span>
+                        
+                        <!-- Input táctil para cantidad -->
+                        <input 
+                            type="number" 
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            min="1"
+                            :value="item.quantity"
+                            @input="updateQuantity(index, parseInt($event.target.value) || 1)"
+                            @focus="$event.target.select()"
+                            style="color: #111827 !important; background-color: #F9FAFB !important; border: 1px solid #E5E7EB !important;"
+                            class="w-16 h-10 text-center font-semibold rounded-lg border focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        />
+                        
                         <button @click="updateQuantity(index, item.quantity + 1)" 
                                 type="button"
                                 style="background-color: #4F46E5 !important; color: white !important; opacity: 1 !important;"
-                                class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center touch-optimized active:bg-indigo-700 border-0">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: white !important;">
+                                class="w-10 h-10 rounded-lg bg-indigo-600 text-white flex items-center justify-center touch-optimized active:bg-indigo-700 border-0 transition-colors duration-150">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: white !important;">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                             </svg>
                         </button>

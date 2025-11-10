@@ -39,14 +39,39 @@
                             
                             <!-- Cantidad -->
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <input 
-                                    type="number" 
-                                    min="1" 
-                                    max="{{ $item['stock'] }}"
-                                    wire:model.blur="cartItems.{{ $loop->index }}.quantity"
-                                    wire:change="updateQuantity({{ $loop->index }}, $event.target.value)"
-                                    class="w-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                />
+                                <div class="flex items-center gap-1">
+                                    <button 
+                                        wire:click="updateQuantity({{ $loop->index }}, {{ $item['quantity'] - 1 }})"
+                                        class="p-1 bg-gray-200 hover:bg-gray-300 rounded-md text-gray-700 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        {{ $item['quantity'] <= 1 ? 'disabled' : '' }}
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                        </svg>
+                                    </button>
+                                    
+                                    <input 
+                                        type="number" 
+                                        min="1" 
+                                        max="{{ $item['stock'] }}"
+                                        wire:model.blur="cartItems.{{ $loop->index }}.quantity"
+                                        wire:change="updateQuantity({{ $loop->index }}, $event.target.value)"
+                                        class="w-16 px-2 py-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    />
+                                    
+                                    <button 
+                                        wire:click="updateQuantity({{ $loop->index }}, {{ $item['quantity'] + 1 }})"
+                                        class="p-1 bg-blue-500 hover:bg-blue-600 rounded-md text-white transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        {{ $item['quantity'] >= $item['stock'] ? 'disabled' : '' }}
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                @if($item['quantity'] >= $item['stock'])
+                                <div class="text-xs text-red-500 mt-1">Stock máximo</div>
+                                @endif
                             </td>
                             
                             <!-- Subtotal -->
