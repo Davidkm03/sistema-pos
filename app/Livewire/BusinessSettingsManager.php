@@ -75,6 +75,11 @@ class BusinessSettingsManager extends Component
         'secondary_color' => 'required|string|regex:/^#[a-fA-F0-9]{6}$/',
         'timezone' => 'required|string|max:50',
         'currency' => 'required|string|size:3',
+        'max_discount_cashier' => 'nullable|numeric|min:0|max:100',
+        'max_discount_seller' => 'nullable|numeric|min:0|max:100',
+        'max_discount_admin' => 'nullable|numeric|min:0|max:100',
+        'require_discount_reason' => 'nullable|boolean',
+        'require_reason_from' => 'nullable|numeric|min:0|max:100',
     ];
 
     public function mount()
