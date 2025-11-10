@@ -32,6 +32,7 @@ class Sale extends Model
         'subtotal',
         'tax_amount',
         'retention_amount',
+        'tip_amount',
         'payment_method',
         'status',
         'document_type',
@@ -54,6 +55,7 @@ class Sale extends Model
         'subtotal' => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'retention_amount' => 'decimal:2',
+        'tip_amount' => 'decimal:2',
         'cancelled_at' => 'datetime',
     ];
 

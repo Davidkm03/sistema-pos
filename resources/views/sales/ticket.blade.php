@@ -251,12 +251,20 @@
         <div class="totals">
             <div class="total-row">
                 <span>Subtotal:</span>
-                <span>${{ number_format($sale->total, 2) }}</span>
+                <span>${{ number_format($sale->subtotal ?? $sale->total - ($sale->tip_amount ?? 0), 2) }}</span>
             </div>
+            @if($sale->tax_amount > 0)
             <div class="total-row">
-                <span>IVA (0%):</span>
-                <span>$0.00</span>
+                <span>IVA ({{ setting('tax_rate', 19) }}%):</span>
+                <span>${{ number_format($sale->tax_amount, 2) }}</span>
             </div>
+            @endif
+            @if($sale->tip_amount > 0)
+            <div class="total-row" style="color: #2563eb; font-weight: bold;">
+                <span>Propina:</span>
+                <span>${{ number_format($sale->tip_amount, 2) }}</span>
+            </div>
+            @endif
             <div class="total-row total-final">
                 <span>TOTAL:</span>
                 <span>${{ number_format($sale->total, 2) }}</span>

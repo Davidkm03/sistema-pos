@@ -199,6 +199,7 @@ class PosController extends Controller
                 'customer_id' => $request->customer_id,
                 'user_id' => Auth::id(),
                 'total' => 0,
+                'tip_amount' => $request->tip_amount ?? 0,
                 'payment_method' => $request->payment_method,
                 'status' => 'completada',
                 'document_type' => $documentType,

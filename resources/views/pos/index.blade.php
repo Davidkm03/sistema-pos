@@ -1089,7 +1089,13 @@
             const paymentMethod = document.getElementById('paymentMethod').value;
             const transferType = document.getElementById('transferType')?.value || null;
             const transferReference = document.getElementById('transferReference')?.value || null;
-            const total = getCartTotal();
+            
+            // Calcular subtotal, impuesto, propina y total
+            const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            const taxEnabled = {{ setting('tax_enabled', false) ? 'true' : 'false' }};
+            const tax = taxEnabled ? subtotal * {{ setting('tax_rate', 19) / 100 }} : 0;
+            const tipAmount = getTipAmount();
+            const total = subtotal + tax + tipAmount;
 
             // Nombre del método de pago para mostrar
             let paymentMethodName = 'Efectivo';
@@ -1103,10 +1109,31 @@
             const result = await Swal.fire({
                 title: '¿Procesar Venta?',
                 html: `
-                    <div class="text-left p-4">
+                    <div class="text-left p-4 space-y-2">
                         <p class="mb-2"><strong>Productos:</strong> ${cart.length}</p>
-                        <p class="mb-2"><strong>Total:</strong> <span class="text-green-600 text-xl font-bold">$${total.toFixed(2)}</span></p>
-                        <p class="mb-2"><strong>Método de pago:</strong> ${paymentMethodName}</p>
+                        <div class="border-t pt-2">
+                            <p class="flex justify-between mb-1">
+                                <span>Subtotal:</span>
+                                <span>$${subtotal.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span>
+                            </p>
+                            ${tax > 0 ? `
+                            <p class="flex justify-between mb-1">
+                                <span>IVA ({{ setting('tax_rate', 19) }}%):</span>
+                                <span>$${tax.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span>
+                            </p>
+                            ` : ''}
+                            ${tipAmount > 0 ? `
+                            <p class="flex justify-between mb-1 text-blue-600">
+                                <span><strong>Propina:</strong></span>
+                                <span><strong>$${tipAmount.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</strong></span>
+                            </p>
+                            ` : ''}
+                            <p class="flex justify-between mb-2 text-lg font-bold text-green-600 border-t pt-2">
+                                <span>TOTAL:</span>
+                                <span>$${total.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span>
+                            </p>
+                        </div>
+                        <p class="mb-2 border-t pt-2"><strong>Método de pago:</strong> ${paymentMethodName}</p>
                         ${transferReference ? `<p class="mb-2 text-sm"><strong>Ref:</strong> ${transferReference}</p>` : ''}
                     </div>
                 `,
