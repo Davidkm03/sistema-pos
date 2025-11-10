@@ -135,8 +135,8 @@ php artisan view:cache
 ## 🔍 Verificación
 
 ### Abrir en el navegador:
-- **Lista de cotizaciones**: https://sistemapos.paginaswebscolombia.com/cotizaciones
-- **Nueva cotización**: https://sistemapos.paginaswebscolombia.com/cotizaciones/create
+- **Lista de cotizaciones**: https://sistemapos.paginaswebscolombia.com/quotes
+- **Nueva cotización**: https://sistemapos.paginaswebscolombia.com/quotes/create
 
 ### Verificar que se vean:
 1. ✅ Botón "Cotizaciones" en el menú lateral
@@ -165,7 +165,7 @@ php artisan permission:cache-reset
 php artisan cache:clear
 ```
 
-### Si aparece error 500 al acceder a /cotizaciones:
+### Si aparece error 500 al acceder a /quotes:
 ```bash
 # Ver logs
 tail -50 storage/logs/laravel.log
