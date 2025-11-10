@@ -1,20 +1,29 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Nueva Cotización
-            </h2>
-            <a href="{{ route('quotes.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-lg font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 transition">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="font-bold text-xl text-gray-800">Nueva Cotización</h2>
+                    <p class="text-xs text-gray-500">Crea un nuevo presupuesto para tus clientes</p>
+                </div>
+            </div>
+            <a href="{{ route('quotes.index') }}" 
+               class="inline-flex items-center gap-2 px-4 py-2 bg-white border-2 border-gray-200 text-gray-600 rounded-xl font-semibold hover:bg-gray-50 hover:border-indigo-200 transition-all shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                Volver
+                <span class="hidden sm:inline">Volver</span>
             </a>
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-4 sm:py-8">
+        <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             @if(session('error'))
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
@@ -59,30 +68,58 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Columna Izquierda: Productos -->
                     <div class="lg:col-span-2">
-                        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Seleccionar Productos</h3>
-                            
-                            <!-- Búsqueda de productos -->
-                            <div class="mb-4">
-                                <input type="text" id="productSearch" 
-                                       placeholder="Buscar producto por nombre o código..." 
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl border-2 border-indigo-100 overflow-hidden">
+                            <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600">
+                                <div class="flex items-center gap-3 text-white">
+                                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold">Seleccionar Productos</h3>
+                                        <p class="text-xs text-indigo-100">Agrega productos a la cotización</p>
+                                    </div>
+                                </div>
                             </div>
+                            
+                            <div class="p-6">
+                                <!-- Búsqueda de productos -->
+                                <div class="mb-4">
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <input type="text" id="productSearch" 
+                                               placeholder="Buscar producto por nombre o código..." 
+                                               class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium transition-all">
+                                    </div>
+                                </div>
 
-                            <!-- Grid de productos -->
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-96 overflow-y-auto" id="productsGrid">
-                                @foreach($products as $product)
-                                <button type="button" 
-                                        class="product-card p-3 border-2 border-gray-200 rounded-lg hover:border-indigo-500 hover:shadow-md transition text-left"
-                                        data-id="{{ $product->id }}"
-                                        data-name="{{ $product->name }}"
-                                        data-price="{{ $product->price }}"
-                                        onclick="addToQuote(this)">
-                                    <div class="text-sm font-semibold text-gray-900 truncate">{{ $product->name }}</div>
-                                    <div class="text-xs text-gray-500 mt-1">Stock: {{ $product->stock }}</div>
-                                    <div class="text-sm font-bold text-indigo-600 mt-1">${{ number_format($product->price, 0) }}</div>
-                                </button>
-                                @endforeach
+                                <!-- Grid de productos -->
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-96 overflow-y-auto" id="productsGrid">
+                                    @foreach($products as $product)
+                                    <button type="button" 
+                                            class="product-card p-3 border-2 border-gray-200 rounded-xl hover:border-indigo-500 hover:shadow-lg hover:scale-105 transition-all duration-200 text-left bg-gradient-to-br from-white to-gray-50"
+                                            data-id="{{ $product->id }}"
+                                            data-name="{{ $product->name }}"
+                                            data-price="{{ $product->price }}"
+                                            onclick="addToQuote(this)">
+                                        <div class="text-sm font-bold text-gray-900 truncate mb-1">{{ $product->name }}</div>
+                                        <div class="flex items-center gap-1 text-xs text-gray-500 mb-2">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                            </svg>
+                                            Stock: {{ $product->stock }}
+                                        </div>
+                                        <div class="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                                            ${{ number_format($product->price, 0) }}
+                                        </div>
+                                    </button>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -90,75 +127,125 @@
                     <!-- Columna Derecha: Detalles de Cotización y Carrito -->
                     <div>
                         <!-- Detalles de la cotización -->
-                        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Detalles</h3>
-                            
-                            <div class="space-y-4">
-                                <div>
-                                    <div class="flex items-center justify-between mb-2">
-                                        <label class="block text-sm font-medium text-gray-700">Cliente (Opcional)</label>
-                                        <button type="button" onclick="openCustomerModal()" 
-                                                class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                            </svg>
-                                            Nuevo Cliente
-                                        </button>
+                        <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl border-2 border-indigo-100 overflow-hidden mb-6">
+                            <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600">
+                                <div class="flex items-center gap-3 text-white">
+                                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
                                     </div>
-                                    <select name="customer_id" id="customerSelect" class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                                        <option value="">Sin cliente</option>
-                                        @foreach($customers as $customer)
-                                        <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                                        @endforeach
-                                    </select>
+                                    <div>
+                                        <h3 class="text-lg font-bold">Detalles</h3>
+                                        <p class="text-xs text-indigo-100">Información de la cotización</p>
+                                    </div>
                                 </div>
+                            </div>
+                            
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <label class="block text-sm font-bold text-gray-700 flex items-center gap-1">
+                                                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                </svg>
+                                                Cliente (Opcional)
+                                            </label>
+                                            <button type="button" onclick="openCustomerModal()" 
+                                                    class="text-sm text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 hover:scale-105 transition-transform">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                                </svg>
+                                                Nuevo
+                                            </button>
+                                        </div>
+                                        <select name="customer_id" id="customerSelect" class="w-full rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 font-medium transition-all">
+                                            <option value="">Sin cliente</option>
+                                            @foreach($customers as $customer)
+                                            <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Válida Hasta (Opcional)</label>
-                                    <input type="date" name="valid_until" 
-                                           min="{{ now()->addDay()->format('Y-m-d') }}"
-                                           class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                                </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
+                                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                            Válida Hasta (Opcional)
+                                        </label>
+                                        <input type="date" name="valid_until" 
+                                               min="{{ now()->addDay()->format('Y-m-d') }}"
+                                               class="w-full rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 font-medium transition-all">
+                                    </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Notas/Observaciones</label>
-                                    <textarea name="notes" rows="3" 
-                                              class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-                                              placeholder="Condiciones, descuentos especiales, etc."></textarea>
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
+                                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                                            </svg>
+                                            Notas/Observaciones
+                                        </label>
+                                        <textarea name="notes" rows="3" 
+                                                  class="w-full rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 font-medium transition-all"
+                                                  placeholder="Condiciones, descuentos especiales, etc."></textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Carrito -->
-                        <div class="bg-white rounded-lg shadow-sm p-6 sticky top-6">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Items de Cotización</h3>
+                        <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl border-2 border-indigo-100 overflow-hidden sticky top-6">
+                            <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600">
+                                <div class="flex items-center gap-3 text-white">
+                                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold">Items de Cotización</h3>
+                                        <p class="text-xs text-indigo-100">Productos agregados</p>
+                                    </div>
+                                </div>
+                            </div>
                             
-                            <div id="quoteItems" class="space-y-3 mb-4 max-h-64 overflow-y-auto">
-                                <p class="text-sm text-gray-500 text-center py-4">No hay items agregados</p>
-                            </div>
+                            <div class="p-6">
+                                <div id="quoteItems" class="space-y-3 mb-4 max-h-64 overflow-y-auto">
+                                    <div class="text-center py-8">
+                                        <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center">
+                                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <p class="text-sm text-gray-500 font-medium">No hay items agregados</p>
+                                        <p class="text-xs text-gray-400 mt-1">Selecciona productos de la izquierda</p>
+                                    </div>
+                                </div>
 
-                            <!-- Resumen -->
-                            <div class="border-t-2 border-gray-200 pt-4 space-y-2">
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600">Subtotal:</span>
-                                    <span class="font-semibold" id="subtotalDisplay">$0</span>
+                                <!-- Resumen -->
+                                <div class="border-t-2 border-indigo-100 pt-4 space-y-3">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600 font-semibold">Subtotal:</span>
+                                        <span class="font-black text-gray-900" id="subtotalDisplay">$0</span>
+                                    </div>
+                                    @if(setting('tax_enabled', false))
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600 font-semibold">IVA ({{ setting('tax_rate', 19) }}%):</span>
+                                        <span class="font-black text-gray-900" id="taxDisplay">$0</span>
+                                    </div>
+                                    @endif
+                                    <div class="flex justify-between text-lg font-black border-t-2 border-indigo-100 pt-3">
+                                        <span class="text-gray-800">TOTAL:</span>
+                                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600" id="totalDisplay">$0</span>
+                                    </div>
                                 </div>
-                                @if(setting('tax_enabled', false))
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600">IVA ({{ setting('tax_rate', 19) }}%):</span>
-                                    <span class="font-semibold" id="taxDisplay">$0</span>
-                                </div>
-                                @endif
-                                <div class="flex justify-between text-lg font-bold border-t pt-2">
-                                    <span>TOTAL:</span>
-                                    <span class="text-indigo-600" id="totalDisplay">$0</span>
-                                </div>
-                            </div>
 
-                            <!-- Botones -->
-                            <div class="mt-6 space-y-2">
-                                <button type="submit" id="submitBtn"
-                                        class="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                <!-- Botones -->
+                                <div class="mt-6 space-y-3">
+                                    <button type="submit" id="submitBtn"
+                                            style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%) !important;"
+                                            class="w-full px-4 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-black hover:from-indigo-700 hover:to-purple-700 focus:ring-4 focus:ring-indigo-200 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
                                         disabled>
                                     Guardar Cotización
                                 </button>
