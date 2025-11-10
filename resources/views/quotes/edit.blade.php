@@ -15,15 +15,41 @@
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            @if(session('success'))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: '{{ session("success") }}',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp'
+                            }
+                        });
+                    });
+                </script>
+            @endif
+
             @if($errors->any())
-                <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg">
-                    <strong>Errores de validación:</strong>
-                    <ul class="list-disc list-inside mt-2">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Errores de validación',
+                            html: '<ul style="text-align: left; padding-left: 20px;">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
+                            confirmButtonColor: '#4F46E5',
+                            showClass: {
+                                popup: 'animate__animated animate__shakeX'
+                            }
+                        });
+                    });
+                </script>
             @endif
 
             <div class="bg-white rounded-lg shadow-sm p-6">
@@ -64,7 +90,7 @@
 
                         <div id="products-container" class="space-y-3">
                             @foreach($quote->items as $index => $item)
-                            <div class="product-row grid grid-cols-12 gap-3 items-end p-3 bg-gray-50 rounded-lg">
+                            <div class="product-row grid grid-cols-12 gap-3 items-end p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg shadow-sm border border-gray-200">
                                 <div class="col-span-5">
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Producto</label>
                                     <select name="items[{{ $index }}][product_id]" class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm product-select" required onchange="updatePrice(this)">
@@ -146,10 +172,19 @@
     <script>
         let productIndex = {{ count($quote->items) }};
 
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+        });
+
         function addProduct() {
             const container = document.getElementById('products-container');
             const row = document.createElement('div');
-            row.className = 'product-row grid grid-cols-12 gap-3 items-end p-3 bg-gray-50 rounded-lg';
+            row.className = 'product-row grid grid-cols-12 gap-3 items-end p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg shadow-sm border border-gray-200';
+            row.style.animation = 'fadeInDown 0.3s ease-out';
             row.innerHTML = `
                 <div class="col-span-5">
                     <label class="block text-xs font-medium text-gray-700 mb-1">Producto</label>
@@ -188,11 +223,50 @@
             `;
             container.appendChild(row);
             productIndex++;
+            
+            Toast.fire({
+                icon: 'success',
+                title: 'Línea agregada'
+            });
         }
 
         function removeProduct(button) {
-            button.closest('.product-row').remove();
-            calculateTotals();
+            const row = button.closest('.product-row');
+            const productRows = document.querySelectorAll('.product-row');
+            
+            if (productRows.length === 1) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No se puede eliminar',
+                    text: 'Debe haber al menos un producto',
+                    confirmButtonColor: '#4F46E5'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Eliminar línea?',
+                text: "Esta acción no se puede deshacer",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    row.style.animation = 'fadeOutUp 0.3s ease-out';
+                    setTimeout(() => {
+                        row.remove();
+                        calculateTotals();
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Línea eliminada'
+                        });
+                    }, 300);
+                }
+            });
         }
 
         function updatePrice(select) {
@@ -228,6 +302,41 @@
             document.getElementById('tax-display').textContent = '$' + Math.round(tax).toLocaleString('es-CO');
             document.getElementById('total-display').textContent = '$' + Math.round(total).toLocaleString('es-CO');
         }
+
+        // Form submission con validación
+        document.getElementById('quoteForm').addEventListener('submit', function(e) {
+            const productRows = document.querySelectorAll('.product-row');
+            
+            if (productRows.length === 0) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Debe agregar al menos un producto',
+                    confirmButtonColor: '#4F46E5'
+                });
+                return false;
+            }
+
+            let hasEmptyProducts = false;
+            productRows.forEach(row => {
+                const productSelect = row.querySelector('.product-select');
+                if (!productSelect.value) {
+                    hasEmptyProducts = true;
+                }
+            });
+
+            if (hasEmptyProducts) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Debe seleccionar un producto en todas las líneas',
+                    confirmButtonColor: '#4F46E5'
+                });
+                return false;
+            }
+        });
 
         // Calcular totales al cargar
         document.addEventListener('DOMContentLoaded', function() {
