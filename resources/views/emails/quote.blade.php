@@ -1,9 +1,13 @@
 <x-mail::message>
 # Cotización #{{ $quote->quote_number }}
 
-Estimado/a {{ $quote->customer ? $quote->customer->name : 'Cliente' }},
+@if($quote->customer)
+Estimado/a **{{ $quote->customer->name }}**,
+@else
+Estimado/a Cliente,
+@endif
 
-Nos complace enviarle la siguiente cotización:
+Nos complace enviarle la siguiente cotización desde **{{ $businessSettings->business_name }}**:
 
 ---
 
@@ -48,23 +52,19 @@ Nos complace enviarle la siguiente cotización:
 
 ---
 
-<x-mail::button :url="route('quotes.show', $quote->id)" color="success">
-Ver Cotización Completa
-</x-mail::button>
-
 Si tiene alguna pregunta o desea proceder con esta cotización, no dude en contactarnos.
 
-Saludos cordiales,
+**Información de contacto:**
 
-**{{ $businessSettings->business_name }}**  
-@if($businessSettings->business_phone)
-📞 {{ $businessSettings->business_phone }}  
-@endif
-@if($businessSettings->business_email)
-✉️ {{ $businessSettings->business_email }}  
-@endif
+📞 **Teléfono:** {{ $businessSettings->business_phone ?? 'No especificado' }}  
+✉️ **Email:** {{ $businessSettings->business_email ?? 'No especificado' }}  
 @if($businessSettings->business_address)
-📍 {{ $businessSettings->business_address }}
+📍 **Dirección:** {{ $businessSettings->business_address }}
 @endif
+
+---
+
+Saludos cordiales,  
+**{{ $businessSettings->business_name }}**
 
 </x-mail::message>
