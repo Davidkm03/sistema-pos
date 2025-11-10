@@ -35,6 +35,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('products.index');
     });
     
+    // Rutas de Categorías - Requiere permiso manage-settings
+    Route::middleware(['permission:manage-settings'])->group(function () {
+        Route::get('/categorias', function () {
+            return view('categories.index');
+        })->name('categories.index');
+    });
+    
     // Rutas de Inventario - Requiere permiso view-inventory
     Route::middleware(['permission:view-inventory'])->group(function () {
         Route::get('/inventario', function () {
