@@ -251,7 +251,7 @@
         <div class="totals">
             <div class="total-row">
                 <span>Subtotal:</span>
-                <span>${{ number_format($sale->subtotal ?? $sale->total - ($sale->tip_amount ?? 0), 2) }}</span>
+                <span>${{ number_format($sale->subtotal ?? $sale->total - ($sale->tip_amount ?? 0) + ($sale->discount_amount ?? 0), 2) }}</span>
             </div>
             @if($sale->tax_amount > 0)
             <div class="total-row">
@@ -259,10 +259,16 @@
                 <span>${{ number_format($sale->tax_amount, 2) }}</span>
             </div>
             @endif
+            @if($sale->discount_amount > 0)
+            <div class="total-row" style="color: #f97316; font-weight: bold;">
+                <span>Descuento ({{ $sale->discount_percentage }}%):</span>
+                <span>-${{ number_format($sale->discount_amount, 2) }}</span>
+            </div>
+            @endif
             @if($sale->tip_amount > 0)
             <div class="total-row" style="color: #2563eb; font-weight: bold;">
                 <span>Propina:</span>
-                <span>${{ number_format($sale->tip_amount, 2) }}</span>
+                <span>+${{ number_format($sale->tip_amount, 2) }}</span>
             </div>
             @endif
             <div class="total-row total-final">
@@ -275,6 +281,14 @@
         <div class="payment-method">
             <strong>MÉTODO DE PAGO: {{ strtoupper($sale->payment_method) }}</strong>
         </div>
+
+        @if($sale->discount_reason)
+        <!-- Razón del descuento -->
+        <div style="text-align: center; padding: 5px; font-size: 10px; border-top: 1px dashed #000; border-bottom: 1px dashed #000; margin-bottom: 10px;">
+            <strong>Razón del descuento:</strong><br>
+            {{ $sale->discount_reason }}
+        </div>
+        @endif
 
         <!-- Pie del ticket -->
         <div class="footer">

@@ -1274,12 +1274,28 @@
             const transferType = document.getElementById('transferType')?.value || null;
             const transferReference = document.getElementById('transferReference')?.value || null;
             
-            // Calcular subtotal, impuesto, propina y total
+            // Calcular subtotal, impuesto, descuento, propina y total
             const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
             const taxEnabled = {{ setting('tax_enabled', false) ? 'true' : 'false' }};
             const tax = taxEnabled ? subtotal * {{ setting('tax_rate', 19) / 100 }} : 0;
+            const discountAmount = getDiscountAmount();
+            const discountPercent = getDiscountPercent();
             const tipAmount = getTipAmount();
-            const total = subtotal + tax + tipAmount;
+            const total = subtotal + tax - discountAmount + tipAmount;
+
+            // Validar razón de descuento si es requerida
+            if (discountPercent >= requireReasonFrom) {
+                const discountReason = document.getElementById('discountReason').value.trim();
+                if (!discountReason) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Razón requerida',
+                        text: `Debes proporcionar una razón para descuentos del ${requireReasonFrom}% o más`,
+                        confirmButtonColor: '#EF4444'
+                    });
+                    return;
+                }
+            }
 
             // Nombre del método de pago para mostrar
             let paymentMethodName = 'Efectivo';
@@ -1306,10 +1322,16 @@
                                 <span>$${tax.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span>
                             </p>
                             ` : ''}
+                            ${discountAmount > 0 ? `
+                            <p class="flex justify-between mb-1 text-orange-600">
+                                <span><strong>Descuento (${discountPercent}%):</strong></span>
+                                <span><strong>-$${discountAmount.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</strong></span>
+                            </p>
+                            ` : ''}
                             ${tipAmount > 0 ? `
                             <p class="flex justify-between mb-1 text-blue-600">
                                 <span><strong>Propina:</strong></span>
-                                <span><strong>$${tipAmount.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</strong></span>
+                                <span><strong>+$${tipAmount.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</strong></span>
                             </p>
                             ` : ''}
                             <p class="flex justify-between mb-2 text-lg font-bold text-green-600 border-t pt-2">
@@ -1336,7 +1358,7 @@
             if (!result.isConfirmed) return;
             
             // Preparar datos para enviar
-            const tipAmount = getTipAmount();
+            const discountReason = document.getElementById('discountReason')?.value || null;
             const saleData = {
                 items: cart.map(item => ({
                     product_id: item.id,
@@ -1347,6 +1369,8 @@
                 transfer_type: transferType,
                 transfer_reference: transferReference,
                 tip_amount: tipAmount,
+                discount_percentage: discountPercent,
+                discount_reason: discountReason,
                 customer_id: null // Por ahora sin cliente específico
             };
             
