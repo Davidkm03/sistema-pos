@@ -83,6 +83,7 @@ class QuoteController extends Controller
 
             // Crear cotización
             $quote = Quote::create([
+                'empresa_id' => Auth::user()->empresa_id,
                 'quote_number' => Quote::generateQuoteNumber(),
                 'customer_id' => $request->customer_id,
                 'user_id' => Auth::id(),
@@ -241,28 +242,36 @@ class QuoteController extends Controller
         try {
             // Crear venta
             $sale = Sale::create([
+                'empresa_id' => Auth::user()->empresa_id,
                 'user_id' => Auth::id(),
                 'customer_id' => $quote->customer_id,
                 'subtotal' => $quote->subtotal,
-                'tax' => $quote->tax,
-                'discount' => $quote->discount,
+                'tax_amount' => $quote->tax,
+                'discount_amount' => $quote->discount,
                 'total' => $quote->total,
                 'payment_method' => 'efectivo', // Valor por defecto
-                'status' => 'completed'
+                'status' => 'completada',
+                'document_type' => 'receipt',
+                'receipt_number' => Sale::getNextReceiptNumber(),
             ]);
 
             // Crear items y descontar inventario
             foreach ($quote->items as $quoteItem) {
+                $product = Product::find($quoteItem->product_id);
+                
                 SaleItem::create([
                     'sale_id' => $sale->id,
                     'product_id' => $quoteItem->product_id,
                     'quantity' => $quoteItem->quantity,
+                    'unit_price' => $product->getPriceWithoutTax(),
                     'price' => $quoteItem->price,
-                    'subtotal' => $quoteItem->subtotal
+                    'tax_rate' => $product->getEffectiveTaxRate(),
+                    'tax_amount' => calculate_tax($quoteItem->subtotal, $product->getEffectiveTaxRate()),
+                    'subtotal' => $quoteItem->subtotal,
+                    'total' => $quoteItem->subtotal + calculate_tax($quoteItem->subtotal, $product->getEffectiveTaxRate()),
                 ]);
 
                 // Descontar inventario
-                $product = Product::find($quoteItem->product_id);
                 $product->decrement('stock', $quoteItem->quantity);
             }
 

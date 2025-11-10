@@ -98,6 +98,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             $fechaDesde = request('fecha_desde');
             $fechaHasta = request('fecha_hasta');
             
+            // Sale ya tiene EmpresaScope aplicado, filtra automáticamente por empresa_id
             $ventas = \App\Models\Sale::whereBetween('created_at', [
                 $fechaDesde . ' 00:00:00',
                 $fechaHasta . ' 23:59:59'
