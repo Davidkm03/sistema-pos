@@ -18,6 +18,7 @@ class UserManager extends Component
     public $password;
     public $password_confirmation;
     public $role_id;
+    public $empresa_id;
     public $editingId = null;
     public $search = '';
 
@@ -32,6 +33,7 @@ class UserManager extends Component
             'name' => 'required|min:3|max:200',
             'email' => 'required|email|unique:users,email',
             'role_id' => 'required|exists:roles,id',
+            'empresa_id' => 'required|exists:empresas,id',
         ];
 
         if ($this->editingId) {
@@ -57,6 +59,7 @@ class UserManager extends Component
                 $user = User::findOrFail($this->editingId);
                 $user->name = $this->name;
                 $user->email = $this->email;
+                $user->empresa_id = $this->empresa_id;
                 
                 // Only update password if provided
                 if ($this->password) {
@@ -76,6 +79,7 @@ class UserManager extends Component
                     'name' => $this->name,
                     'email' => $this->email,
                     'password' => Hash::make($this->password),
+                    'empresa_id' => $this->empresa_id,
                 ]);
                 
                 // Assign role
@@ -102,6 +106,7 @@ class UserManager extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->role_id = $user->roles->first()?->id;
+        $this->empresa_id = $user->empresa_id;
         // Don't load password
     }
 
@@ -137,6 +142,7 @@ class UserManager extends Component
             'password',
             'password_confirmation',
             'role_id',
+            'empresa_id',
             'editingId'
         ]);
         
@@ -157,7 +163,7 @@ class UserManager extends Component
     public function render()
     {
         // Build query for users
-        $query = User::with('roles');
+        $query = User::with('roles', 'empresa');
 
         // Apply search filter if search term exists
         if ($this->search) {
@@ -172,10 +178,14 @@ class UserManager extends Component
 
         // Get all roles for the form dropdown
         $roles = Role::all();
+        
+        // Get all empresas for the form dropdown
+        $empresas = \App\Models\Empresa::orderBy('nombre')->get();
 
         return view('livewire.user-manager', [
             'users' => $users,
             'roles' => $roles,
+            'empresas' => $empresas,
         ]);
     }
 }

@@ -60,15 +60,15 @@ class RolesAndPermissionsSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Crear rol Admin con todos los permisos
-        $adminRole = Role::create(['name' => 'Admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
         $adminRole->givePermissionTo(Permission::all());
 
         // Crear rol Supervisor
-        $supervisorRole = Role::create(['name' => 'Supervisor']);
+        $supervisorRole = Role::firstOrCreate(['name' => 'Supervisor']);
         $supervisorRole->givePermissionTo([
             'access-pos',
             'process-sales',
@@ -87,7 +87,7 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
 
         // Crear rol Cajero
-        $cajeroRole = Role::create(['name' => 'Cajero']);
+        $cajeroRole = Role::firstOrCreate(['name' => 'Cajero']);
         $cajeroRole->givePermissionTo([
             'access-pos',
             'process-sales',

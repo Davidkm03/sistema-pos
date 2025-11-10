@@ -72,6 +72,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         Route::get('/quotes/{quote}/print', [\App\Http\Controllers\QuoteController::class, 'print'])
             ->name('quotes.print');
+        
+        Route::get('/quotes/{quote}/print-pos', [\App\Http\Controllers\QuoteController::class, 'printPos'])
+            ->name('quotes.print-pos');
     });
     
     // Rutas de Clientes - Para crear desde cotizaciones
@@ -122,8 +125,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return view('settings.business');
     })->name('settings.business');
     
-    // Rutas de Gestión de Usuarios - Solo Admin
-    Route::middleware(['role:Admin'])->group(function () {
+    // Rutas de Gestión de Usuarios - Solo Admin y Super Admin
+    Route::middleware(['role:Admin|super-admin'])->group(function () {
         Route::get('/usuarios', function () {
             return view('users.index');
         })->name('users.index');
@@ -136,7 +139,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/roles/{role}', [App\Http\Controllers\RolePermissionController::class, 'update'])->name('roles.update');
         Route::post('/roles', [App\Http\Controllers\RolePermissionController::class, 'store'])->name('roles.store');
         Route::delete('/roles/{role}', [App\Http\Controllers\RolePermissionController::class, 'destroy'])->name('roles.destroy');
+        
+        // Gestión de Empresas
+        Route::resource('empresas', App\Http\Controllers\EmpresaController::class);
     });
+    
+    // Ruta de debug para verificar roles del usuario actual
+    Route::get('/debug-roles', function() {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'No autenticado']);
+        }
+        return response()->json([
+            'user' => $user->name,
+            'email' => $user->email,
+            'roles' => $user->getRoleNames(),
+            'all_permissions' => $user->getAllPermissions()->pluck('name'),
+            'has_super_admin_role' => $user->hasRole('super-admin'),
+        ]);
+    })->name('debug.roles');
 });
 
 require __DIR__.'/auth.php';

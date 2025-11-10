@@ -5,27 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cotización {{ $quote->quote_number }}</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        @media print {
-            @page {
-                margin: 1cm;
-            }
-            body {
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
-            }
-            .no-print {
-                display: none !important;
-            }
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             font-size: 12px;
             line-height: 1.4;
             color: #333;
@@ -33,55 +16,73 @@
             padding: 20px;
         }
 
+        @media print {
+            @page { margin: 1cm; }
+            body {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+                background: #fff;
+                padding: 0;
+            }
+            .no-print { display: none !important; }
+            .quote-document { box-shadow: none !important; margin: 0 !important; }
+            .items-table thead { display: table-header-group; }
+            .items-table tfoot { display: table-footer-group; }
+        }
+
         .quote-document {
+            position: relative;
             max-width: 800px;
             margin: 0 auto;
-            background: white;
+            background: #fff;
             padding: 40px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0,0,0,.1);
         }
 
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: start;
+            align-items: flex-start;
+            gap: 16px;
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 3px solid #4F46E5;
         }
 
-        .business-info {
-            flex: 1;
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .brand img {
+            width: 64px; height: 64px; object-fit: contain;
         }
 
+        .business-info { flex: 1; }
         .business-name {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             color: #4F46E5;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
-
         .business-details {
             font-size: 11px;
             color: #666;
             line-height: 1.6;
         }
 
-        .quote-info {
-            text-align: right;
+        .quote-info { text-align: right; }
+        .quote-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
         }
-
         .quote-number {
             font-size: 20px;
             font-weight: bold;
             color: #333;
-            margin-bottom: 5px;
-        }
-
-        .quote-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .status-badge {
@@ -92,11 +93,10 @@
             font-weight: bold;
             text-transform: uppercase;
         }
-
-        .status-pendiente { background: #FEF3C7; color: #92400E; }
-        .status-aprobada { background: #D1FAE5; color: #065F46; }
-        .status-rechazada { background: #FEE2E2; color: #991B1B; }
-        .status-convertida { background: #DBEAFE; color: #1E40AF; }
+        .status-pendiente { background:#FEF3C7; color:#92400E; }
+        .status-aprobada  { background:#D1FAE5; color:#065F46; }
+        .status-rechazada { background:#FEE2E2; color:#991B1B; }
+        .status-convertida{ background:#DBEAFE; color:#1E40AF; }
 
         .parties {
             display: grid;
@@ -104,14 +104,12 @@
             gap: 20px;
             margin-bottom: 30px;
         }
-
         .party-box {
             padding: 15px;
             background: #F9FAFB;
             border-radius: 8px;
             border: 1px solid #E5E7EB;
         }
-
         .party-title {
             font-size: 13px;
             font-weight: bold;
@@ -119,7 +117,6 @@
             margin-bottom: 8px;
             text-transform: uppercase;
         }
-
         .party-details {
             font-size: 12px;
             color: #333;
@@ -128,14 +125,10 @@
 
         .items-table {
             width: 100%;
-            margin-bottom: 20px;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
-
-        .items-table thead {
-            background: #F3F4F6;
-        }
-
+        .items-table thead { background:#F3F4F6; }
         .items-table th {
             padding: 10px;
             text-align: left;
@@ -145,12 +138,9 @@
             text-transform: uppercase;
             border-bottom: 2px solid #D1D5DB;
         }
-
         .items-table th:nth-child(2),
         .items-table th:nth-child(3),
-        .items-table th:nth-child(4) {
-            text-align: right;
-        }
+        .items-table th:nth-child(4) { text-align: right; }
 
         .items-table td {
             padding: 12px 10px;
@@ -158,42 +148,22 @@
             font-size: 12px;
             color: #1F2937;
         }
-
         .items-table td:nth-child(2),
         .items-table td:nth-child(3),
-        .items-table td:nth-child(4) {
-            text-align: right;
-        }
+        .items-table td:nth-child(4) { text-align: right; }
 
-        .totals-section {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
+        /* Evitar cortar filas entre páginas */
+        .items-table tr, .items-table td, .items-table th { page-break-inside: avoid; }
 
-        .totals {
-            width: 300px;
-        }
-
+        .totals-section { display: flex; justify-content: flex-end; margin-top: 20px; }
+        .totals { width: 320px; }
         .total-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            font-size: 12px;
+            display:flex; justify-content:space-between; padding:8px 0; font-size:12px;
         }
-
-        .total-row.subtotal,
-        .total-row.tax,
-        .total-row.discount {
-            border-bottom: 1px solid #E5E7EB;
-        }
-
+        .total-row.subtotal, .total-row.tax, .total-row.discount { border-bottom:1px solid #E5E7EB; }
         .total-row.final {
-            font-size: 16px;
-            font-weight: bold;
-            color: #4F46E5;
-            padding-top: 12px;
-            border-top: 2px solid #4F46E5;
+            font-size: 16px; font-weight: bold; color:#4F46E5;
+            padding-top:12px; border-top:2px solid #4F46E5;
         }
 
         .notes-section {
@@ -203,100 +173,70 @@
             border-left: 4px solid #F59E0B;
             border-radius: 4px;
         }
-
-        .notes-title {
-            font-size: 12px;
-            font-weight: bold;
-            color: #92400E;
-            margin-bottom: 8px;
-        }
-
-        .notes-content {
-            font-size: 11px;
-            color: #78350F;
-            white-space: pre-line;
-        }
+        .notes-title { font-size:12px; font-weight:bold; color:#92400E; margin-bottom:8px; }
+        .notes-content { font-size:11px; color:#78350F; white-space: pre-line; }
 
         .footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #E5E7EB;
-            text-align: center;
-            font-size: 10px;
-            color: #6B7280;
+            margin-top: 40px; padding-top: 20px; border-top:1px solid #E5E7EB;
+            text-align: center; font-size:10px; color:#6B7280;
         }
 
         .print-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background: #4F46E5;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: all 0.2s;
+            position: fixed; top: 20px; right: 20px;
+            padding: 12px 24px; background:#4F46E5; color:#fff; border:none; border-radius:8px;
+            font-size:14px; font-weight:bold; cursor:pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,.1); transition: all .2s;
         }
-
-        .print-button:hover {
-            background: #4338CA;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
-        }
+        .print-button:hover { background:#4338CA; transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0,0,0,.15); }
 
         .watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            position:absolute; top:50%; left:50%;
             transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 80px;
-            font-weight: bold;
-            color: rgba(239, 68, 68, 0.1);
-            pointer-events: none;
-            z-index: 0;
+            font-size:80px; font-weight:bold; color: rgba(239,68,68,.1);
+            pointer-events:none; z-index:0; text-transform: uppercase;
         }
     </style>
 </head>
 <body>
     <button class="print-button no-print" onclick="window.print()">
-        <svg style="display: inline-block; width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg style="display:inline-block;width:20px;height:20px;margin-right:8px;vertical-align:middle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
         </svg>
         Imprimir Cotización
     </button>
 
-    <div class="quote-document" style="position: relative;">
+    @php
+        $cur = setting('currency_symbol', '$');
+    @endphp
+
+    <div class="quote-document">
         @if($quote->status === 'rechazada')
-        <div class="watermark">RECHAZADA</div>
+            <div class="watermark">Rechazada</div>
         @elseif($quote->status === 'convertida')
-        <div class="watermark" style="color: rgba(59, 130, 246, 0.1);">CONVERTIDA</div>
+            <div class="watermark" style="color: rgba(59,130,246,.12);">Convertida</div>
         @elseif($quote->valid_until && $quote->isExpired())
-        <div class="watermark" style="color: rgba(239, 68, 68, 0.1);">VENCIDA</div>
+            <div class="watermark" style="color: rgba(239,68,68,.12);">Vencida</div>
         @endif
 
         <!-- Header -->
         <div class="header">
             <div class="business-info">
-                <div class="business-name">{{ setting('business_name', 'Mi Negocio') }}</div>
-                <div class="business-details">
-                    @if(setting('business_address'))
-                    Dirección: {{ setting('business_address') }}<br>
+                <div class="brand">
+                    @if(setting('business_logo_url'))
+                        <img src="{{ setting('business_logo_url') }}" alt="Logo">
                     @endif
-                    @if(setting('business_phone'))
-                    Teléfono: {{ setting('business_phone') }}<br>
-                    @endif
-                    @if(setting('business_email'))
-                    Email: {{ setting('business_email') }}<br>
-                    @endif
-                    @if(setting('business_nit'))
-                    NIT: {{ setting('business_nit') }}
-                    @endif
+                    <div>
+                        <div class="business-name">{{ setting('business_name', 'Mi Negocio') }}</div>
+                        <div class="business-details">
+                            @if(setting('business_address')) Dirección: {{ setting('business_address') }}<br>@endif
+                            @if(setting('business_phone'))   Teléfono: {{ setting('business_phone') }}<br>@endif
+                            @if(setting('business_email'))   Email: {{ setting('business_email') }}<br>@endif
+                            @if(setting('business_nit'))     NIT: {{ setting('business_nit') }}@endif
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div class="quote-info">
                 <div class="quote-label">COTIZACIÓN</div>
                 <div class="quote-number">{{ $quote->quote_number }}</div>
@@ -306,22 +246,16 @@
             </div>
         </div>
 
-        <!-- Parties (Cliente y Vendedor) -->
+        <!-- Parties -->
         <div class="parties">
             <div class="party-box">
                 <div class="party-title">Cliente</div>
                 <div class="party-details">
                     @if($quote->customer)
                         <strong>{{ $quote->customer->name }}</strong><br>
-                        @if($quote->customer->document)
-                        Doc: {{ $quote->customer->document }}<br>
-                        @endif
-                        @if($quote->customer->email)
-                        Email: {{ $quote->customer->email }}<br>
-                        @endif
-                        @if($quote->customer->phone)
-                        Tel: {{ $quote->customer->phone }}
-                        @endif
+                        @if($quote->customer->document) Doc: {{ $quote->customer->document }}<br>@endif
+                        @if($quote->customer->email)    Email: {{ $quote->customer->email }}<br>@endif
+                        @if($quote->customer->phone)    Tel: {{ $quote->customer->phone }}@endif
                     @else
                         Cliente general
                     @endif
@@ -333,20 +267,17 @@
                 <div class="party-details">
                     <strong>Fecha:</strong> {{ $quote->created_at->format('d/m/Y') }}<br>
                     @if($quote->valid_until)
-                    <strong>Válida hasta:</strong> 
-                    <span style="{{ $quote->valid_until && $quote->isExpired() ? 'color: #DC2626; font-weight: bold;' : '' }}">
-                        {{ $quote->valid_until->format('d/m/Y') }}
-                        @if($quote->isExpired())
-                        (Vencida)
-                        @endif
-                    </span><br>
+                        <strong>Válida hasta:</strong>
+                        <span style="{{ $quote->isExpired() ? 'color:#DC2626;font-weight:bold;' : '' }}">
+                            {{ $quote->valid_until->format('d/m/Y') }} @if($quote->isExpired())(Vencida)@endif
+                        </span><br>
                     @endif
-                    <strong>Vendedor:</strong> {{ $quote->user->name }}
+                    <strong>Vendedor:</strong> {{ optional($quote->user)->name ?? '—' }}
                 </div>
             </div>
         </div>
 
-        <!-- Items Table -->
+        <!-- Items -->
         <table class="items-table">
             <thead>
                 <tr>
@@ -358,66 +289,66 @@
             </thead>
             <tbody>
                 @foreach($quote->items as $item)
-                <tr>
-                    <td>{{ $item->product->name ?? 'Producto eliminado' }}</td>
-                    <td>{{ $item->quantity }}</td>
-                    <td>${{ number_format($item->price, 0) }}</td>
-                    <td><strong>${{ number_format($item->subtotal, 0) }}</strong></td>
-                </tr>
+                    <tr>
+                        <td>{{ $item->product->name ?? 'Producto eliminado' }}</td>
+                        <td>{{ $item->quantity }}</td>
+                        <td>{{ $cur }}{{ number_format($item->price, 0) }}</td>
+                        <td><strong>{{ $cur }}{{ number_format($item->subtotal, 0) }}</strong></td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>
 
-        <!-- Totals -->
+        <!-- Totales -->
         <div class="totals-section">
             <div class="totals">
                 <div class="total-row subtotal">
                     <span>Subtotal:</span>
-                    <span>${{ number_format($quote->subtotal, 0) }}</span>
+                    <span>{{ $cur }}{{ number_format($quote->subtotal, 0) }}</span>
                 </div>
                 @if($quote->tax > 0)
-                <div class="total-row tax">
-                    <span>IVA:</span>
-                    <span>${{ number_format($quote->tax, 0) }}</span>
-                </div>
+                    <div class="total-row tax">
+                        <span>IVA:</span>
+                        <span>{{ $cur }}{{ number_format($quote->tax, 0) }}</span>
+                    </div>
                 @endif
                 @if($quote->discount > 0)
-                <div class="total-row discount">
-                    <span>Descuento:</span>
-                    <span style="color: #DC2626;">-${{ number_format($quote->discount, 0) }}</span>
-                </div>
+                    <div class="total-row discount">
+                        <span>Descuento:</span>
+                        <span style="color:#DC2626;">-{{ $cur }}{{ number_format($quote->discount, 0) }}</span>
+                    </div>
                 @endif
                 <div class="total-row final">
                     <span>TOTAL:</span>
-                    <span>${{ number_format($quote->total, 0) }}</span>
+                    <span>{{ $cur }}{{ number_format($quote->total, 0) }}</span>
                 </div>
             </div>
         </div>
 
-        <!-- Notes -->
+        <!-- Notas -->
         @if($quote->notes)
-        <div class="notes-section">
-            <div class="notes-title">Notas / Observaciones</div>
-            <div class="notes-content">{{ $quote->notes }}</div>
-        </div>
+            <div class="notes-section">
+                <div class="notes-title">Notas / Observaciones</div>
+                <div class="notes-content">{{ $quote->notes }}</div>
+            </div>
         @endif
 
-        <!-- Conversion Info -->
+        <!-- Conversión -->
         @if($quote->status === 'convertida' && $quote->convertedSale)
-        <div class="notes-section" style="background: #DBEAFE; border-left-color: #3B82F6;">
-            <div class="notes-title" style="color: #1E40AF;">Información de Conversión</div>
-            <div class="notes-content" style="color: #1E3A8A;">
-                Esta cotización fue convertida a venta el {{ $quote->converted_at->format('d/m/Y H:i') }}<br>
-                Venta #{{ $quote->converted_to_sale_id }}
+            <div class="notes-section" style="background:#DBEAFE;border-left-color:#3B82F6;">
+                <div class="notes-title" style="color:#1E40AF;">Información de Conversión</div>
+                <div class="notes-content" style="color:#1E3A8A;">
+                    Esta cotización fue convertida a venta el {{ optional($quote->converted_at)->format('d/m/Y H:i') }}<br>
+                    Venta #{{ $quote->converted_to_sale_id }}
+                </div>
             </div>
-        </div>
         @endif
 
         <!-- Footer -->
         <div class="footer">
             <p><strong>Esta es una cotización, NO es una factura.</strong></p>
             <p>Los precios son válidos hasta la fecha indicada y están sujetos a disponibilidad de inventario.</p>
-            <p style="margin-top: 10px;">Documento generado el {{ now()->format('d/m/Y H:i') }}</p>
+            <p style="margin-top:10px;">Documento generado el {{ now()->format('d/m/Y H:i') }}</p>
         </div>
     </div>
 </body>

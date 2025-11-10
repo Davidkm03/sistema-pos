@@ -19,6 +19,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'empresa_id',
         'name',
         'email',
         'password',
@@ -53,5 +54,21 @@ class User extends Authenticatable
     public function businessSetting()
     {
         return $this->hasOne(BusinessSetting::class);
+    }
+
+    /**
+     * Relación con la empresa
+     */
+    public function empresa()
+    {
+        return $this->belongsTo(Empresa::class);
+    }
+    
+    /**
+     * Verificar si el usuario es super admin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('super-admin');
     }
 }

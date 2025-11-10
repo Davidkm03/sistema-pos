@@ -21,24 +21,11 @@ class SuperAdminSeeder extends Seeder
         $allPermissions = Permission::all();
         
         // Asignar todos los permisos al super admin
-        $superAdminRole->syncPermissions($allPermissions);
-        
-        // Crear usuario super admin si no existe
-        $superAdmin = User::firstOrCreate(
-            ['email' => 'superadmin@sistema-pos.com'],
-            [
-                'name' => 'Super Administrador',
-                'password' => bcrypt('SuperAdmin123!'),
-            ]
-        );
-        
-        // Asignar rol de super admin
-        if (!$superAdmin->hasRole('super-admin')) {
-            $superAdmin->assignRole('super-admin');
+        if ($allPermissions->count() > 0) {
+            $superAdminRole->syncPermissions($allPermissions);
+            $this->command->info("✅ Asignados {$allPermissions->count()} permisos al rol super-admin");
         }
         
-        $this->command->info('✅ Super Admin creado exitosamente');
-        $this->command->info('📧 Email: superadmin@sistema-pos.com');
-        $this->command->info('🔐 Password: SuperAdmin123!');
+        $this->command->info('✅ Rol super-admin creado/actualizado exitosamente');
     }
 }

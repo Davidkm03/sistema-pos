@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\EmpresaScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
@@ -9,7 +10,16 @@ use Carbon\Carbon;
 
 class Goal extends Model
 {
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new EmpresaScope);
+    }
+
     protected $fillable = [
+        'empresa_id',
         'name',
         'target_amount',
         'start_date',

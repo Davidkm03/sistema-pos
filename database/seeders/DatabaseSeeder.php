@@ -8,6 +8,8 @@ use App\Models\Product;
 use App\Models\Customer;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,33 +20,61 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        // Crear usuario administrador
-        User::factory()->create([
-            'name' => 'Administrador',
+        // Ejecutar seeders de roles y permisos primero
+        $this->call([
+            RolesAndPermissionsSeeder::class,
+            CancellationPermissionsSeeder::class,
+            QuotesPermissionsSeeder::class,
+            GoalPermissionsSeeder::class,
+            SuperAdminSeeder::class, // Crea el super-admin y asigna todos los permisos
+            EmpresaSeeder::class, // Crear empresas ANTES de crear usuarios
+            BusinessSettingsSeeder::class,
+            TicketSettingSeeder::class,
+            CancellationReasonsSeeder::class,
+        ]);
+        
+        // Obtener la primera empresa
+        $empresaPrincipal = \App\Models\Empresa::first();
+        
+        // Obtener el rol de super-admin creado por SuperAdminSeeder
+        $superAdminRole = Role::where('name', 'super-admin')->first();
+        
+        // Crear usuario administrador principal
+        $admin = User::factory()->create([
+            'empresa_id' => $empresaPrincipal->id,
+            'name' => 'Super Administrador',
             'email' => 'admin@sistema-pos.com',
         ]);
+        
+        // Asignar rol de super-admin
+        if ($superAdminRole) {
+            $admin->assignRole($superAdminRole);
+        }
 
         // Crear categorías
         $categories = [
             [
+                'empresa_id' => $empresaPrincipal->id,
                 'name' => 'Bebidas',
                 'description' => 'Bebidas frías y calientes'
             ],
             [
+                'empresa_id' => $empresaPrincipal->id,
                 'name' => 'Snacks',
                 'description' => 'Botanas y golosinas'
             ],
             [
+                'empresa_id' => $empresaPrincipal->id,
                 'name' => 'Alimentos',
                 'description' => 'Comida preparada'
             ],
             [
+                'empresa_id' => $empresaPrincipal->id,
                 'name' => 'Limpieza',
                 'description' => 'Productos de limpieza'
             ],
             [
+                'empresa_id' => $empresaPrincipal->id,
                 'name' => 'Otros',
                 'description' => 'Productos varios'
             ]
@@ -65,6 +95,7 @@ class DatabaseSeeder extends Seeder
         $products = [
             // Bebidas
             [
+                'empresa_id' => $empresaPrincipal->id,
                 'name' => 'Coca Cola 600ml',
                 'sku' => 'BEB-001',
                 'price' => 18.00,
@@ -73,6 +104,7 @@ class DatabaseSeeder extends Seeder
                 'category_id' => $bebidasCategory->id
             ],
             [
+                'empresa_id' => $empresaPrincipal->id,
                 'name' => 'Pepsi 600ml',
                 'sku' => 'BEB-002',
                 'price' => 17.00,
@@ -81,6 +113,7 @@ class DatabaseSeeder extends Seeder
                 'category_id' => $bebidasCategory->id
             ],
             [
+                'empresa_id' => $empresaPrincipal->id,
                 'name' => 'Agua Natural 500ml',
                 'sku' => 'BEB-003',
                 'price' => 8.00,
@@ -227,22 +260,29 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($products as $productData) {
+            // Agregar empresa_id si no existe
+            if (!isset($productData['empresa_id'])) {
+                $productData['empresa_id'] = $empresaPrincipal->id;
+            }
             Product::create($productData);
         }
 
         // Crear clientes de ejemplo
         $customers = [
             [
+                'empresa_id' => $empresaPrincipal->id,
                 'name' => 'María González López',
                 'phone' => '55-1234-5678',
                 'email' => 'maria.gonzalez@email.com'
             ],
             [
+                'empresa_id' => $empresaPrincipal->id,
                 'name' => 'Carlos Rodríguez Pérez',
                 'phone' => '55-8765-4321',
                 'email' => 'carlos.rodriguez@email.com'
             ],
             [
+                'empresa_id' => $empresaPrincipal->id,
                 'name' => 'Ana Martínez Sánchez',
                 'phone' => '55-5555-1234',
                 'email' => 'ana.martinez@email.com'

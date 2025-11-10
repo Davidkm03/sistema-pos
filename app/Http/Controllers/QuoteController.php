@@ -292,4 +292,14 @@ class QuoteController extends Controller
         
         return view('quotes.print', compact('quote'));
     }
+
+    /**
+     * Imprimir cotización en formato POS (impresora térmica)
+     */
+    public function printPos(Quote $quote)
+    {
+        $quote->load(['customer', 'user', 'items.product', 'convertedSale']);
+        
+        return view('quotes.print-pos', compact('quote'));
+    }
 }
