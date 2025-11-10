@@ -16,15 +16,40 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if(session('success'))
-                <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-lg">
-                    {{ session('success') }}
-                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: '{{ session("success") }}',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp'
+                            }
+                        });
+                    });
+                </script>
             @endif
 
             @if(session('error'))
-                <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg">
-                    {{ session('error') }}
-                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: '{{ session("error") }}',
+                            confirmButtonColor: '#4F46E5',
+                            showClass: {
+                                popup: 'animate__animated animate__shakeX'
+                            }
+                        });
+                    });
+                </script>
             @endif
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -193,10 +218,9 @@
                         <!-- Convertir a venta -->
                         @can('quotes.convert')
                         @if($quote->isConvertible())
-                        <form action="{{ route('quotes.convert', $quote) }}" method="POST" 
-                              onsubmit="return confirm('¿Deseas convertir esta cotización a venta? Esto descontará el inventario.');">
+                        <form id="convertForm" action="{{ route('quotes.convert', $quote) }}" method="POST">
                             @csrf
-                            <button type="submit" 
+                            <button type="button" onclick="confirmConvert()"
                                     class="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition">
                                 <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -210,11 +234,10 @@
                         <!-- Eliminar -->
                         @can('quotes.delete')
                         @if($quote->status !== 'convertida')
-                        <form action="{{ route('quotes.destroy', $quote) }}" method="POST" 
-                              onsubmit="return confirm('¿Estás seguro de eliminar esta cotización?');">
+                        <form id="deleteForm" action="{{ route('quotes.destroy', $quote) }}" method="POST">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" 
+                            <button type="button" onclick="confirmDelete()"
                                     class="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition">
                                 <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -240,4 +263,51 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        function confirmConvert() {
+            Swal.fire({
+                title: '¿Convertir a venta?',
+                html: `
+                    <p class="text-gray-600 mb-2">Esta acción:</p>
+                    <ul class="text-left text-sm text-gray-700">
+                        <li>✓ Creará una venta con estos productos</li>
+                        <li>✓ Descontará del inventario</li>
+                        <li>✓ Marcará la cotización como convertida</li>
+                    </ul>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#4F46E5',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Sí, convertir',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('convertForm').submit();
+                }
+            });
+        }
+
+        function confirmDelete() {
+            Swal.fire({
+                title: '¿Eliminar cotización?',
+                text: 'Esta acción no se puede deshacer',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            });
+        }
+    </script>
+    @endpush
 </x-app-layout>
