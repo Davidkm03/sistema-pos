@@ -301,6 +301,15 @@
                                 <span>Imprimir (Ticket POS)</span>
                             </a>
 
+                            <!-- Enviar por Email -->
+                            <button type="button" onclick="showEmailModal()"
+                                    class="group flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-bold hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all shadow-lg hover:shadow-xl">
+                                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                <span>Enviar por Email</span>
+                            </button>
+
                             <!-- Editar (solo si está pendiente) -->
                             @can('quotes.edit')
                             @if($quote->status === 'pendiente')
@@ -378,8 +387,122 @@
         </div>
     </div>
 
+    <!-- Modal de Enviar Email -->
+    <div id="emailModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+            <div class="px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white">
+                <h3 class="text-xl font-bold flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    Enviar Cotización por Email
+                </h3>
+            </div>
+            <form id="emailForm" action="{{ route('quotes.send-email', $quote) }}" method="POST" class="p-6">
+                @csrf
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        Correo Electrónico del Destinatario
+                    </label>
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           value="{{ $quote->customer ? $quote->customer->email : '' }}"
+                           required
+                           placeholder="ejemplo@correo.com"
+                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all">
+                    <p class="text-xs text-gray-500 mt-1">
+                        Se enviará la cotización #{{ $quote->quote_number }} a este correo
+                    </p>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" 
+                            onclick="hideEmailModal()"
+                            class="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg">
+                        Enviar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     @push('scripts')
     <script>
+        function showEmailModal() {
+            document.getElementById('emailModal').classList.remove('hidden');
+        }
+
+        function hideEmailModal() {
+            document.getElementById('emailModal').classList.add('hidden');
+        }
+
+        // Cerrar modal al hacer clic fuera de él
+        document.getElementById('emailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideEmailModal();
+            }
+        });
+
+        // Manejar envío del formulario
+        document.getElementById('emailForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = this;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            // Deshabilitar botón y mostrar loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+            
+            // Enviar formulario
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideEmailModal();
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Email Enviado!',
+                        text: data.message || 'La cotización ha sido enviada exitosamente.',
+                        confirmButtonColor: '#059669'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'No se pudo enviar el email. Por favor, verifica la configuración SMTP.',
+                        confirmButtonColor: '#059669'
+                    });
+                }
+            })
+            .catch(error => {
+                hideEmailModal();
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un error al enviar el email. Por favor, intenta nuevamente.',
+                    confirmButtonColor: '#059669'
+                });
+            });
+        });
+
         function confirmConvert() {
             Swal.fire({
                 title: '¿Convertir a venta?',

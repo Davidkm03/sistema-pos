@@ -82,6 +82,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         Route::get('/quotes/{quote}/print-pos', [\App\Http\Controllers\QuoteController::class, 'printPos'])
             ->name('quotes.print-pos');
+        
+        Route::post('/quotes/{quote}/send-email', [\App\Http\Controllers\QuoteController::class, 'sendEmail'])
+            ->name('quotes.send-email');
     });
     
     // Rutas de Clientes - Para crear desde cotizaciones

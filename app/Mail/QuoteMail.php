@@ -2,6 +2,8 @@
 
 namespace App\Mail;
 
+use App\Models\Quote;
+use App\Models\BusinessSetting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -13,12 +15,16 @@ class QuoteMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public Quote $quote;
+    public BusinessSetting $businessSettings;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(Quote $quote, BusinessSetting $businessSettings)
     {
-        //
+        $this->quote = $quote;
+        $this->businessSettings = $businessSettings;
     }
 
     /**
@@ -27,7 +33,7 @@ class QuoteMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Quote Mail',
+            subject: 'Cotización #' . $this->quote->quote_number . ' - ' . $this->businessSettings->business_name,
         );
     }
 
@@ -38,6 +44,10 @@ class QuoteMail extends Mailable
     {
         return new Content(
             markdown: 'emails.quote',
+            with: [
+                'quote' => $this->quote,
+                'businessSettings' => $this->businessSettings,
+            ],
         );
     }
 

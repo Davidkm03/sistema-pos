@@ -8,9 +8,14 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use App\Models\BusinessSetting;
+use App\Mail\QuoteMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 
 class QuoteController extends Controller
 {
@@ -310,5 +315,73 @@ class QuoteController extends Controller
         $quote->load(['customer', 'user', 'items.product', 'convertedSale']);
         
         return view('quotes.print-pos', compact('quote'));
+    }
+
+    /**
+     * Enviar cotización por email
+     */
+    public function sendEmail(Request $request, Quote $quote)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        try {
+            // Obtener configuración del negocio
+            $businessSettings = BusinessSetting::current();
+
+            // Validar que la configuración SMTP esté completa
+            if (!$businessSettings->smtp_host || !$businessSettings->smtp_from_address) {
+                $message = 'Por favor configure el servidor SMTP en Configuración del Negocio antes de enviar emails.';
+                
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message
+                    ], 400);
+                }
+                
+                return back()->with('error', $message);
+            }
+
+            // Configurar SMTP dinámicamente desde business_settings
+            Config::set('mail.mailers.smtp.host', $businessSettings->smtp_host);
+            Config::set('mail.mailers.smtp.port', $businessSettings->smtp_port ?? 587);
+            Config::set('mail.mailers.smtp.encryption', $businessSettings->smtp_encryption ?? 'tls');
+            Config::set('mail.mailers.smtp.username', $businessSettings->smtp_username);
+            Config::set('mail.mailers.smtp.password', $businessSettings->smtp_password);
+            Config::set('mail.from.address', $businessSettings->smtp_from_address);
+            Config::set('mail.from.name', $businessSettings->smtp_from_name ?? $businessSettings->business_name);
+
+            // Cargar relaciones necesarias
+            $quote->load(['customer', 'user', 'items.product']);
+
+            // Enviar email
+            Mail::to($request->email)->send(new QuoteMail($quote, $businessSettings));
+
+            $message = 'Cotización enviada exitosamente a ' . $request->email;
+            
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $message
+                ]);
+            }
+            
+            return back()->with('success', $message);
+        } catch (\Exception $e) {
+            Log::error('Error al enviar cotización por email: ' . $e->getMessage());
+            
+            $message = 'Error al enviar email: ' . $e->getMessage();
+            
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $message
+                ], 500);
+            }
+            
+            return back()->with('error', $message);
+        }
     }
 }
