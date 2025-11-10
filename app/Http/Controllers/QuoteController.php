@@ -327,12 +327,12 @@ class QuoteController extends Controller
         ]);
 
         try {
-            // Obtener configuración del negocio
-            $businessSettings = BusinessSetting::current();
+            // Obtener configuración SMTP global (del super-admin)
+            $smtpSettings = BusinessSetting::smtp();
 
             // Validar que la configuración SMTP esté completa
-            if (!$businessSettings->smtp_host || !$businessSettings->smtp_from_address) {
-                $message = 'Por favor configure el servidor SMTP en Configuración del Negocio antes de enviar emails.';
+            if (!$smtpSettings) {
+                $message = 'El servidor SMTP no está configurado. Contacte al administrador del sistema.';
                 
                 if ($request->expectsJson() || $request->ajax()) {
                     return response()->json([
@@ -344,14 +344,17 @@ class QuoteController extends Controller
                 return back()->with('error', $message);
             }
 
-            // Configurar SMTP dinámicamente desde business_settings
-            Config::set('mail.mailers.smtp.host', $businessSettings->smtp_host);
-            Config::set('mail.mailers.smtp.port', $businessSettings->smtp_port ?? 587);
-            Config::set('mail.mailers.smtp.encryption', $businessSettings->smtp_encryption ?? 'tls');
-            Config::set('mail.mailers.smtp.username', $businessSettings->smtp_username);
-            Config::set('mail.mailers.smtp.password', $businessSettings->smtp_password);
-            Config::set('mail.from.address', $businessSettings->smtp_from_address);
-            Config::set('mail.from.name', $businessSettings->smtp_from_name ?? $businessSettings->business_name);
+            // Obtener configuración del negocio del usuario actual (para datos en el email)
+            $businessSettings = BusinessSetting::current();
+
+            // Configurar SMTP dinámicamente desde configuración global
+            Config::set('mail.mailers.smtp.host', $smtpSettings->smtp_host);
+            Config::set('mail.mailers.smtp.port', $smtpSettings->smtp_port ?? 587);
+            Config::set('mail.mailers.smtp.encryption', $smtpSettings->smtp_encryption ?? 'tls');
+            Config::set('mail.mailers.smtp.username', $smtpSettings->smtp_username);
+            Config::set('mail.mailers.smtp.password', $smtpSettings->smtp_password);
+            Config::set('mail.from.address', $smtpSettings->smtp_from_address);
+            Config::set('mail.from.name', $smtpSettings->smtp_from_name ?? $businessSettings->business_name);
 
             // Cargar relaciones necesarias
             $quote->load(['customer', 'user', 'items.product']);

@@ -132,6 +132,30 @@ class BusinessSetting extends Model
     }
 
     /**
+     * Obtener la configuración SMTP global (del super-admin)
+     */
+    public static function smtp()
+    {
+        return Cache::remember('smtp_settings_global', 3600, function () {
+            // Buscar configuración de cualquier super-admin
+            $superAdminUser = \App\Models\User::role('super-admin')->first();
+            
+            if (!$superAdminUser) {
+                return null;
+            }
+
+            $settings = self::where('user_id', $superAdminUser->id)->first();
+            
+            // Validar que tenga configuración SMTP completa
+            if (!$settings || !$settings->smtp_host || !$settings->smtp_from_address) {
+                return null;
+            }
+
+            return $settings;
+        });
+    }
+
+    /**
      * Valores por defecto si no existe configuración
      */
     public static function defaults()
@@ -187,10 +211,13 @@ class BusinessSetting extends Model
     {
         static::saved(function ($settings) {
             Cache::forget('business_settings_' . $settings->user_id);
+            // Limpiar también caché SMTP global
+            Cache::forget('smtp_settings_global');
         });
 
         static::deleted(function ($settings) {
             Cache::forget('business_settings_' . $settings->user_id);
+            Cache::forget('smtp_settings_global');
         });
     }
 }
