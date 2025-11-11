@@ -689,10 +689,10 @@
 
 </div>
 
-@script
+{{-- JavaScript global para confirmDelete (debe ser accesible desde onclick) --}}
 <script>
-    // Confirmación de eliminación
-    function confirmDelete(productId) {
+    // Confirmación de eliminación (función global)
+    window.confirmDelete = function(productId) {
         Swal.fire({
             title: '¿Eliminar producto?',
             text: "Esta acción no se puede deshacer",
@@ -707,11 +707,18 @@
             hideClass: { popup: 'animate__animated animate__fadeOutUp' }
         }).then((result) => {
             if (result.isConfirmed) {
-                $wire.delete(productId);
+                // Obtener el componente Livewire
+                const component = Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'));
+                if (component) {
+                    component.call('delete', productId);
+                }
             }
         });
-    }
+    };
+</script>
 
+@script
+<script>
     // Listeners de Livewire (v3)
     if (window.Livewire && typeof window.Livewire.on === 'function') {
         Livewire.on('product-saved', (event = {}) => {
