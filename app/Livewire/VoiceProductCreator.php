@@ -23,6 +23,38 @@ class VoiceProductCreator extends Component
         $this->reset(['voiceTranscript', 'voiceExtractedData']);
     }
 
+    public function transcribeAudio($base64Audio)
+    {
+        try {
+            $this->voiceProcessing = true;
+
+            // Decode base64 audio
+            $audioData = base64_decode($base64Audio);
+            
+            // Save temporarily
+            $tempPath = storage_path('app/temp_audio_' . uniqid() . '.webm');
+            file_put_contents($tempPath, $audioData);
+
+            // Call Whisper API
+            $whisperService = new \App\Services\WhisperService();
+            $transcript = $whisperService->transcribe($tempPath);
+
+            // Delete temp file
+            unlink($tempPath);
+
+            if (!$transcript) {
+                throw new \Exception('No se pudo transcribir el audio');
+            }
+
+            $this->voiceTranscript = $transcript;
+            $this->voiceProcessing = false;
+
+        } catch (\Exception $e) {
+            $this->voiceProcessing = false;
+            $this->dispatch('voice-error', message: 'Error transcribiendo: ' . $e->getMessage());
+        }
+    }
+
     public function close()
     {
         $this->showModal = false;

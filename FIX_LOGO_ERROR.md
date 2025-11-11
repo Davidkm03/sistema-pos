@@ -56,7 +56,8 @@ php artisan route:cache
 php artisan view:cache
 
 # Verificar permisos del directorio logos
-chmod -R 775 storage/app/public/logos
+chmod -R 775 storage/php artisan migratenpm install
+npm run buildapp/public/logos
 
 # Probar
 echo "✅ Fix aplicado!"

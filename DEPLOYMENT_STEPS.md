@@ -72,7 +72,7 @@ php artisan migrate --force
 php artisan config:cache
 
 # Limpiar cache de rutas
-php artisan route:cache
+php artisan route:cachephp artisan tinker --execute="\$super = App\Models\User::role('super-admin')->first(); \$settings = App\Models\BusinessSetting::where('user_id', \$super->id)->first(); if(strpos(\$settings->smtp_host, ' ') === 0) { \$settings->update(['smtp_host' => trim(\$settings->smtp_host)]); echo 'Fixed!'; } else { echo 'No space found'; }"
 
 # Limpiar cache de vistas
 php artisan view:cache
