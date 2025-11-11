@@ -1,126 +1,124 @@
 {{-- Modal de Creación por Voz con MediaRecorder + Whisper --}}
-<div>
-    <div 
-        x-data="{
-            open: @entangle('showModal'),
-            recording: false,
-            mediaRecorder: null,
-            audioChunks: [],
-            transcript: @entangle('voiceTranscript').live,
-            processing: @entangle('voiceProcessing').live,
-            extractedData: @entangle('voiceExtractedData').live,
+<div x-data="{
+    open: $wire.entangle('showModal'),
+    recording: false,
+    mediaRecorder: null,
+    audioChunks: [],
+    transcript: $wire.entangle('voiceTranscript').live,
+    processing: $wire.entangle('voiceProcessing').live,
+    extractedData: $wire.entangle('voiceExtractedData').live,
 
-            init() {
-                console.log('🎤 VoiceProductCreator initialized');
-            },
+    init() {
+        console.log('🎤 VoiceProductCreator initialized');
+    },
 
-            async startRecording() {
-                console.log('🎤 Requesting microphone...');
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    console.log('✅ Microphone granted');
-                    
-                    this.audioChunks = [];
-                    this.mediaRecorder = new MediaRecorder(stream);
-                    
-                    this.mediaRecorder.ondataavailable = (event) => {
-                        if (event.data.size > 0) {
-                            this.audioChunks.push(event.data);
-                        }
-                    };
-                    
-                    this.mediaRecorder.onstop = async () => {
-                        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
-                        const reader = new FileReader();
-                        reader.readAsDataURL(audioBlob);
-                        reader.onloadend = async () => {
-                            const base64Audio = reader.result.split(',')[1];
-                            await $wire.transcribeAudio(base64Audio);
-                        };
-                        stream.getTracks().forEach(track => track.stop());
-                    };
-                    
-                    this.mediaRecorder.start();
-                    this.recording = true;
-                } catch (error) {
-                    console.error('❌ Microphone error:', error);
-                    if (error.name === 'NotAllowedError') {
-                        Swal.fire({
-                            title: 'Micrófono Bloqueado',
-                            html: '<p>Pasos para permitir:</p><ol><li>Click en el candado 🔒</li><li>Permitir Micrófono</li><li>Recarga (F5)</li></ol>',
-                            icon: 'warning'
-                        });
+    async startRecording() {
+        console.log('🎤 Requesting microphone...');
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            console.log('✅ Microphone granted');
+            
+            this.audioChunks = [];
+            this.mediaRecorder = new MediaRecorder(stream);
+            
+            this.mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    this.audioChunks.push(event.data);
+                }
+            };
+            
+            this.mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+                const reader = new FileReader();
+                reader.readAsDataURL(audioBlob);
+                reader.onloadend = async () => {
+                    const base64Audio = reader.result.split(',')[1];
+                    await $wire.transcribeAudio(base64Audio);
+                };
+                stream.getTracks().forEach(track => track.stop());
+            };
+            
+            this.mediaRecorder.start();
+            this.recording = true;
+        } catch (error) {
+            console.error('❌ Microphone error:', error);
+            if (error.name === 'NotAllowedError') {
+                Swal.fire({
+                    title: 'Micrófono Bloqueado',
+                    html: '<p>Pasos para permitir:</p><ol><li>Click en el candado 🔒</li><li>Permitir Micrófono</li><li>Recarga (F5)</li></ol>',
+                    icon: 'warning'
+                });
+            }
+        }
+    },
+
+    stopRecording() {
+        if (this.mediaRecorder && this.recording) {
+            this.mediaRecorder.stop();
+            this.recording = false;
+        }
+    },
+
+    startTutorial() {
+        if (typeof driver === 'undefined') {
+            console.error('Driver.js no cargado');
+            return;
+        }
+
+        const driverObj = driver({
+            showProgress: true,
+            steps: [
+                {
+                    element: '.voice-record-btn',
+                    popover: {
+                        title: '🎤 Paso 1: Grabar',
+                        description: 'Presiona este botón y habla claramente. Di el nombre, categoría, precio, costo y stock del producto.',
+                        position: 'bottom'
+                    }
+                },
+                {
+                    element: '.voice-example-box',
+                    popover: {
+                        title: '💡 Ejemplo de uso',
+                        description: 'Di el nombre del producto, su categoría, precio, costo y cantidad de stock disponible.',
+                        position: 'top'
+                    }
+                },
+                {
+                    popover: {
+                        title: '✨ Paso 2: Procesar',
+                        description: 'Después de grabar, el texto aparecerá. Click en "Procesar con IA" para que GPT-4o-mini extraiga los datos estructurados.'
+                    }
+                },
+                {
+                    popover: {
+                        title: '✅ Paso 3: Crear',
+                        description: 'Verifica los datos extraídos y presiona "Crear Producto". Si la categoría no existe, se creará automáticamente.'
+                    }
+                },
+                {
+                    popover: {
+                        title: '🚀 ¡Listo!',
+                        description: 'Tu producto se creará en segundos. Puedes crear múltiples productos rápidamente usando solo tu voz.',
+                        position: 'center'
                     }
                 }
-            },
+            ]
+        });
 
-            stopRecording() {
-                if (this.mediaRecorder && this.recording) {
-                    this.mediaRecorder.stop();
-                    this.recording = false;
-                }
-            },
+        driverObj.drive();
+    }
+}"
+x-show="open"
+x-cloak
+@keydown.escape.window="$wire.close()"
+class="fixed inset-0 z-50 overflow-y-auto"
+style="display: none;">
 
-            startTutorial() {
-                if (typeof driver === 'undefined') {
-                    console.error('Driver.js no cargado');
-                    return;
-                }
+<div x-show="open" x-transition @click="$wire.close()" class="fixed inset-0 bg-black bg-opacity-75"></div>
 
-                const driverObj = driver({
-                    showProgress: true,
-                    steps: [
-                        {
-                            element: '.voice-record-btn',
-                            popover: {
-                                title: '🎤 Paso 1: Grabar',
-                                description: 'Presiona este botón y habla claramente. Di el nombre, categoría, precio, costo y stock del producto.',
-                                position: 'bottom'
-                            }
-                        },
-                        {
-                            element: '.voice-example-box',
-                            popover: {
-                                title: '💡 Ejemplo de uso',
-                                description: 'Di el nombre del producto, su categoría, precio, costo y cantidad de stock disponible.',
-                                position: 'top'
-                            }
-                        },
-                        {
-                            popover: {
-                                title: '✨ Paso 2: Procesar',
-                                description: 'Después de grabar, el texto aparecerá. Click en "Procesar con IA" para que GPT-4o-mini extraiga los datos estructurados.'
-                            }
-                        },
-                        {
-                            popover: {
-                                title: '✅ Paso 3: Crear',
-                                description: 'Verifica los datos extraídos y presiona "Crear Producto". Si la categoría no existe, se creará automáticamente.'
-                            }
-                        },
-                        {
-                            popover: {
-                                title: '🚀 ¡Listo!',
-                                description: 'Tu producto se creará en segundos. Puedes crear múltiples productos rápidamente usando solo tu voz.',
-                                position: 'center'
-                            }
-                        }
-                    ]
-                });
-
-                driverObj.drive();
-            }
-        }"
-        x-show="open"
-        x-cloak
-        @keydown.escape.window="$wire.close()"
-        class="fixed inset-0 z-50 overflow-y-auto"
-        style="display: none;">
-        
-        <div x-show="open" x-transition @click="$wire.close()" class="fixed inset-0 bg-black bg-opacity-75"></div>
-        
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div x-show="open" x-transition @click.stop class="relative bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-8">
+<div class="flex items-center justify-center min-h-screen p-4">
+    <div x-show="open" x-transition @click.stop class="relative bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-8">
                 
                 <div class="flex items-center justify-between mb-6">
                     <div>
@@ -220,33 +218,37 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    {{-- Driver.js CDN --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
-    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.iife.js"></script>
-
-    @script
-    <script>
-        $wire.on('voice-product-created', (event) => {
-            Swal.fire({
-                icon: 'success',
-                title: '✨ Producto Creado!',
-                text: event.productName,
-                toast: true,
-                position: 'top-end',
-                timer: 3000,
-                showConfirmButton: false
-            });
-        });
-
-        $wire.on('voice-error', (event) => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: event.message
-            });
-        });
-    </script>
-    @endscript
 </div>
+
+{{-- Driver.js CDN --}}
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.iife.js"></script>
+@endpush
+
+@script
+<script>
+    $wire.on('voice-product-created', (event) => {
+        Swal.fire({
+            icon: 'success',
+            title: '✨ Producto Creado!',
+            text: event.productName,
+            toast: true,
+            position: 'top-end',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    });
+
+    $wire.on('voice-error', (event) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: event.message
+        });
+    });
+</script>
+@endscript
