@@ -51,11 +51,37 @@ class Customer extends Model
     }
 
     /**
+     * Get the quotes for the customer.
+     */
+    public function quotes(): HasMany
+    {
+        return $this->hasMany(Quote::class);
+    }
+
+    /**
      * Get the empresa that owns the customer.
      */
     public function empresa(): BelongsTo
     {
         return $this->belongsTo(Empresa::class);
+    }
+
+    /**
+     * Get customer statistics.
+     */
+    public function getStatistics(): array
+    {
+        $totalPurchases = $this->sales()->count();
+        $totalSpent = $this->sales()->sum('total');
+        $lastPurchase = $this->sales()->latest()->first();
+        $averageTicket = $totalPurchases > 0 ? $totalSpent / $totalPurchases : 0;
+
+        return [
+            'total_purchases' => $totalPurchases,
+            'total_spent' => $totalSpent,
+            'average_ticket' => $averageTicket,
+            'last_purchase_date' => $lastPurchase?->created_at,
+        ];
     }
 
     // ==========================================

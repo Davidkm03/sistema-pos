@@ -113,6 +113,36 @@
                 </svg>
                 <span>Proveedores</span>
             </a>
+
+            <!-- Clientes -->
+            <a href="{{ route('customers.index') }}" 
+               @click="open = false"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('customers.*') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <span>Clientes</span>
+            </a>
+
+            <!-- Compras -->
+            <a href="{{ route('purchases.index') }}" 
+               @click="open = false"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('purchases.*') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                <span>Compras</span>
+            </a>
+
+            <!-- Gastos -->
+            <a href="{{ route('expenses.index') }}" 
+               @click="open = false"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('expenses.*') ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-2 border-white/30' : 'text-white/80 hover:text-white hover:bg-white/10 border-2 border-transparent hover:border-white/20' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>Gastos</span>
+            </a>
             @endcan
 
             @can('view-inventory')

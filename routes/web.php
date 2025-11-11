@@ -43,6 +43,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('categories.index');
         
         Route::get('/proveedores', \App\Livewire\SupplierManager::class)->name('suppliers.index');
+        
+        Route::get('/clientes', \App\Livewire\CustomerManager::class)->name('customers.index');
+        
+        Route::get('/compras', \App\Livewire\PurchaseManager::class)->name('purchases.index');
+        
+        Route::get('/gastos', \App\Livewire\ExpenseManager::class)->name('expenses.index');
     });
     
     // Rutas de Inventario - Requiere permiso view-inventory
