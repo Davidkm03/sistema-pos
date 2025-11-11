@@ -30,23 +30,23 @@
             {{-- Features Info --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
-                    <div class="text-3xl mb-2">💰</div>
+                    <div class="text-3xl mb-2">$</div>
                     <div class="font-bold text-blue-900">Ventas & Ganancias</div>
                     <div class="text-sm text-blue-700">Total, margen, ticket promedio</div>
                 </div>
                 <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
-                    <div class="text-3xl mb-2">📦</div>
+                    <div class="text-3xl mb-2">#</div>
                     <div class="font-bold text-orange-900">Alertas de Stock</div>
-                    <div class="text-sm text-orange-700">Productos que se agotarán</div>
+                    <div class="text-sm text-orange-700">Productos que se agotaran</div>
                 </div>
                 <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
-                    <div class="text-3xl mb-2">🎯</div>
+                    <div class="text-3xl mb-2">+</div>
                     <div class="font-bold text-purple-900">Combos Sugeridos</div>
                     <div class="text-sm text-purple-700">Productos que se venden juntos</div>
                 </div>
                 <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
-                    <div class="text-3xl mb-2">✨</div>
-                    <div class="font-bold text-green-900">Recomendación IA</div>
+                    <div class="text-3xl mb-2">AI</div>
+                    <div class="font-bold text-green-900">Recomendacion IA</div>
                     <div class="text-sm text-green-700">GPT-4o-mini analiza tu negocio</div>
                 </div>
             </div>
@@ -80,7 +80,7 @@
                 {{-- Time Selection --}}
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-2">
-                        🕐 Hora del Reporte
+                        Hora del Reporte
                     </label>
                     <input 
                         type="time" 
@@ -88,7 +88,7 @@
                         class="w-full md:w-auto px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono text-lg"
                     >
                     <p class="text-sm text-gray-500 mt-2">
-                        💡 Hora de Colombia (GMT-5). Recomendado: 19:00 (7pm)
+                        Hora de Colombia (GMT-5). Recomendado: 19:00 (7pm)
                     </p>
                     @error('whatsapp_report_time')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -98,7 +98,7 @@
                 {{-- WhatsApp Number --}}
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-2">
-                        📱 Número de WhatsApp del Dueño
+                        Numero de WhatsApp del Dueno
                     </label>
                     <div class="flex gap-2">
                         <input 
@@ -127,10 +127,10 @@
                         >
                         <div class="flex-1">
                             <label for="include_combos" class="font-bold text-purple-900 cursor-pointer">
-                                🎯 Incluir análisis de combos frecuentes
+                                Incluir analisis de combos frecuentes
                             </label>
                             <p class="text-sm text-purple-700 mt-1">
-                                El reporte mostrará qué productos se compran juntos y sugerirá precios de combo
+                                El reporte mostrara que productos se compran juntos y sugerira precios de combo
                             </p>
                         </div>
                     </div>
@@ -144,34 +144,34 @@
                         </svg>
                         <div>
                             <h3 class="font-bold text-green-900 text-lg">Ejemplo de Reporte</h3>
-                            <p class="text-sm text-green-700 mt-1">Así se verá el mensaje que recibirás:</p>
+                            <p class="text-sm text-green-700 mt-1">Asi se vera el mensaje que recibiras:</p>
                         </div>
                     </div>
-                    <div class="bg-white rounded-lg p-4 font-mono text-sm text-gray-800 whitespace-pre-line border border-green-300">🚀 *REPORTE DIARIO* 🚀
+                    <div class="bg-white rounded-lg p-4 font-mono text-sm text-gray-800 whitespace-pre-line border border-green-300">*REPORTE DIARIO*
 
-📊 *Ventas de hoy*
+*Ventas de hoy*
 • Total vendido: $985,200
 • Transacciones: 47
 • Ticket promedio: $20,961
 
-💰 *Ganancias*
+*Ganancias*
 • Utilidad estimada: $315,264
 • Margen: 32%
 
-🔴 *Se agotarán mañana*
+*Se agotaran manana*
 • Arroz Diana (quedan 8)
-• Azúcar (quedan 12)
+• Azucar (quedan 12)
 • Coca-Cola 2L (quedan 15)
 
-🎯 *Combos sugeridos*
+*Combos sugeridos*
 • Hamburguesa + Papitas
-  23 veces • Precio combo: $18,400
+  23 veces - Precio combo: $18,400
 
-✨ *Sugerencia IA*
+*Sugerencia IA*
 Compra 5 cajas de Coca-Cola. El proveedor BebidasMar tiene mejor precio.
 
 ---
-_Reporte automático - 10/11/2025 19:00_</div>
+_Reporte automatico - 10/11/2025 19:00_</div>
                 </div>
 
                 {{-- Action Buttons --}}
@@ -206,12 +206,12 @@ _Reporte automático - 10/11/2025 19:00_</div>
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                         </svg>
                         <div class="text-sm text-blue-800">
-                            <p class="font-bold mb-1">⚙️ Configuración del Servidor</p>
-                            <p>Para que el reporte se envíe automáticamente, debes configurar un cron job en el servidor:</p>
+                            <p class="font-bold mb-1">Configuracion del Servidor</p>
+                            <p>Para que el reporte se envie automaticamente, debes configurar un cron job en el servidor:</p>
                             <code class="block bg-blue-100 px-3 py-2 rounded-lg mt-2 font-mono text-xs">
                                 * * * * * cd /ruta/del/proyecto && php artisan schedule:run >> /dev/null 2>&1
                             </code>
-                            <p class="mt-2">Consulta la documentación para más detalles.</p>
+                            <p class="mt-2">Consulta la documentacion para mas detalles.</p>
                         </div>
                     </div>
                 </div>
@@ -237,10 +237,10 @@ _Reporte automático - 10/11/2025 19:00_</div>
     $wire.on('report-generated', (event) => {
         Swal.fire({
             icon: 'info',
-            title: '🚀 Reporte Generado',
+            title: 'Reporte Generado',
             html: `
                 <p class="mb-3">${event.message}</p>
-                <p class="text-sm text-gray-600">El comando generó un link de WhatsApp. Revisa la consola del servidor o los logs para obtenerlo.</p>
+                <p class="text-sm text-gray-600">El comando genero un link de WhatsApp. Revisa la consola del servidor o los logs para obtenerlo.</p>
             `,
             confirmButtonColor: '#3B82F6',
             confirmButtonText: 'Entendido'

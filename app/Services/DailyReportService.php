@@ -157,7 +157,7 @@ class DailyReportService
         $apiKey = config('services.openai.api_key');
         
         if (!$apiKey) {
-            return "⚠️ OpenAI no configurado. Activa la API en settings.";
+            return "OpenAI no configurado. Activa la API en settings.";
         }
 
         $prompt = $this->buildPromptForAI($salesData, $profitData, $lowStock, $atRisk);
@@ -189,10 +189,10 @@ class DailyReportService
                 return $data['choices'][0]['message']['content'] ?? 'Sin recomendación IA';
             }
 
-            return "⚠️ Error en OpenAI: " . $response->status();
+            return "Error OpenAI: " . $response->status();
             
         } catch (\Exception $e) {
-            return "⚠️ Error IA: " . $e->getMessage();
+            return "Error IA: " . $e->getMessage();
         }
     }
 
@@ -204,19 +204,19 @@ class DailyReportService
         $lowStockNames = $lowStock->pluck('name')->take(3)->implode(', ');
         $atRiskNames = $atRisk->pluck('name')->implode(', ');
 
-        $prompt = "Análisis de negocio hoy:\n\n";
-        $prompt .= "📊 Ventas: {$salesData['total_sales']} transacciones, ${$salesData['total_revenue']}\n";
-        $prompt .= "💰 Margen: {$profitData['margin_percent']}%\n";
+        $prompt = "Analisis de negocio hoy:\n\n";
+        $prompt .= "Ventas: {$salesData['total_sales']} transacciones, ${$salesData['total_revenue']}\n";
+        $prompt .= "Margen: {$profitData['margin_percent']}%\n";
         
         if ($lowStockNames) {
-            $prompt .= "⚠️ Stock bajo: {$lowStockNames}\n";
+            $prompt .= "Stock bajo: {$lowStockNames}\n";
         }
         
         if ($atRiskNames) {
-            $prompt .= "🔴 Se agotarán mañana: {$atRiskNames}\n";
+            $prompt .= "Se agotaran manana: {$atRiskNames}\n";
         }
 
-        $prompt .= "\nDa UNA recomendación práctica en máximo 2 líneas para mejorar ventas o inventario mañana.";
+        $prompt .= "\nDa UNA recomendacion practica en maximo 2 lineas para mejorar ventas o inventario manana.";
 
         return $prompt;
     }
@@ -233,22 +233,22 @@ class DailyReportService
         string $aiRecommendation
     ): string {
         $currency = '$';
-        $message = "🚀 *REPORTE DIARIO* 🚀\n\n";
+        $message = "*REPORTE DIARIO*\n\n";
 
         // Sales summary
-        $message .= "📊 *Ventas de hoy*\n";
+        $message .= "*Ventas de hoy*\n";
         $message .= "• Total vendido: {$currency}" . number_format($salesData['total_revenue'], 0) . "\n";
         $message .= "• Transacciones: {$salesData['total_sales']}\n";
         $message .= "• Ticket promedio: {$currency}" . number_format($salesData['average_ticket'], 0) . "\n\n";
 
         // Profit
-        $message .= "💰 *Ganancias*\n";
+        $message .= "*Ganancias*\n";
         $message .= "• Utilidad estimada: {$currency}" . number_format($profitData['profit'], 0) . "\n";
         $message .= "• Margen: {$profitData['margin_percent']}%\n\n";
 
         // Products at risk
         if ($atRisk->isNotEmpty()) {
-            $message .= "🔴 *Se agotarán mañana*\n";
+            $message .= "*Se agotaran manana*\n";
             foreach ($atRisk as $product) {
                 $message .= "• {$product->name} (quedan {$product->stock})\n";
             }
@@ -257,7 +257,7 @@ class DailyReportService
 
         // Low stock
         if ($lowStock->isNotEmpty()) {
-            $message .= "⚠️ *Stock bajo*\n";
+            $message .= "*Stock bajo*\n";
             foreach ($lowStock->take(3) as $product) {
                 $message .= "• {$product->name}: {$product->stock} unidades\n";
             }
@@ -266,20 +266,20 @@ class DailyReportService
 
         // Frequent combos
         if ($combos->isNotEmpty()) {
-            $message .= "🎯 *Combos sugeridos* (compran juntos)\n";
+            $message .= "*Combos sugeridos* (compran juntos)\n";
             foreach ($combos as $combo) {
                 $message .= "• {$combo['product1']} + {$combo['product2']}\n";
-                $message .= "  {$combo['times_together']} veces • Precio combo: {$currency}" . number_format($combo['suggested_combo_price'], 0) . "\n";
+                $message .= "  {$combo['times_together']} veces - Precio combo: {$currency}" . number_format($combo['suggested_combo_price'], 0) . "\n";
             }
             $message .= "\n";
         }
 
         // AI recommendation
-        $message .= "✨ *Sugerencia IA*\n";
+        $message .= "*Sugerencia IA*\n";
         $message .= $aiRecommendation . "\n\n";
 
         $message .= "---\n";
-        $message .= "_Reporte automático - " . now()->format('d/m/Y H:i') . "_";
+        $message .= "_Reporte automatico - " . now()->format('d/m/Y H:i') . "_";
 
         return $message;
     }

@@ -172,11 +172,11 @@
                             </div>
                             <div class="ml-4 flex-1">
                                 <h3 class="text-2xl font-black text-gray-900 mb-1">Reporte Diario WhatsApp</h3>
-                                <p class="text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600">Análisis automático con IA</p>
+                                <p class="text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600">Analisis automatico con IA</p>
                             </div>
                             <div class="flex-shrink-0">
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-green-400 to-emerald-400 text-white shadow-md">
-                                    ✨ IA
+                                    IA
                                 </span>
                             </div>
                         </div>
