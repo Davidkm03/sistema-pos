@@ -37,8 +37,8 @@ class SecurityHeaders
         // Referrer Policy - Controlar información enviada en referrer
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         
-        // Permissions Policy - Deshabilitar features no necesarias
-        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+        // Permissions Policy - Permitir micrófono para voice features, bloquear cámara y geolocation
+        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(self), geolocation=()');
 
         return $response;
     }
