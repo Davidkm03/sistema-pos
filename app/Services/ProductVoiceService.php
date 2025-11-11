@@ -98,12 +98,13 @@ TAREA:
 Extraer: nombre, categoría, precio de venta, costo y stock inicial.
 
 REGLAS:
-1. Los precios pueden estar en palabras: "dos mil quinientos" = 2500, "mil" = 1000
+1. Los precios pueden estar en palabras: "dos mil quinientos" = 2500, "cuarenta y ocho mil" = 48000
 2. Cantidades en palabras: "cincuenta" = 50, "cien" = 100
-3. Categorías comunes: Bebidas, Snacks, Comidas, Lácteos, Aseo, Panadería, Dulces, Otros
-4. Si falta algún dato, usar null
-5. El nombre puede incluir tamaño/presentación (500ml, 1L, etc)
-6. Stock por defecto es 0 si no se menciona
+3. Categorías comunes: Bebidas, Snacks, Comidas, Lácteos, Aseo, Panadería, Dulces, Lubricantes, Repuestos, Ferretería, Electrónica, Otros
+4. Si el usuario menciona una categoría específica, ÚSALA EXACTAMENTE como la dice (ej: "lubricantes" → "Lubricantes")
+5. Si falta algún dato, usar null
+6. El nombre puede incluir especificaciones técnicas (20W50, 4 tiempos, etc)
+7. Stock por defecto es 0 si no se menciona
 
 FORMATO DE SALIDA:
 Devuelve SOLO un objeto JSON válido sin explicaciones:
@@ -119,6 +120,9 @@ EJEMPLOS:
 
 Entrada: "Coca Cola 500ml categoría bebidas precio dos mil quinientos costo mil quinientos stock cincuenta"
 Salida: {"nombre":"Coca Cola 500ml","categoria":"Bebidas","precio":2500,"costo":1500,"stock":50}
+
+Entrada: "Aceites 20W50 4 tiempos lubricantes cuarenta y ocho mil pesos costo cuarenta mil tengo cincuenta"
+Salida: {"nombre":"Aceites 20W50 4 Tiempos","categoria":"Lubricantes","precio":48000,"costo":40000,"stock":50}
 
 Entrada: "Papas Margarita de snacks vale mil quinientos el costo es ochocientos tengo treinta"
 Salida: {"nombre":"Papas Margarita","categoria":"Snacks","precio":1500,"costo":800,"stock":30}

@@ -59,6 +59,56 @@
                     this.mediaRecorder.stop();
                     this.recording = false;
                 }
+            },
+
+            startTutorial() {
+                if (typeof driver === 'undefined') {
+                    console.error('Driver.js no cargado');
+                    return;
+                }
+
+                const driverObj = driver({
+                    showProgress: true,
+                    steps: [
+                        {
+                            element: '.voice-record-btn',
+                            popover: {
+                                title: '🎤 Paso 1: Grabar',
+                                description: 'Presiona este botón y habla claramente. Di el nombre, categoría, precio, costo y stock del producto.',
+                                position: 'bottom'
+                            }
+                        },
+                        {
+                            element: '.voice-example-box',
+                            popover: {
+                                title: '💡 Ejemplo de uso',
+                                description: 'Puedes decir algo como: "Aceites 20W50 categoría lubricantes precio cuarenta y ocho mil costo cuarenta mil tengo cincuenta unidades"',
+                                position: 'top'
+                            }
+                        },
+                        {
+                            popover: {
+                                title: '✨ Paso 2: Procesar',
+                                description: 'Después de grabar, el texto aparecerá. Click en "Procesar con IA" para que GPT-4o-mini extraiga los datos estructurados.'
+                            }
+                        },
+                        {
+                            popover: {
+                                title: '✅ Paso 3: Crear',
+                                description: 'Verifica los datos extraídos y presiona "Crear Producto". Si la categoría no existe, se creará automáticamente.'
+                            }
+                        },
+                        {
+                            popover: {
+                                title: '🚀 ¡Listo!',
+                                description: 'Tu producto se creará en segundos. Puedes crear múltiples productos rápidamente usando solo tu voz.',
+                                position: 'center'
+                            }
+                        }
+                    ]
+                });
+
+                driverObj.drive();
             }
         }"
         x-show="open"
@@ -77,14 +127,24 @@
                         <h3 class="text-2xl font-bold text-gray-900">🎤 Crear Producto por Voz</h3>
                         <p class="text-sm text-gray-500">OpenAI Whisper + GPT-4o-mini ✨</p>
                     </div>
-                    <button @click="$wire.close()" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+                    <div class="flex gap-2">
+                        <button 
+                            @click="startTutorial()" 
+                            class="text-blue-500 hover:text-blue-700 p-2 rounded-lg hover:bg-blue-50"
+                            title="Ver tutorial">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </button>
+                        <button @click="$wire.close()" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 voice-example-box">
                     <p class="text-sm text-blue-800">
                         <strong>Ejemplo:</strong> "Coca Cola categoría bebidas precio dos mil quinientos costo mil quinientos stock cincuenta"
                     </p>
@@ -96,7 +156,7 @@
                         @click="recording ? stopRecording() : startRecording()"
                         :disabled="processing"
                         :class="recording ? 'bg-red-500 hover:bg-red-600 scale-110' : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'"
-                        class="w-32 h-32 rounded-full text-white shadow-xl transition-all flex items-center justify-center disabled:opacity-50">
+                        class="w-32 h-32 rounded-full text-white shadow-xl transition-all flex items-center justify-center disabled:opacity-50 voice-record-btn">
                         <svg x-show="!recording" class="w-16 h-16" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clip-rule="evenodd"></path>
                         </svg>
@@ -161,6 +221,10 @@
             </div>
         </div>
     </div>
+
+    {{-- Driver.js CDN --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.iife.js"></script>
 
     @script
     <script>

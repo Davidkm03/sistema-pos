@@ -98,14 +98,29 @@ class VoiceProductCreator extends Component
             $empresaId = Auth::user()->empresa_id;
             $data = $this->voiceExtractedData;
 
-            // Buscar o crear categoría
-            $category = Category::firstOrCreate(
-                [
-                    'name' => $data['categoria'],
-                    'empresa_id' => $empresaId
-                ],
-                ['description' => 'Categoría creada automáticamente por voz']
-            );
+            // Buscar categoría existente similar o crear nueva
+            $categoryName = $data['categoria'];
+            
+            // Buscar categoría exacta primero
+            $category = Category::where('empresa_id', $empresaId)
+                ->where('name', $categoryName)
+                ->first();
+            
+            // Si no existe, buscar similar (case-insensitive, con % LIKE)
+            if (!$category) {
+                $category = Category::where('empresa_id', $empresaId)
+                    ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($categoryName) . '%'])
+                    ->first();
+            }
+            
+            // Si aún no existe, crear nueva
+            if (!$category) {
+                $category = Category::create([
+                    'name' => $categoryName,
+                    'empresa_id' => $empresaId,
+                    'description' => 'Categoría creada automáticamente por voz'
+                ]);
+            }
 
             // Generar SKU automático
             $lastProduct = Product::where('empresa_id', $empresaId)
