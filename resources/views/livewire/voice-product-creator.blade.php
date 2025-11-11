@@ -87,13 +87,13 @@
                 {
                     popover: {
                         title: '✨ Paso 2: Procesar',
-                        description: 'Después de grabar, el texto aparecerá. Click en "Procesar con IA" para que GPT-4o-mini extraiga los datos estructurados.'
+                        description: 'Después de grabar, el texto aparecerá. Click en \\'Procesar con IA\\' para que GPT-4o-mini extraiga los datos estructurados.'
                     }
                 },
                 {
                     popover: {
                         title: '✅ Paso 3: Crear',
-                        description: 'Verifica los datos extraídos y presiona "Crear Producto". Si la categoría no existe, se creará automáticamente.'
+                        description: 'Verifica los datos extraídos y presiona \\'Crear Producto\\'. Si la categoría no existe, se creará automáticamente.'
                     }
                 },
                 {
