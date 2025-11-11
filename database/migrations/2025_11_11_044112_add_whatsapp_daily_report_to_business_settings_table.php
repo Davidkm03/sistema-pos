@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('business_settings', function (Blueprint $table) {
-            $table->boolean('whatsapp_daily_report_enabled')->default(false)->after('logo');
-            $table->time('whatsapp_report_time')->default('19:00:00')->after('whatsapp_daily_report_enabled');
-            $table->string('owner_whatsapp', 20)->nullable()->after('whatsapp_report_time');
-            $table->boolean('whatsapp_report_include_combos')->default(true)->after('owner_whatsapp');
+            $table->boolean('whatsapp_daily_report_enabled')->default(false);
+            $table->time('whatsapp_report_time')->default('19:00:00');
+            $table->string('owner_whatsapp', 20)->nullable();
+            $table->boolean('whatsapp_report_include_combos')->default(true);
         });
     }
 
