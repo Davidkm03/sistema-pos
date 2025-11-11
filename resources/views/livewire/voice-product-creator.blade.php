@@ -82,7 +82,7 @@
                             element: '.voice-example-box',
                             popover: {
                                 title: '💡 Ejemplo de uso',
-                                description: 'Puedes decir algo como: "Aceites 20W50 categoría lubricantes precio cuarenta y ocho mil costo cuarenta mil tengo cincuenta unidades"',
+                                description: 'Di el nombre del producto, su categoría, precio, costo y cantidad de stock disponible.',
                                 position: 'top'
                             }
                         },
