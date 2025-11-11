@@ -11,7 +11,22 @@
             extractedData: @entangle('voiceExtractedData').live,
 
             init() {
-                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                console.log('VoiceProductCreator Alpine init - Modal should be closed');
+                
+                // NO inicializar Speech Recognition aquí - solo cuando el usuario haga click
+                // La API requiere interacción del usuario (user gesture) para pedir permisos
+            },
+
+            startRecording() {
+                console.log('User clicked record button - initializing Speech Recognition');
+                
+                // Inicializar Speech Recognition SOLO cuando el usuario hace click (user gesture required)
+                if (!this.recognition) {
+                    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+                        Swal.fire('No Soportado', 'Tu navegador no soporta reconocimiento de voz. Usa Chrome, Edge o Safari.', 'error');
+                        return;
+                    }
+
                     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
                     this.recognition = new SR();
                     this.recognition.lang = 'es-CO';
@@ -21,6 +36,7 @@
                     this.recognition.onresult = (event) => {
                         this.transcript = event.results[0][0].transcript;
                         this.recording = false;
+                        console.log('Speech recognized:', this.transcript);
                     };
 
                     this.recognition.onerror = (event) => {
@@ -30,8 +46,16 @@
                         if (event.error === 'not-allowed') {
                             Swal.fire({
                                 title: 'Micrófono Bloqueado',
-                                html: '<p>Permite el micrófono en tu navegador:</p><ol style=\'text-align:left;padding-left:20px\'><li>Click en el candado 🔒</li><li>Permitir Micrófono</li><li>Recarga la página</li></ol>',
-                                icon: 'warning'
+                                html: '<p><strong>Pasos para permitir el micrófono:</strong></p><ol style="text-align:left;padding-left:20px;margin-top:10px"><li>Click en el <strong>candado 🔒</strong> en la barra de direcciones</li><li>Busca <strong>"Micrófono"</strong></li><li>Selecciona <strong>"Permitir"</strong></li><li>Recarga la página (F5)</li></ol><p style="margin-top:15px"><strong>Nota:</strong> Asegúrate de estar usando <strong>HTTPS</strong> (candado en la URL)</p>',
+                                icon: 'warning',
+                                confirmButtonText: 'Entendido',
+                                width: '500px'
+                            });
+                        } else if (event.error === 'no-speech') {
+                            Swal.fire({
+                                title: 'No se detectó voz',
+                                text: 'Habla más cerca del micrófono e intenta de nuevo',
+                                icon: 'info'
                             });
                         } else if (event.error !== 'aborted') {
                             Swal.fire('Error', 'Error de grabación: ' + event.error, 'error');
@@ -40,16 +64,11 @@
 
                     this.recognition.onend = () => {
                         this.recording = false;
+                        console.log('Speech recognition ended');
                     };
                 }
-            },
-
-            startRecording() {
-                if (!this.recognition) {
-                    Swal.fire('No Soportado', 'Usa Chrome, Edge o Safari', 'error');
-                    return;
-                }
                 
+                // Resetear y empezar
                 this.transcript = '';
                 this.extractedData = null;
                 this.recording = true;
@@ -57,9 +76,11 @@
                 setTimeout(() => {
                     try {
                         this.recognition.start();
+                        console.log('Speech recognition started successfully');
                     } catch (error) {
+                        console.error('Error starting recognition:', error);
                         this.recording = false;
-                        Swal.fire('Error', 'No se pudo iniciar', 'error');
+                        Swal.fire('Error', 'No se pudo iniciar: ' + error.message, 'error');
                     }
                 }, 100);
             },
