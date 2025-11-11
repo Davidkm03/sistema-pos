@@ -244,9 +244,13 @@ class ProductManager extends Component
         // Paginate products (10 per page)
         $products = $query->paginate(10);
 
-        // Get all categories and suppliers for the form dropdown
+        // Get all categories for the form dropdown
         $categories = Category::all();
-        $suppliers = \App\Models\Supplier::where('is_active', true)->orderBy('name')->get();
+        
+        // Get all active suppliers for the form dropdown
+        $suppliers = \App\Models\Supplier::where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
         return view('livewire.product-manager', [
             'products' => $products,

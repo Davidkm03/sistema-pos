@@ -225,6 +225,6 @@ class SupplierManager extends Component
 
         return view('livewire.supplier-manager', [
             'suppliers' => $suppliers
-        ]);
+        ])->layout('layouts.app');
     }
 }
