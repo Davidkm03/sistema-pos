@@ -59,6 +59,9 @@ class SendDailyWhatsAppReport extends Command
         }
 
         try {
+            // Set empresa_id in report service
+            $this->reportService->setEmpresaId($settings->empresa_id);
+            
             // Generate report data
             $this->info('Analizando ventas...');
             $salesData = $this->reportService->getSalesToday();
@@ -102,6 +105,7 @@ class SendDailyWhatsAppReport extends Command
 
             // Log the report
             Log::channel('daily')->info('Daily WhatsApp Report Generated', [
+                'empresa_id' => $settings->empresa_id,
                 'phone' => $settings->owner_whatsapp,
                 'sales' => $salesData['total_sales'],
                 'revenue' => $salesData['total_revenue'],

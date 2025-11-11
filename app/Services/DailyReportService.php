@@ -5,22 +5,49 @@ namespace App\Services;
 use App\Models\Sale;
 use App\Models\Product;
 use App\Models\SaleItem;
+use App\Models\BusinessSetting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class DailyReportService
 {
+    protected $empresaId;
+
+    public function __construct()
+    {
+        // Get empresa_id from authenticated user if available
+        if (Auth::check()) {
+            $this->empresaId = Auth::user()->empresa_id;
+        }
+    }
+
     /**
-     * Get today's sales summary
+     * Set empresa_id manually (for scheduled tasks)
+     */
+    public function setEmpresaId($empresaId)
+    {
+        $this->empresaId = $empresaId;
+        return $this;
+    }
+
+    /**
+     * Get today's sales summary for the empresa
      */
     public function getSalesToday()
     {
         $today = Carbon::today();
         
-        $sales = Sale::whereDate('created_at', $today)
-            ->where('status', 'completed')
-            ->get();
+        $query = Sale::whereDate('created_at', $today)
+            ->where('status', 'completed');
+        
+        // Filter by empresa_id if set
+        if ($this->empresaId) {
+            $query->where('empresa_id', $this->empresaId);
+        }
+        
+        $sales = $query->get();
 
         return [
             'total_sales' => $sales->count(),
@@ -37,11 +64,17 @@ class DailyReportService
     {
         $today = Carbon::today();
         
-        $profitData = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.id')
+        $query = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.id')
             ->join('products', 'sale_items.product_id', '=', 'products.id')
             ->whereDate('sales.created_at', $today)
-            ->where('sales.status', 'completed')
-            ->select(
+            ->where('sales.status', 'completed');
+        
+        // Filter by empresa_id if set
+        if ($this->empresaId) {
+            $query->where('sales.empresa_id', $this->empresaId);
+        }
+        
+        $profitData = $query->select(
                 DB::raw('SUM(sale_items.price * sale_items.quantity) as revenue'),
                 DB::raw('SUM(products.cost * sale_items.quantity) as cost')
             )
@@ -80,11 +113,17 @@ class DailyReportService
         $today = Carbon::today();
         
         // Get sales velocity (units sold today)
-        $velocityData = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.id')
+        $query = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.id')
             ->join('products', 'sale_items.product_id', '=', 'products.id')
             ->whereDate('sales.created_at', $today)
-            ->where('sales.status', 'completed')
-            ->select(
+            ->where('sales.status', 'completed');
+        
+        // Filter by empresa_id if set
+        if ($this->empresaId) {
+            $query->where('sales.empresa_id', $this->empresaId);
+        }
+        
+        $velocityData = $query->select(
                 'products.id',
                 'products.name',
                 'products.stock',
@@ -111,15 +150,21 @@ class DailyReportService
         $thirtyDaysAgo = Carbon::now()->subDays(30);
         
         // Find products frequently bought together
-        $combos = DB::table('sale_items as si1')
+        $query = DB::table('sale_items as si1')
             ->join('sale_items as si2', 'si1.sale_id', '=', 'si2.sale_id')
             ->join('products as p1', 'si1.product_id', '=', 'p1.id')
             ->join('products as p2', 'si2.product_id', '=', 'p2.id')
             ->join('sales', 'si1.sale_id', '=', 'sales.id')
             ->where('si1.product_id', '<', 'si2.product_id') // Avoid duplicates (A-B vs B-A)
             ->where('sales.created_at', '>=', $thirtyDaysAgo)
-            ->where('sales.status', 'completed')
-            ->select(
+            ->where('sales.status', 'completed');
+        
+        // Filter by empresa_id if set
+        if ($this->empresaId) {
+            $query->where('sales.empresa_id', $this->empresaId);
+        }
+        
+        $combos = $query->select(
                 'p1.id as product1_id',
                 'p1.name as product1_name',
                 'p1.price as product1_price',

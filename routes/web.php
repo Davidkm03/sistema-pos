@@ -41,6 +41,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/categorias', function () {
             return view('categories.index');
         })->name('categories.index');
+        
+        Route::get('/proveedores', \App\Livewire\SupplierManager::class)->name('suppliers.index');
     });
     
     // Rutas de Inventario - Requiere permiso view-inventory
