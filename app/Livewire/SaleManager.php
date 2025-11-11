@@ -7,8 +7,10 @@ use App\Models\SaleCancellationReason;
 use App\Models\SaleAuditLog;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 use Carbon\Carbon;
 
+#[Layout('layouts.app')]
 class SaleManager extends Component
 {
     use WithPagination;
@@ -23,14 +25,14 @@ class SaleManager extends Component
     // Modal de anulación
     public $showCancelModal = false;
     public $saleToCancel = null;
-    public $selectedReason = null;
+    public $cancellationReason = '';
     public $detailedReason = '';
 
     // Info
-    public $cancellationReasons = [];
+    public $previousReasons = [];
 
     protected $rules = [
-        'selectedReason' => 'required',
+        'cancellationReason' => 'required|min:5',
         'detailedReason' => 'required|min:20',
     ];
 
@@ -38,21 +40,19 @@ class SaleManager extends Component
     {
         $this->dateFrom = today()->subDays(7)->format('Y-m-d');
         $this->dateTo = today()->format('Y-m-d');
-        $this->loadCancellationReasons();
+        $this->loadPreviousReasons();
     }
 
-    public function loadCancellationReasons()
+    public function loadPreviousReasons()
     {
-        $this->cancellationReasons = SaleCancellationReason::active()
-            ->ordered()
-            ->get()
-            ->map(function ($reason) {
-                return [
-                    'id' => $reason->id,
-                    'text' => $reason->reason,
-                    'requires_approval' => $reason->requires_admin_approval,
-                ];
-            })
+        // Obtener razones únicas de ventas canceladas anteriormente
+        $this->previousReasons = Sale::whereNotNull('cancellation_reason')
+            ->where('status', 'cancelled')
+            ->select('cancellation_reason')
+            ->distinct()
+            ->orderBy('cancellation_reason')
+            ->limit(20)
+            ->pluck('cancellation_reason')
             ->toArray();
     }
 
@@ -72,7 +72,7 @@ class SaleManager extends Component
 
         $this->saleToCancel = $sale;
         $this->showCancelModal = true;
-        $this->reset(['selectedReason', 'detailedReason']);
+        $this->reset(['cancellationReason', 'detailedReason']);
     }
 
     public function closeCancelModal()
@@ -87,26 +87,18 @@ class SaleManager extends Component
         $this->validate();
 
         try {
-            $reason = SaleCancellationReason::find($this->selectedReason);
-
-            // Verificar si requiere aprobación de admin
-            if ($reason->requiresApproval() && !auth()->user()->hasRole('Admin')) {
-                $this->dispatch('show-alert', [
-                    'type' => 'error',
-                    'message' => 'Esta razón requiere aprobación de un administrador'
-                ]);
-                return;
-            }
-
-            // Anular la venta
-            $this->saleToCancel->cancel($reason->reason, $this->detailedReason);
+            // Anular la venta con la razón escrita por el usuario
+            $this->saleToCancel->cancel($this->cancellationReason, $this->detailedReason);
 
             $this->dispatch('show-alert', [
                 'type' => 'success',
-                'message' => '✓ Venta #' . $this->saleToCancel->id . ' anulada exitosamente'
+                'message' => 'Venta #' . $this->saleToCancel->id . ' anulada exitosamente'
             ]);
 
             $this->closeCancelModal();
+            
+            // Recargar razones para incluir la nueva
+            $this->loadPreviousReasons();
 
         } catch (\Exception $e) {
             $this->dispatch('show-alert', [
@@ -141,6 +133,6 @@ class SaleManager extends Component
     {
         return view('livewire.sale-manager', [
             'sales' => $this->sales,
-        ])->layout('layouts.app');
+        ]);
     }
 }

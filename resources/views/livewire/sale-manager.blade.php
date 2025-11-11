@@ -389,18 +389,39 @@
                                 </svg>
                                 Razón de anulación
                                 <span class="text-red-500">*</span>
+                                <span class="text-gray-500 font-normal text-xs">(mínimo 5 caracteres)</span>
                             </label>
-                            <select wire:model="selectedReason"
-                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all font-semibold @error('selectedReason') border-red-500 @enderror">
-                                <option value="">Seleccione una razón...</option>
-                                @foreach($cancellationReasons as $reason)
-                                    <option value="{{ $reason['id'] }}">
-                                        {{ $reason['text'] }}
-                                        @if($reason['requires_approval']) 🔒 (Requiere aprobación admin) @endif
-                                    </option>
+                            <input type="text" 
+                                   wire:model="cancellationReason"
+                                   list="cancellation-reasons-list"
+                                   placeholder="Ej: Error en productos, Cliente solicitó cancelación, etc."
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all font-semibold @error('cancellationReason') border-red-500 @enderror">
+                            
+                            <!-- Datalist con sugerencias de razones anteriores -->
+                            <datalist id="cancellation-reasons-list">
+                                @foreach($previousReasons as $reason)
+                                    <option value="{{ $reason }}">
                                 @endforeach
-                            </select>
-                            @error('selectedReason')
+                                <!-- Razones predeterminadas comunes -->
+                                <option value="Error en productos">
+                                <option value="Error en precio">
+                                <option value="Error en cantidad">
+                                <option value="Cliente no pagó">
+                                <option value="Devolución por garantía">
+                                <option value="Venta duplicada">
+                                <option value="Cliente solicitó cancelación">
+                            </datalist>
+                            
+                            @if(count($previousReasons) > 0)
+                                <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Escribe tu razón o selecciona una de las sugerencias anteriores
+                                </p>
+                            @endif
+                            
+                            @error('cancellationReason')
                                 <p class="mt-2 text-sm font-bold text-red-600 flex items-center gap-1">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
