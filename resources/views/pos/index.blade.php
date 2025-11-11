@@ -254,7 +254,7 @@
                                     <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                                     </svg>
-                                    ⚠️ Productos con Bajo Stock
+                                    Productos con Bajo Stock
                                 </h3>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     @foreach($lowStockProducts as $product)
@@ -374,7 +374,7 @@
                                         <option value="efectivo">💵 Efectivo</option>
                                         <option value="tarjeta_debito">💳 Tarjeta Débito</option>
                                         <option value="tarjeta_credito">💳 Tarjeta Crédito</option>
-                                        <option value="transferencia">📱 Transferencia</option>
+                                        <option value="transferencia">Transferencia</option>
                                     </select>
                                 </div>
 
@@ -443,7 +443,7 @@
                                     </div>
                                     
                                     <div id="insufficientDisplay" class="hidden p-3 bg-red-50 border-2 border-red-200 rounded-xl">
-                                        <span class="text-red-700 text-sm font-bold">⚠️ Monto insuficiente</span>
+                                        <span class="text-red-700 text-sm font-bold">Monto insuficiente</span>
                                     </div>
                                 </div>
 
@@ -1302,7 +1302,7 @@
             if (paymentMethod === 'tarjeta_debito') paymentMethodName = 'Tarjeta Débito';
             else if (paymentMethod === 'tarjeta_credito') paymentMethodName = 'Tarjeta Crédito';
             else if (paymentMethod === 'transferencia') {
-                paymentMethodName = `📱 Transferencia${transferType ? ' (' + transferType + ')' : ''}`;
+                paymentMethodName = `Transferencia${transferType ? ' (' + transferType + ')' : ''}`;
             }
 
             // Confirmación antes de procesar

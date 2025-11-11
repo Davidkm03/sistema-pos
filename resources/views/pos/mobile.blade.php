@@ -649,7 +649,7 @@
                 </div>
                 
                 <div x-show="receivedAmount > 0 && changeAmount < 0" class="mt-4 p-3 bg-red-50 border-2 border-red-200 rounded-lg">
-                    <span class="text-red-700 text-sm font-medium">⚠️ Monto insuficiente</span>
+                    <span class="text-red-700 text-sm font-medium">Monto insuficiente</span>
                 </div>
             </div>
             

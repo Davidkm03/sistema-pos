@@ -37,13 +37,23 @@
                                 <label class="block text-sm font-bold text-gray-700 mb-2">
                                     Proveedor <span class="text-red-500">*</span>
                                 </label>
-                                <select wire:model="supplier_id" 
-                                        class="w-full rounded-lg border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
-                                    <option value="">Seleccionar proveedor</option>
-                                    @foreach($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="flex gap-2">
+                                    <select wire:model="supplier_id" 
+                                            class="flex-1 rounded-lg border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
+                                        <option value="">Seleccionar proveedor</option>
+                                        @foreach($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" 
+                                            wire:click="openSupplierModal"
+                                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors"
+                                            title="Crear nuevo proveedor">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                    </button>
+                                </div>
                                 @error('supplier_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
@@ -295,6 +305,111 @@
         </div>
         @endif
     </div>
+
+    <!-- Modal para crear proveedor -->
+    @if($showSupplierModal)
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-green-600 to-teal-700 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        Crear Nuevo Proveedor
+                    </h3>
+                    <button wire:click="closeSupplierModal" 
+                            class="text-white hover:text-gray-200 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6">
+                <form wire:submit.prevent="saveSupplier">
+                    <div class="space-y-6">
+                        <!-- Nombre -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                Nombre del Proveedor <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   wire:model="newSupplierName"
+                                   class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200"
+                                   placeholder="Ej: Distribuidora ABC"
+                                   autofocus>
+                            @error('newSupplierName') 
+                                <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> 
+                            @enderror
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                Teléfono
+                            </label>
+                            <input type="text" 
+                                   wire:model="newSupplierPhone"
+                                   class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200"
+                                   placeholder="Ej: +56 9 1234 5678">
+                            @error('newSupplierPhone') 
+                                <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> 
+                            @enderror
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                Correo Electrónico
+                            </label>
+                            <input type="email" 
+                                   wire:model="newSupplierEmail"
+                                   class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200"
+                                   placeholder="Ej: contacto@proveedor.com">
+                            @error('newSupplierEmail') 
+                                <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> 
+                            @enderror
+                        </div>
+
+                        <!-- Dirección -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                Dirección
+                            </label>
+                            <textarea wire:model="newSupplierAddress" 
+                                      rows="3"
+                                      class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200"
+                                      placeholder="Dirección completa del proveedor"></textarea>
+                            @error('newSupplierAddress') 
+                                <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> 
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="mt-8 flex gap-3 justify-end pt-6 border-t border-gray-200">
+                        <button type="button" 
+                                wire:click="closeSupplierModal"
+                                class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg transition-colors">
+                            Cancelar
+                        </button>
+                        <button type="submit"
+                                class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors shadow-md flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Crear Proveedor
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 
 @push('scripts')
@@ -407,6 +522,27 @@
                 icon: 'error',
                 title: 'Error',
                 text: event.message || 'Ocurrió un error al procesar la solicitud',
+                confirmButtonColor: '#DC2626'
+            });
+        });
+
+        Livewire.on('supplier-created', () => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Proveedor creado',
+                text: 'El proveedor se ha creado correctamente y está seleccionado',
+                timer: 3000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+        });
+
+        Livewire.on('supplier-error', (event) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al crear proveedor',
+                text: event.message || 'Ocurrió un error al crear el proveedor',
                 confirmButtonColor: '#DC2626'
             });
         });

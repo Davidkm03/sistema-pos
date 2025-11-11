@@ -30,22 +30,37 @@
         <div class="min-h-screen bg-gray-100">
             @include('layouts.navigation')
 
-            <!-- Main Content with Responsive Sidebar Offset -->
+            <!-- Fixed Header with Notifications -->
             <div class="lg:ml-64 transition-all duration-300">
-                <!-- Page Heading -->
-                @isset($header)
-                    <header class="bg-white shadow">
-                        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                            {{ $header }}
-                        </div>
-                    </header>
-                @endisset
+                <header class="bg-white shadow-sm border-b border-gray-200 fixed top-0 right-0 left-0 lg:left-64 z-40">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="flex items-center justify-between h-16">
+                            <!-- Page Title (if provided) -->
+                            <div class="flex-1">
+                                @isset($header)
+                                    <div class="text-sm text-gray-600">
+                                        {{ $header }}
+                                    </div>
+                                @endisset
+                            </div>
 
-                <!-- Page Content -->
-                <main>
-                    {{ $slot ?? '' }}
-                    @yield('content')
-                </main>
+                            <!-- User Actions -->
+                            <div class="flex items-center space-x-4">
+                                <!-- Notifications Dropdown -->
+                                @livewire('notification-dropdown')
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Main Content with Header Offset -->
+                <div class="pt-16">
+                    <!-- Page Content -->
+                    <main>
+                        {{ $slot ?? '' }}
+                        @yield('content')
+                    </main>
+                </div>
             </div>
         </div>
         @livewireScripts

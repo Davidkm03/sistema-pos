@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PosController;
 use App\Livewire\TicketSettings;
 use App\Livewire\DailyReportSettings;
+use App\Livewire\BusinessSettingsManager;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -134,6 +135,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['permission:manage-settings'])->group(function () {
         Route::get('/configuracion/tickets', TicketSettings::class)->name('settings.tickets');
         Route::get('/configuracion/reporte-diario', DailyReportSettings::class)->name('settings.daily-report');
+        Route::get('/configuracion/negocio', BusinessSettingsManager::class)->name('settings.business');
     });
     
     // Configuración General del Sistema - Todos los usuarios
@@ -141,10 +143,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return view('settings.main');
     })->name('settings.index');
     
-    // Configuración de Negocio - Todos los usuarios pueden configurar su negocio
-    Route::get('/configuracion/negocio', function () {
-        return view('settings.business');
-    })->name('settings.business');
+    // Configuración de Notificaciones - Solo Admin y Supervisor
+    Route::middleware(['permission:manage-settings'])->group(function () {
+        Route::get('/configuracion/notificaciones', function () {
+            return view('settings.notifications');
+        })->name('settings.notifications');
+    });
     
     // Rutas de Gestión de Usuarios - Solo Admin y Super Admin
     Route::middleware(['role:Admin|super-admin'])->group(function () {
@@ -164,6 +168,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Gestión de Empresas
         Route::resource('empresas', App\Http\Controllers\EmpresaController::class);
     });
+    
+    // Rutas de Notificaciones - Todos los usuarios autenticados
+    Route::get('/notificaciones', function () {
+        return view('notifications.index');
+    })->name('notifications.index');
     
     // Ruta de debug para verificar roles del usuario actual
     Route::get('/debug-roles', function() {

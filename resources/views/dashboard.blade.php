@@ -185,7 +185,7 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-900">🎯 {{ $currentGoal->name }}</h3>
+                                    <h3 class="text-lg font-bold text-gray-900">{{ $currentGoal->name }}</h3>
                                     <p class="text-xs text-gray-600">
                                         {{ \Carbon\Carbon::parse($currentGoal->start_date)->format('d/m/Y') }} - 
                                         {{ \Carbon\Carbon::parse($currentGoal->end_date)->format('d/m/Y') }}
@@ -232,16 +232,16 @@
                         {{-- Stats Grid --}}
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                             <div class="bg-white rounded-lg p-4 border-2 border-amber-100 shadow-sm">
-                                <p class="text-xs text-gray-600 font-semibold mb-1">💰 Ganancia Actual</p>
+                                <p class="text-xs text-gray-600 font-semibold mb-1">Ganancia Actual</p>
                                 <p class="text-xl font-black text-gray-900">${{ number_format($currentProfit, 0) }}</p>
                             </div>
                             <div class="bg-white rounded-lg p-4 border-2 border-amber-100 shadow-sm">
-                                <p class="text-xs text-gray-600 font-semibold mb-1">🎯 Meta Objetivo</p>
+                                <p class="text-xs text-gray-600 font-semibold mb-1">Meta Objetivo</p>
                                 <p class="text-xl font-black text-gray-900">${{ number_format((float)$currentGoal->target_amount, 0) }}</p>
                             </div>
                             @if(!$isCompleted && !$isExpired)
                                 <div class="bg-white rounded-lg p-4 border-2 border-amber-100 shadow-sm">
-                                    <p class="text-xs text-gray-600 font-semibold mb-1">📊 Falta Alcanzar</p>
+                                    <p class="text-xs text-gray-600 font-semibold mb-1">Falta Alcanzar</p>
                                     <p class="text-xl font-black text-gray-900">
                                         ${{ number_format(abs($remainingAmount), 0) }}
                                     </p>

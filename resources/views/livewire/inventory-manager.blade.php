@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="flex-1">
-                <h4 class="text-lg font-black text-red-900 mb-2">⚠️ Productos Agotados ({{ $outOfStockProducts->count() }})</h4>
+                <h4 class="text-lg font-black text-red-900 mb-2">Productos Agotados ({{ $outOfStockProducts->count() }})</h4>
                 <p class="text-sm text-red-700 mb-3 font-semibold">Los siguientes productos NO tienen stock disponible:</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                     @foreach($outOfStockProducts as $product)

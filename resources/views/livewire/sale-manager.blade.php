@@ -66,7 +66,7 @@
                         <select wire:model.live="statusFilter"
                                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all font-semibold">
                             <option value="all">✨ Todas</option>
-                            <option value="completada">✅ Completadas</option>
+                            <option value="completada">Completadas</option>
                             <option value="anulada">❌ Anuladas</option>
                             <option value="corregida">🔄 Corregidas</option>
                         </select>
@@ -326,7 +326,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-bold text-yellow-800 mb-1">⚠️ Advertencia Importante</p>
+                                <p class="text-sm font-bold text-yellow-800 mb-1">Advertencia Importante</p>
                                 <p class="text-sm text-yellow-700">
                                     La anulación de una venta es <strong>irreversible</strong>.
                                     Se revertirá el inventario automáticamente y se registrará en el log de auditoría.
@@ -364,7 +364,7 @@
 
                         {{-- Productos --}}
                         <div class="mt-4">
-                            <p class="text-sm font-black text-gray-700 uppercase mb-3">📦 Productos ({{ $saleToCancel->saleItems->count() }})</p>
+                            <p class="text-sm font-black text-gray-700 uppercase mb-3">Productos ({{ $saleToCancel->saleItems->count() }})</p>
                             <div class="space-y-2 max-h-40 overflow-y-auto bg-white rounded-lg p-3 border-2 border-gray-100">
                                 @foreach($saleToCancel->saleItems as $item)
                                     <div class="flex justify-between items-center text-sm pb-2 border-b border-gray-100 last:border-0">

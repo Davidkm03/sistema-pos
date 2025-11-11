@@ -4,10 +4,19 @@ namespace App\Observers;
 
 use App\Models\Sale;
 use App\Models\InventoryMovement;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SaleObserver
 {
+    protected NotificationService $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     /**
      * Handle the Sale "creating" event.
      * Asignar automáticamente el empresa_id del usuario autenticado.
@@ -39,6 +48,14 @@ class SaleObserver
                     'reason' => 'Venta #' . $sale->id . ' - ' . ($sale->document_type === 'receipt' ? 'Recibo #' . $sale->receipt_number : 'Factura #' . $sale->invoice_number),
                     'user_id' => $sale->user_id,
                 ]);
+            }
+
+            // Crear notificaciones
+            try {
+                $this->notificationService->notifySaleCompleted($sale);
+                $this->notificationService->notifyLargeSale($sale);
+            } catch (\Exception $e) {
+                Log::error('Error creating sale notifications: ' . $e->getMessage());
             }
         }
     }

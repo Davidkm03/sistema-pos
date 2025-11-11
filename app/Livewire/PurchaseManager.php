@@ -8,8 +8,10 @@ use App\Models\Supplier;
 use App\Models\Product;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\DB;
 
+#[Layout('layouts.app')]
 class PurchaseManager extends Component
 {
     use WithPagination;
@@ -23,6 +25,13 @@ class PurchaseManager extends Component
     public $selectedProduct;
     public $productQuantity = 1;
     public $productCost = 0;
+    
+    // Modal de creación de proveedor
+    public $showSupplierModal = false;
+    public $newSupplierName = '';
+    public $newSupplierPhone = '';
+    public $newSupplierEmail = '';
+    public $newSupplierAddress = '';
     
     public $editingId = null;
     public $search = '';
@@ -229,6 +238,51 @@ class PurchaseManager extends Component
         $this->productCost = 0;
     }
 
+    public function openSupplierModal()
+    {
+        $this->showSupplierModal = true;
+        $this->reset(['newSupplierName', 'newSupplierPhone', 'newSupplierEmail', 'newSupplierAddress']);
+    }
+
+    public function closeSupplierModal()
+    {
+        $this->showSupplierModal = false;
+        $this->reset(['newSupplierName', 'newSupplierPhone', 'newSupplierEmail', 'newSupplierAddress']);
+    }
+
+    public function saveSupplier()
+    {
+        $this->validate([
+            'newSupplierName' => 'required|string|max:255',
+            'newSupplierPhone' => 'nullable|string|max:20',
+            'newSupplierEmail' => 'nullable|email|max:255',
+            'newSupplierAddress' => 'nullable|string|max:500',
+        ], [
+            'newSupplierName.required' => 'El nombre del proveedor es obligatorio',
+            'newSupplierName.max' => 'El nombre no puede exceder 255 caracteres',
+            'newSupplierPhone.max' => 'El teléfono no puede exceder 20 caracteres',
+            'newSupplierEmail.email' => 'El correo electrónico no es válido',
+            'newSupplierEmail.max' => 'El correo no puede exceder 255 caracteres',
+            'newSupplierAddress.max' => 'La dirección no puede exceder 500 caracteres',
+        ]);
+
+        try {
+            $supplier = Supplier::create([
+                'name' => $this->newSupplierName,
+                'phone' => $this->newSupplierPhone,
+                'email' => $this->newSupplierEmail,
+                'address' => $this->newSupplierAddress,
+                'is_active' => true,
+            ]);
+
+            $this->supplier_id = $supplier->id;
+            $this->closeSupplierModal();
+            $this->dispatch('supplier-created');
+        } catch (\Exception $e) {
+            $this->dispatch('supplier-error', message: $e->getMessage());
+        }
+    }
+
     public function render()
     {
         $suppliers = Supplier::where('is_active', true)->orderBy('name')->get();
@@ -254,6 +308,6 @@ class PurchaseManager extends Component
             'suppliers' => $suppliers,
             'products' => $products,
             'purchases' => $purchases,
-        ])->layout('layouts.app');
+        ]);
     }
 }

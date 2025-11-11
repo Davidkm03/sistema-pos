@@ -331,7 +331,7 @@
                                         </div>
 
                                         <div class="bg-white border border-green-300 rounded p-3 text-sm">
-                                            <p class="font-medium mb-1">✅ Ventajas:</p>
+                                            <p class="font-medium mb-1">Ventajas:</p>
                                             <ul class="list-disc list-inside text-xs space-y-1 text-gray-600">
                                                 <li>No necesita trámites con DIAN</li>
                                                 <li>Numeración libre</li>
@@ -379,7 +379,7 @@
                                         </div>
 
                                         <div class="bg-white border border-yellow-300 rounded p-3 text-sm">
-                                            <p class="font-medium mb-1 text-yellow-800">⚠️ Importante:</p>
+                                            <p class="font-medium mb-1 text-yellow-800">Importante:</p>
                                             <ul class="list-disc list-inside text-xs space-y-1 text-gray-600">
                                                 <li>Todos los campos son obligatorios</li>
                                                 <li>El sistema alertará al alcanzar 80% del rango</li>
@@ -399,7 +399,7 @@
 
                             <!-- CONFIGURACIÓN DE DESCUENTOS -->
                             <div class="border-t pt-6 mt-6">
-                                <h3 class="text-lg font-semibold mb-4">💰 Configuración de Descuentos</h3>
+                                <h3 class="text-lg font-semibold mb-4">Configuración de Descuentos</h3>
                                 <p class="text-sm text-gray-600 mb-4">
                                     Configura los límites máximos de descuento que puede otorgar cada rol al procesar una venta.
                                 </p>
@@ -409,7 +409,7 @@
                                         <!-- Descuento Cajero -->
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                                👤 Límite para Cajeros
+                                                Límite para Cajeros
                                             </label>
                                             <div class="relative">
                                                 <input type="number" 
@@ -554,7 +554,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                                👤 Usuario SMTP
+                                                Usuario SMTP
                                             </label>
                                             <input type="text" 
                                                    wire:model="smtp_username"

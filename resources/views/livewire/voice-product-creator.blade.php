@@ -109,7 +109,7 @@
                     },
                     {
                         popover: {
-                            title: '✅ Paso 3: Crear',
+                            title: 'Paso 3: Crear',
                             description: `Verifica los datos extraídos y presiona 'Crear Producto'. Si la categoría no existe, se creará automáticamente.`
                         }
                     },
@@ -192,7 +192,7 @@
             </div>
 
             <div x-show="transcript" class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-                <p class="text-sm font-bold text-gray-700 mb-2">📝 Transcrito:</p>
+                <p class="text-sm font-bold text-gray-700 mb-2">Transcrito:</p>
                 <p class="text-gray-900" x-text="transcript"></p>
                 <button
                     wire:click="processVoiceInput"
@@ -205,7 +205,7 @@
             </div>
 
             <div x-show="extractedData" class="bg-green-50 border border-green-300 rounded-lg p-6">
-                <p class="text-lg font-bold text-green-900 mb-4">✅ Producto detectado:</p>
+                <p class="text-lg font-bold text-green-900 mb-4">Producto detectado:</p>
 
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
@@ -237,7 +237,7 @@
                         wire:click="createFromVoice"
                         class="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700"
                     >
-                        ✅ Crear Producto
+                        Crear Producto
                     </button>
                     <button
                         wire:click="cancelVoiceInput"

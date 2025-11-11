@@ -420,7 +420,7 @@
 
             // Mostrar disclaimer si está activado
             if (businessSettings.show_tax_disclaimer !== false) {
-                ticketHTML += `<div class="center small" style="margin: 10px 0; padding: 5px; border: 1px solid #666;">⚠️ DOCUMENTO NO VÁLIDO COMO FACTURA<br>No genera derecho a impuestos descontables</div>`;
+                ticketHTML += `<div class="center small" style="margin: 10px 0; padding: 5px; border: 1px solid #666;">DOCUMENTO NO VÁLIDO COMO FACTURA<br>No genera derecho a impuestos descontables</div>`;
             }
 
             // Encabezado personalizado
