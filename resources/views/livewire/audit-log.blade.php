@@ -262,7 +262,8 @@
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Modal de Detalles -->
     @if($showDetailsModal && $selectedLog)
         <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
             <div class="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-lg bg-white">

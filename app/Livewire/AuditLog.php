@@ -5,8 +5,10 @@ namespace App\Livewire;
 use App\Models\SaleAuditLog;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 use Carbon\Carbon;
 
+#[Layout('layouts.app')]
 class AuditLog extends Component
 {
     use WithPagination;
@@ -70,6 +72,6 @@ class AuditLog extends Component
     {
         return view('livewire.audit-log', [
             'logs' => $this->logs,
-        ])->layout('layouts.app');
+        ]);
     }
 }
