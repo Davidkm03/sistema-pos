@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Agregar Security Headers a todas las respuestas web
         $middleware->web(append: [
             \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\EnsureUserHasEmpresa::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
