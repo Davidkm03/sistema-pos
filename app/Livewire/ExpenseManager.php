@@ -24,7 +24,7 @@ class ExpenseManager extends Component
     public $categoryName;
     public $categoryDescription;
     public $categoryColor = '#6B7280';
-    public $showCategoryForm = false;
+    public $showCategoryModal = false;
 
     public $editingId = null;
     public $search = '';
@@ -159,9 +159,10 @@ class ExpenseManager extends Component
                 'name' => $this->categoryName,
                 'description' => $this->categoryDescription,
                 'color' => $this->categoryColor,
+                'is_active' => true,
             ]);
 
-            $this->reset(['categoryName', 'categoryDescription', 'categoryColor', 'showCategoryForm']);
+            $this->reset(['categoryName', 'categoryDescription', 'categoryColor', 'showCategoryModal']);
             $this->categoryColor = '#6B7280';
             $this->dispatch('category-created');
         } catch (\Exception $e) {

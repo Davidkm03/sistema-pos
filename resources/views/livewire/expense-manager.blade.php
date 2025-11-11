@@ -13,7 +13,7 @@
                 <p class="text-sm text-gray-600 mt-1">Registra y controla los gastos de tu negocio</p>
             </div>
         </div>
-        <button wire:click="showCategoryForm = !showCategoryForm" 
+        <button wire:click="$set('showCategoryModal', true)" 
                 class="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors shadow-md flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
@@ -22,42 +22,84 @@
         </button>
     </div>
 
-    <!-- Category Form -->
-    @if($showCategoryForm)
-    <div class="bg-white rounded-2xl shadow-xl border-2 border-indigo-200 overflow-hidden mb-8">
-        <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-700">
-            <h2 class="text-xl font-bold text-white">Nueva Categoría de Gasto</h2>
-        </div>
-        <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Nombre</label>
-                    <input type="text" wire:model="categoryName" 
-                           class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-                           placeholder="Ej: Servicios públicos">
-                    @error('categoryName') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    <!-- Category Modal -->
+    @if($showCategoryModal)
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" wire:click.self="$set('showCategoryModal', false)">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden transform transition-all" wire:click.stop>
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-700 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-white">Nueva Categoría de Gasto</h2>
                 </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Descripción</label>
-                    <input type="text" wire:model="categoryDescription" 
-                           class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-                           placeholder="Opcional">
-                    @error('categoryDescription') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Color</label>
-                    <input type="color" wire:model="categoryColor" 
-                           class="w-full h-10 rounded-lg border-gray-300">
+                <button wire:click="$set('showCategoryModal', false)" class="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6">
+                <div class="space-y-4">
+                    <!-- Name -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                            Nombre de la Categoría <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" wire:model="categoryName" 
+                               class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base py-3"
+                               placeholder="Ej: Servicios públicos, Alquiler, Mantenimiento...">
+                        @error('categoryName') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                            Descripción (Opcional)
+                        </label>
+                        <textarea wire:model="categoryDescription" rows="2"
+                                  class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base"
+                                  placeholder="Breve descripción de la categoría"></textarea>
+                        @error('categoryDescription') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- Color -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                            Color de Identificación <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex items-center gap-4">
+                            <input type="color" wire:model.live="categoryColor" 
+                                   class="h-12 w-20 rounded-lg border-2 border-gray-300 cursor-pointer">
+                            <div class="flex-1">
+                                <div class="px-4 py-2 rounded-lg font-bold text-sm" 
+                                     style="background-color: {{ $categoryColor }}20; color: {{ $categoryColor }}; border: 2px solid {{ $categoryColor }};">
+                                    Vista previa del color
+                                </div>
+                            </div>
+                        </div>
+                        @error('categoryColor') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
+                    </div>
                 </div>
             </div>
-            <div class="flex gap-3 mt-4">
-                <button wire:click="saveCategory" 
-                        class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors">
-                    Guardar Categoría
-                </button>
-                <button wire:click="showCategoryForm = false" 
-                        class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg transition-colors">
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+                <button wire:click="$set('showCategoryModal', false)" 
+                        class="px-6 py-2.5 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg transition-colors">
                     Cancelar
+                </button>
+                <button wire:click="saveCategory" 
+                        class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Crear Categoría
                 </button>
             </div>
         </div>
@@ -357,6 +399,7 @@
                 toast: true,
                 position: 'top-end'
             });
+            @this.set('showCategoryModal', false);
         });
 
         Livewire.on('expense-error', (event) => {
