@@ -14,6 +14,7 @@ class ProductManager extends Component
     // Public properties
     public $name;
     public $category_id;
+    public $supplier_id;
     public $price;
     public $cost;
     public $stock;
@@ -46,6 +47,7 @@ class ProductManager extends Component
         $rules = [
             'name' => 'required|min:3|max:200',
             'category_id' => 'required|exists:categories,id',
+            'supplier_id' => 'nullable|exists:suppliers,id',
             'price' => 'required|numeric|min:0',
             'cost' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
@@ -165,6 +167,7 @@ class ProductManager extends Component
             $this->editingId = $product->id;
             $this->name = $product->name;
             $this->category_id = $product->category_id;
+            $this->supplier_id = $product->supplier_id;
             $this->price = $product->price;
             $this->cost = $product->cost;
             $this->stock = $product->stock;
@@ -202,6 +205,7 @@ class ProductManager extends Component
         $this->reset([
             'name',
             'category_id',
+            'supplier_id',
             'price',
             'cost',
             'stock',
@@ -226,8 +230,8 @@ class ProductManager extends Component
      */
     public function render()
     {
-        // Build query for products with eager loading of category
-        $query = Product::with('category');
+        // Build query for products with eager loading of category and supplier
+        $query = Product::with(['category', 'supplier']);
 
         // Apply search filter if search term exists
         if ($this->search) {
@@ -240,12 +244,14 @@ class ProductManager extends Component
         // Paginate products (10 per page)
         $products = $query->paginate(10);
 
-        // Get all categories for the form dropdown
+        // Get all categories and suppliers for the form dropdown
         $categories = Category::all();
+        $suppliers = \App\Models\Supplier::where('is_active', true)->orderBy('name')->get();
 
         return view('livewire.product-manager', [
             'products' => $products,
             'categories' => $categories,
+            'suppliers' => $suppliers,
         ]);
     }
 }

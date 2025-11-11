@@ -255,15 +255,53 @@ class DailyReportService
         
         if ($lowStockNames) {
             $prompt .= "Stock bajo: {$lowStockNames}\n";
+            
+            // Add supplier information for low stock products
+            $suppliersInfo = $this->getSuppliersForProducts($lowStock);
+            if ($suppliersInfo) {
+                $prompt .= "Proveedores: {$suppliersInfo}\n";
+            }
         }
         
         if ($atRiskNames) {
             $prompt .= "Se agotaran manana: {$atRiskNames}\n";
+            
+            // Add supplier information for at-risk products
+            $suppliersInfoRisk = $this->getSuppliersForProducts($atRisk);
+            if ($suppliersInfoRisk) {
+                $prompt .= "Proveedores disponibles: {$suppliersInfoRisk}\n";
+            }
         }
 
         $prompt .= "\nDa UNA recomendacion practica en maximo 2 lineas para mejorar ventas o inventario manana.";
+        $prompt .= " Menciona proveedores especificos si es relevante.";
 
         return $prompt;
+    }
+
+    /**
+     * Get supplier information for products
+     */
+    private function getSuppliersForProducts($products)
+    {
+        if ($products->isEmpty()) {
+            return null;
+        }
+
+        $suppliers = [];
+        foreach ($products as $product) {
+            if ($product->supplier) {
+                $supplierName = $product->supplier->name;
+                $phone = $product->supplier->phone ? " ({$product->supplier->phone})" : '';
+                $suppliers[] = "{$supplierName}{$phone}";
+            }
+        }
+
+        if (empty($suppliers)) {
+            return null;
+        }
+
+        return implode(', ', array_unique($suppliers));
     }
 
     /**
