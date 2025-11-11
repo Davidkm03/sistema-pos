@@ -3,9 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\Notification;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('layouts.app')]
 class NotificationManager extends Component
 {
     use WithPagination;
