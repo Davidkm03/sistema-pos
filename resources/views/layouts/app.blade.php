@@ -4,9 +4,6 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        
-        <!-- Permissions Policy para permitir micrófono (feature de voz) -->
-        <meta http-equiv="Permissions-Policy" content="microphone=(self)">
 
         <title>{{ setting('business_name', config('app.name', 'Laravel')) }}</title>
 

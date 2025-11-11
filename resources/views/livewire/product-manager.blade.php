@@ -714,26 +714,43 @@
                     };
 
                     this.recognition.onerror = (event) => {
-                        console.error('Speech recognition error:', event.error);
+                        console.error('Speech recognition error:', event.error, event);
                         this.recording = false;
                         
-                        let errorMsg = 'Error desconocido';
                         if (event.error === 'not-allowed') {
-                            errorMsg = 'Permiso de micrófono denegado. Por favor permite el acceso al micrófono en tu navegador.';
+                            Swal.fire({
+                                title: 'Micrófono Bloqueado',
+                                html: '<div style="text-align:left"><p><strong>Pasos para permitir el micrófono:</strong></p><ol style="padding-left:20px;margin-top:10px"><li>Click en el <strong>candado 🔒</strong> en la barra de direcciones</li><li>Busca <strong>"Micrófono"</strong></li><li>Selecciona <strong>"Permitir"</strong></li><li>Recarga la página (F5)</li></ol></div>',
+                                icon: 'warning',
+                                confirmButtonText: 'Entendido',
+                                confirmButtonColor: '#F59E0B',
+                                width: '500px'
+                            });
                         } else if (event.error === 'no-speech') {
-                            errorMsg = 'No se detectó voz. Intenta de nuevo.';
+                            Swal.fire({
+                                title: 'No se detectó voz',
+                                text: 'Habla más cerca del micrófono e intenta de nuevo',
+                                icon: 'info',
+                                confirmButtonColor: '#3B82F6'
+                            });
                         } else if (event.error === 'network') {
-                            errorMsg = 'Error de red. Verifica tu conexión.';
+                            Swal.fire({
+                                title: 'Error de Red',
+                                text: 'Verifica tu conexión a internet',
+                                icon: 'error',
+                                confirmButtonColor: '#EF4444'
+                            });
+                        } else if (event.error === 'aborted') {
+                            // No mostrar nada, fue cancelado por el usuario
+                            console.log('Grabación cancelada por el usuario');
                         } else {
-                            errorMsg = 'Error al grabar: ' + event.error;
+                            Swal.fire({
+                                title: 'Error de Grabación',
+                                text: 'Error: ' + event.error,
+                                icon: 'error',
+                                confirmButtonColor: '#EF4444'
+                            });
                         }
-                        
-                        Swal.fire({
-                            title: 'Error de Grabación',
-                            text: errorMsg,
-                            icon: 'error',
-                            confirmButtonColor: '#EF4444'
-                        });
                     };
 
                     this.recognition.onend = () => {
@@ -756,22 +773,33 @@
                     return;
                 }
 
+                // Resetear estado
                 this.transcript = '';
                 this.extractedData = null;
                 this.recording = true;
                 
-                try {
-                    this.recognition.start();
-                } catch (error) {
-                    console.error('Error starting recognition:', error);
-                    this.recording = false;
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'No se pudo iniciar la grabación: ' + error.message,
-                        icon: 'error',
-                        confirmButtonColor: '#EF4444'
-                    });
-                }
+                // Dar tiempo al navegador para mostrar el diálogo de permisos
+                setTimeout(() => {
+                    try {
+                        this.recognition.start();
+                        console.log('Speech recognition started');
+                    } catch (error) {
+                        console.error('Error starting recognition:', error);
+                        this.recording = false;
+                        
+                        let msg = 'No se pudo iniciar la grabación';
+                        if (error.message.includes('already')) {
+                            msg = 'Ya hay una grabación en curso';
+                        }
+                        
+                        Swal.fire({
+                            title: 'Error',
+                            text: msg,
+                            icon: 'error',
+                            confirmButtonColor: '#EF4444'
+                        });
+                    }
+                }, 100);
             },
 
             stopRecording() {
