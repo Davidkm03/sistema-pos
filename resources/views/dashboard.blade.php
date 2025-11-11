@@ -1,7 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center gap-2">
+                                 <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Ventas de Hoy</p>
+                        <p class="text-3xl sm:text-4xl font-black text-gray-900">
+                            ${{ number_format(\App\Models\Sale::whereDate('created_at', today())->where('status', '!=', 'cancelada')->sum('total'), 0) }}
+                        </p>h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center gap-2">
                 <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                 </svg>
@@ -107,9 +110,9 @@
                         </div>
                         <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Ventas Hoy</p>
                         <p class="text-3xl sm:text-4xl font-black text-gray-900">
-                            ${{ number_format(\App\Models\Sale::whereDate('created_at', today())->sum('total'), 0) }}
+                            ${{ number_format(\App\Models\Sale::whereDate('created_at', today())->where('status', '!=', 'cancelada')->sum('total'), 0) }}
                         </p>
-                        <p class="text-xs text-gray-500 mt-2">{{ \App\Models\Sale::whereDate('created_at', today())->count() }} transacciones</p>
+                        <p class="text-xs text-gray-500 mt-2">{{ \App\Models\Sale::whereDate('created_at', today())->where('status', '!=', 'cancelada')->count() }} transacciones</p>
                     </div>
                 </div>
 
@@ -151,7 +154,7 @@
                         </div>
                         <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Total Ventas</p>
                         <p class="text-3xl sm:text-4xl font-black text-gray-900">
-                            ${{ number_format(\App\Models\Sale::sum('total'), 0) }}
+                            ${{ number_format(\App\Models\Sale::where('status', '!=', 'cancelada')->sum('total'), 0) }}
                         </p>
                         <p class="text-xs text-gray-500 mt-2">Histórico completo</p>
                     </div>

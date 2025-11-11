@@ -51,6 +51,7 @@ class Goal extends Model
                 Carbon::parse($this->start_date)->startOfDay(),
                 Carbon::parse($this->end_date)->endOfDay()
             ])
+            ->where('status', '!=', 'cancelada')
             ->with('saleItems.product')
             ->get();
 
