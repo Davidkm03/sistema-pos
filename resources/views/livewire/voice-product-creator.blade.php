@@ -75,21 +75,20 @@
                     };
                 }
                 
-                // Resetear y empezar
+                // Resetear y empezar INMEDIATAMENTE (sin setTimeout - debe ser síncrono con el click)
                 this.transcript = '';
                 this.extractedData = null;
                 this.recording = true;
                 
-                setTimeout(() => {
-                    try {
-                        this.recognition.start();
-                        console.log('Speech recognition started successfully');
-                    } catch (error) {
-                        console.error('Error starting recognition:', error);
-                        this.recording = false;
-                        Swal.fire('Error', 'No se pudo iniciar: ' + error.message, 'error');
-                    }
-                }, 100);
+                // START debe ser síncrono con el click del usuario para que el navegador permita el micrófono
+                try {
+                    this.recognition.start();
+                    console.log('Speech recognition started successfully');
+                } catch (error) {
+                    console.error('Error starting recognition:', error);
+                    this.recording = false;
+                    Swal.fire('Error', 'No se pudo iniciar: ' + error.message, 'error');
+                }
             },
 
             stopRecording() {
