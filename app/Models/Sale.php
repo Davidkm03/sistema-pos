@@ -341,7 +341,7 @@ class Sale extends Model
      */
     public function isCancelled(): bool
     {
-        return $this->status === 'cancelled';
+        return $this->status === 'cancelada';
     }
 
     /**
@@ -361,6 +361,7 @@ class Sale extends Model
             'completed' => '<span class="px-2 py-1 text-xs rounded bg-green-100 text-green-800">Completada</span>',
             'completada' => '<span class="px-2 py-1 text-xs rounded bg-green-100 text-green-800">Completada</span>',
             'cancelled' => '<span class="px-2 py-1 text-xs rounded bg-red-100 text-red-800">Anulada</span>',
+            'cancelada' => '<span class="px-2 py-1 text-xs rounded bg-red-100 text-red-800">Anulada</span>',
             'corrected' => '<span class="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800">Corregida</span>',
             'pending' => '<span class="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">Pendiente</span>',
         ];
@@ -510,7 +511,7 @@ class Sale extends Model
 
             // PASO 3: Actualizar venta
             $this->update([
-                'status' => 'cancelled',
+                'status' => 'cancelada',
                 'cancelled_at' => now(),
                 'cancelled_by' => $user->id,
                 'cancellation_reason' => $detailedReason,
@@ -522,7 +523,7 @@ class Sale extends Model
                 'cancelled',
                 $reason . ': ' . $detailedReason,
                 $oldData,
-                ['status' => 'cancelled', 'cancelled_at' => now()->toDateTimeString()]
+                ['status' => 'cancelada', 'cancelled_at' => now()->toDateTimeString()]
             );
 
             return true;
@@ -629,7 +630,7 @@ class Sale extends Model
      */
     public function scopeCancelled(Builder $query): void
     {
-        $query->where('status', 'cancelled');
+        $query->where('status', 'cancelada');
     }
 
     /**

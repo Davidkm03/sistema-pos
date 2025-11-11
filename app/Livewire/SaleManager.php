@@ -47,7 +47,7 @@ class SaleManager extends Component
     {
         // Obtener razones únicas de ventas canceladas anteriormente
         $this->previousReasons = Sale::whereNotNull('cancellation_reason')
-            ->where('status', 'cancelled')
+            ->where('status', 'cancelada')
             ->select('cancellation_reason')
             ->distinct()
             ->orderBy('cancellation_reason')
