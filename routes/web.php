@@ -3,6 +3,7 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PosController;
 use App\Livewire\TicketSettings;
+use App\Livewire\DailyReportSettings;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -124,6 +125,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas de Configuración - Solo Admin y Supervisor
     Route::middleware(['permission:manage-settings'])->group(function () {
         Route::get('/configuracion/tickets', TicketSettings::class)->name('settings.tickets');
+        Route::get('/configuracion/reporte-diario', DailyReportSettings::class)->name('settings.daily-report');
     });
     
     // Configuración General del Sistema - Todos los usuarios

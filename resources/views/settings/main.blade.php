@@ -158,6 +158,75 @@
                     </div>
                 </a>
 
+                <!-- Reporte Diario WhatsApp -->
+                <a href="{{ route('settings.daily-report') }}" 
+                   class="group block bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl border-2 border-green-100 hover:border-green-300 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="flex-shrink-0">
+                                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <h3 class="text-2xl font-black text-gray-900 mb-1">Reporte Diario WhatsApp</h3>
+                                <p class="text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600">Análisis automático con IA</p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-green-400 to-emerald-400 text-white shadow-md">
+                                    ✨ IA
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2.5 text-sm mb-6">
+                            <div class="flex items-center p-2 rounded-lg bg-white/60 hover:bg-white/80 transition-colors">
+                                <div class="w-5 h-5 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <span class="ml-3 font-medium text-gray-700">Resumen de ventas y ganancias</span>
+                            </div>
+                            <div class="flex items-center p-2 rounded-lg bg-white/60 hover:bg-white/80 transition-colors">
+                                <div class="w-5 h-5 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <span class="ml-3 font-medium text-gray-700">Alertas de productos por agotarse</span>
+                            </div>
+                            <div class="flex items-center p-2 rounded-lg bg-white/60 hover:bg-white/80 transition-colors">
+                                <div class="w-5 h-5 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <span class="ml-3 font-medium text-gray-700">Combos frecuentes sugeridos</span>
+                            </div>
+                            <div class="flex items-center p-2 rounded-lg bg-white/60 hover:bg-white/80 transition-colors">
+                                <div class="w-5 h-5 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <span class="ml-3 font-medium text-gray-700">Recomendación inteligente con GPT-4</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4 border-t-2 border-green-100">
+                            <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-bold shadow-lg group-hover:shadow-xl transition-all">
+                                <span>Configurar ahora</span>
+                                <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
             </div>
 
             <!-- Info Box Mejorado -->
