@@ -1,9 +1,7 @@
-<div><div>
+<div>
+    {{-- Modal de Creación por Voz (Componente Independiente) --}}
 
-    {{-- Modal de Creación por Voz (Componente Independiente) --}}    {{-- Care about people's approval and you will be their prisoner. --}}
-
-    <div </div>
-
+    <div 
         x-data="{
             open: @entangle('showModal'),
             recording: false,
