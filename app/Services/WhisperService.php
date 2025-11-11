@@ -11,7 +11,7 @@ class WhisperService
 
     public function __construct()
     {
-        $this->apiKey = config('services.openai.key');
+        $this->apiKey = config('services.openai.api_key');
     }
 
     /**
