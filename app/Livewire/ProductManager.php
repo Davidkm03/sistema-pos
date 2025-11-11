@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Services\ProductVoiceService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -23,6 +24,11 @@ class ProductManager extends Component
     // Tax properties
     public $tax_type = 'standard';
     public $custom_tax_rate = null;
+
+    // Voice input properties
+    public $voiceTranscript = '';
+    public $voiceProcessing = false;
+    public $voiceExtractedData = null;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -219,6 +225,108 @@ class ProductManager extends Component
     public function updatingSearch()
     {
         $this->resetPage();
+    }
+
+    /**
+     * Process voice transcript using AI
+     */
+    public function processVoiceInput()
+    {
+        if (empty($this->voiceTranscript)) {
+            $this->dispatch('voice-error', message: 'No se detectó ningún texto. Intenta hablar de nuevo.');
+            return;
+        }
+
+        $this->voiceProcessing = true;
+
+        try {
+            $voiceService = new ProductVoiceService();
+            
+            if (!$voiceService->isAvailable()) {
+                $this->dispatch('voice-error', message: 'Servicio de IA no configurado. Agrega OPENAI_API_KEY en el archivo .env');
+                $this->voiceProcessing = false;
+                return;
+            }
+
+            $extractedData = $voiceService->extractProductData($this->voiceTranscript);
+
+            if ($extractedData && !empty($extractedData['nombre'])) {
+                $this->voiceExtractedData = $extractedData;
+                $this->dispatch('voice-data-extracted', data: $extractedData);
+            } else {
+                $this->dispatch('voice-error', message: 'No se pudo entender la información del producto. Intenta hablar más claro.');
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('voice-error', message: 'Error al procesar: ' . $e->getMessage());
+        } finally {
+            $this->voiceProcessing = false;
+        }
+    }
+
+    /**
+     * Create product from voice data
+     */
+    public function createFromVoice()
+    {
+        if (empty($this->voiceExtractedData)) {
+            $this->dispatch('voice-error', message: 'No hay datos para crear el producto');
+            return;
+        }
+
+        try {
+            // Find or validate category
+            $categoryName = $this->voiceExtractedData['categoria'];
+            $category = null;
+            
+            if ($categoryName) {
+                $category = Category::where('name', 'like', '%' . $categoryName . '%')->first();
+                
+                // If category doesn't exist, create it
+                if (!$category) {
+                    $category = Category::create([
+                        'name' => $categoryName,
+                        'empresa_id' => auth()->user()->empresa_id
+                    ]);
+                }
+            }
+
+            // Generate SKU
+            $sku = $this->generateSku();
+
+            // Create product
+            $product = Product::create([
+                'name' => $this->voiceExtractedData['nombre'],
+                'category_id' => $category ? $category->id : null,
+                'sku' => $sku,
+                'price' => $this->voiceExtractedData['precio'] ?? 0,
+                'cost' => $this->voiceExtractedData['costo'] ?? 0,
+                'stock' => $this->voiceExtractedData['stock'] ?? 0,
+                'tax_type' => 'standard',
+            ]);
+
+            // Reset voice data
+            $this->voiceTranscript = '';
+            $this->voiceExtractedData = null;
+
+            // Dispatch success event
+            $this->dispatch('voice-product-created', 
+                message: 'Producto "' . $product->name . '" creado exitosamente por voz',
+                product: $product->name
+            );
+
+        } catch (\Exception $e) {
+            $this->dispatch('voice-error', message: 'Error al crear producto: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Cancel voice input
+     */
+    public function cancelVoiceInput()
+    {
+        $this->voiceTranscript = '';
+        $this->voiceExtractedData = null;
+        $this->voiceProcessing = false;
     }
 
     /**

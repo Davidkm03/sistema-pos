@@ -1,5 +1,5 @@
 <div class="max-w-7xl mx-auto space-y-6">
-    
+
     {{-- SECCIÓN 1 - FORMULARIO PARA CREAR (Solo si NO está editando) --}}
     @can('create-products')
     @if(!$editingId)
@@ -17,10 +17,10 @@
                 </div>
             </div>
         </div>
-        
+
         <form wire:submit.prevent="save" class="p-6 sm:p-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                
+
                 {{-- Name --}}
                 <div>
                     <label for="name" class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
@@ -29,11 +29,12 @@
                         </svg>
                         Nombre del Producto
                     </label>
-                    <input type="text" 
-                           id="name"
-                           wire:model="name" 
-                           placeholder="Ej: Coca Cola 500ml"
-                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium @error('name') border-red-500 @enderror">
+                    <input
+                        type="text"
+                        id="name"
+                        wire:model.defer="name"
+                        placeholder="Ej: Coca Cola 500ml"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium @error('name') border-red-500 @enderror">
                     @error('name')
                         <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -52,9 +53,10 @@
                         </svg>
                         Categoría
                     </label>
-                    <select id="category_id"
-                            wire:model="category_id" 
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium @error('category_id') border-red-500 @enderror">
+                    <select
+                        id="category_id"
+                        wire:model="category_id"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium @error('category_id') border-red-500 @enderror">
                         <option value="">Seleccionar categoría</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -70,7 +72,7 @@
                     @enderror
                 </div>
 
-                {{-- SKU Automático - Solo información --}}
+                {{-- SKU Automático (info) --}}
                 <div class="md:col-span-2 lg:col-span-1">
                     <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-4 h-full flex items-center">
                         <div class="flex items-start gap-3">
@@ -95,11 +97,12 @@
                         </svg>
                         Precio de Venta
                     </label>
-                    <input type="number" 
-                           id="price"
-                           step="0.01"
-                           wire:model="price" 
-                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all font-bold text-green-700 @error('price') border-red-500 @enderror">
+                    <input
+                        type="number"
+                        id="price"
+                        step="0.01"
+                        wire:model.defer="price"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all font-bold text-green-700 @error('price') border-red-500 @enderror">
                     @error('price')
                         <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -118,11 +121,12 @@
                         </svg>
                         Costo
                     </label>
-                    <input type="number" 
-                           id="cost"
-                           step="0.01"
-                           wire:model="cost" 
-                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all font-semibold text-orange-700 @error('cost') border-red-500 @enderror">
+                    <input
+                        type="number"
+                        id="cost"
+                        step="0.01"
+                        wire:model.defer="cost"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all font-semibold text-orange-700 @error('cost') border-red-500 @enderror">
                     @error('cost')
                         <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -141,10 +145,11 @@
                         </svg>
                         Stock Disponible
                     </label>
-                    <input type="number"
-                           id="stock"
-                           wire:model="stock"
-                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold text-blue-700 @error('stock') border-red-500 @enderror">
+                    <input
+                        type="number"
+                        id="stock"
+                        wire:model.defer="stock"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold text-blue-700 @error('stock') border-red-500 @enderror">
                     @error('stock')
                         <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -163,9 +168,10 @@
                             {{-- Tax Type --}}
                             <div>
                                 <label for="tax_type" class="block text-sm font-medium text-gray-700 mb-1">Tipo de IVA</label>
-                                <select id="tax_type"
-                                        wire:model.live="tax_type"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('tax_type') border-red-500 @enderror">
+                                <select
+                                    id="tax_type"
+                                    wire:model.live="tax_type"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('tax_type') border-red-500 @enderror">
                                     <option value="standard">Estándar ({{ get_tax_rate() }}%)</option>
                                     <option value="exempt">Exento (0%) - Con derecho</option>
                                     <option value="excluded">Excluido (0%) - Sin derecho</option>
@@ -180,7 +186,8 @@
                             @if($tax_type === 'custom')
                                 <div>
                                     <label for="custom_tax_rate" class="block text-sm font-medium text-gray-700 mb-1">Tasa Personalizada (%)</label>
-                                    <input type="number"
+                                    <input
+                                           type="number"
                                            id="custom_tax_rate"
                                            step="0.01"
                                            wire:model="custom_tax_rate"
@@ -219,12 +226,13 @@
                 @endif
             </div>
 
-            {{-- Buttons --}}
+            {{-- Botones --}}
             <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8 pt-6 border-t-2 border-gray-200">
-                {{-- Botón Cancelar --}}
-                <button type="button" 
-                        wire:click="resetForm"
-                        class="px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-xl font-bold hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all flex items-center justify-center gap-2 active:scale-95">
+                {{-- Cancelar --}}
+                <button
+                    type="button"
+                    wire:click="resetForm"
+                    class="px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-xl font-bold hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all flex items-center justify-center gap-2 active:scale-95">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -232,11 +240,25 @@
                 </button>
 
                 @if(!$editingId)
-                {{-- Botón Guardar y Crear Otro (solo al crear) --}}
-                <button type="button" 
-                        wire:click="saveAndCreateAnother"
-                        class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95"
-                        wire:loading.attr="disabled">
+                {{-- Botón Crear por Voz con IA --}}
+                <button
+                    type="button"
+                    @click="$dispatch('open-voice-modal')"
+                    class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="hidden sm:inline">Crear por Voz</span>
+                    <span class="sm:hidden">🎤</span>
+                    <span class="ml-1 px-2 py-0.5 bg-white/20 rounded-full text-xs font-bold">AI</span>
+                </button>
+
+                {{-- Guardar y Crear Otro --}}
+                <button
+                    type="button"
+                    wire:click="saveAndCreateAnother"
+                    class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95"
+                    wire:loading.attr="disabled">
                     <svg wire:loading.remove wire:target="saveAndCreateAnother" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
@@ -244,15 +266,17 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span wire:loading.remove wire:target="saveAndCreateAnother">Guardar y Crear Otro</span>
+                    <span wire:loading.remove wire:target="saveAndCreateAnother" class="hidden sm:inline">Guardar y Crear Otro</span>
+                    <span wire:loading.remove wire:target="saveAndCreateAnother" class="sm:hidden">➕ Otro</span>
                     <span wire:loading wire:target="saveAndCreateAnother">Guardando...</span>
                 </button>
                 @endif
-                
-                {{-- Botón Guardar Normal --}}
-                <button type="submit" 
-                        class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-black text-lg hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
-                        wire:loading.attr="disabled">
+
+                {{-- Guardar --}}
+                <button
+                    type="submit"
+                    class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-black text-lg hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
+                    wire:loading.attr="disabled">
                     <svg wire:loading.remove wire:target="save" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
@@ -273,9 +297,9 @@
     @if($editingId)
     <div class="fixed inset-0 z-50 overflow-y-auto" x-data="{ show: true }" x-show="show" x-cloak>
         <!-- Backdrop -->
-        <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity" 
+        <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity"
              @click="show = false; $wire.resetForm()"></div>
-        
+
         <!-- Modal -->
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="relative bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden transform transition-all"
@@ -284,8 +308,8 @@
                  x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                  x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
                  @click.stop>
-                
-                <!-- Header del Modal -->
+
+                <!-- Header -->
                 <div class="px-6 py-5 bg-gradient-to-r from-yellow-500 to-orange-500 sticky top-0 z-10">
                     <div class="flex items-center justify-between text-white">
                         <div class="flex items-center gap-3">
@@ -299,7 +323,7 @@
                                 <p class="text-sm text-yellow-100">Actualiza la información del producto</p>
                             </div>
                         </div>
-                        <button @click="show = false; $wire.resetForm()" 
+                        <button @click="show = false; $wire.resetForm()"
                                 class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/20 hover:bg-white/30 transition-all active:scale-90">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -308,11 +332,11 @@
                     </div>
                 </div>
 
-                <!-- Contenido del Modal (con scroll) -->
+                <!-- Contenido -->
                 <form wire:submit.prevent="save" class="overflow-y-auto max-h-[calc(90vh-180px)]">
                     <div class="p-6 sm:p-8">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            
+
                             {{-- Name --}}
                             <div>
                                 <label for="modal-name" class="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
@@ -321,10 +345,11 @@
                                     </svg>
                                     Nombre
                                 </label>
-                                <input type="text" 
-                                       id="modal-name"
-                                       wire:model="name" 
-                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium @error('name') border-red-500 @enderror">
+                                <input
+                                    type="text"
+                                    id="modal-name"
+                                    wire:model="name"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium @error('name') border-red-500 @enderror">
                                 @error('name')
                                     <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -343,9 +368,10 @@
                                     </svg>
                                     Categoría
                                 </label>
-                                <select id="modal-category_id"
-                                        wire:model="category_id" 
-                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium @error('category_id') border-red-500 @enderror">
+                                <select
+                                    id="modal-category_id"
+                                    wire:model="category_id"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium @error('category_id') border-red-500 @enderror">
                                     <option value="">Seleccionar categoría</option>
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -369,10 +395,11 @@
                                     </svg>
                                     SKU / Código
                                 </label>
-                                <input type="text" 
-                                       id="modal-sku"
-                                       wire:model="sku" 
-                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium @error('sku') border-red-500 @enderror">
+                                <input
+                                    type="text"
+                                    id="modal-sku"
+                                    wire:model="sku"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium @error('sku') border-red-500 @enderror">
                                 @error('sku')
                                     <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -391,11 +418,12 @@
                                     </svg>
                                     Precio de Venta
                                 </label>
-                                <input type="number" 
-                                       id="modal-price"
-                                       step="0.01"
-                                       wire:model="price" 
-                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all font-bold text-green-700 @error('price') border-red-500 @enderror">
+                                <input
+                                    type="number"
+                                    id="modal-price"
+                                    step="0.01"
+                                    wire:model="price"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all font-bold text-green-700 @error('price') border-red-500 @enderror">
                                 @error('price')
                                     <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -414,11 +442,12 @@
                                     </svg>
                                     Costo
                                 </label>
-                                <input type="number" 
-                                       id="modal-cost"
-                                       step="0.01"
-                                       wire:model="cost" 
-                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all font-semibold text-orange-700 @error('cost') border-red-500 @enderror">
+                                <input
+                                    type="number"
+                                    id="modal-cost"
+                                    step="0.01"
+                                    wire:model="cost"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all font-semibold text-orange-700 @error('cost') border-red-500 @enderror">
                                 @error('cost')
                                     <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -437,10 +466,11 @@
                                     </svg>
                                     Stock Disponible
                                 </label>
-                                <input type="number"
-                                       id="modal-stock"
-                                       wire:model="stock"
-                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold text-blue-700 @error('stock') border-red-500 @enderror">
+                                <input
+                                    type="number"
+                                    id="modal-stock"
+                                    wire:model="stock"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold text-blue-700 @error('stock') border-red-500 @enderror">
                                 @error('stock')
                                     <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -451,25 +481,26 @@
                                 @enderror
                             </div>
 
-                            {{-- Nota: Los campos de TAX y de imagen se pueden copiar del formulario principal si los necesitas --}}
                         </div>
                     </div>
 
-                    <!-- Footer con botones (sticky) -->
+                    <!-- Footer -->
                     <div class="sticky bottom-0 px-6 py-4 bg-gradient-to-t from-gray-50 to-white border-t-2 border-gray-200">
                         <div class="flex flex-col sm:flex-row justify-end gap-3">
-                            <button type="button" 
-                                    @click="show = false; $wire.resetForm()"
-                                    class="px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-xl font-bold hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all flex items-center justify-center gap-2 active:scale-95">
+                            <button
+                                type="button"
+                                @click="show = false; $wire.resetForm()"
+                                class="px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-xl font-bold hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all flex items-center justify-center gap-2 active:scale-95">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
                                 Cancelar
                             </button>
-                            <button type="submit" 
-                                    style="background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%) !important;"
-                                    class="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-xl font-black text-lg hover:from-yellow-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
-                                    wire:loading.attr="disabled">
+                            <button
+                                type="submit"
+                                style="background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%) !important;"
+                                class="px-8 py-4 text-white rounded-xl font-black text-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
+                                wire:loading.attr="disabled">
                                 <svg wire:loading.remove class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
@@ -503,7 +534,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="p-6">
             {{-- Search --}}
             <div class="mb-6">
@@ -513,12 +544,12 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
-                    <input type="text" 
-                           wire:model.live="search"
-                           placeholder="Buscar por nombre o SKU..."
-                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium text-gray-900 placeholder-gray-400 shadow-sm">
+                    <input
+                        type="text"
+                        wire:model.debounce.400ms="search"
+                        placeholder="Buscar por nombre o SKU..."
+                        class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium text-gray-900 placeholder-gray-400 shadow-sm">
                 </div>
-            </div>
             </div>
 
             {{-- Table --}}
@@ -540,8 +571,8 @@
                             <tr class="hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-150">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($product->image)
-                                        <img src="{{ asset('storage/' . $product->image) }}" 
-                                             alt="{{ $product->name }}" 
+                                        <img src="{{ asset('storage/' . $product->image) }}"
+                                             alt="{{ $product->name }}"
                                              class="w-16 h-16 rounded-xl object-cover bg-white border-2 border-gray-200 shadow-md">
                                     @else
                                         <div class="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center border-2 border-gray-300 shadow-sm">
@@ -600,25 +631,28 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex items-center gap-2">
                                         @can('edit-products')
-                                        <button wire:click="edit({{ $product->id }})" 
-                                                class="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl hover:from-yellow-600 hover:to-orange-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 font-bold shadow-md hover:shadow-lg transition-all active:scale-95">
+                                        <button
+                                            wire:click="edit({{ $product->id }})"
+                                            class="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl hover:from-yellow-600 hover:to-orange-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 font-bold shadow-md hover:shadow-lg transition-all active:scale-95">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                             </svg>
                                             Editar
                                         </button>
                                         @endcan
-                                        
+
                                         @can('delete-products')
-                                        <button onclick="confirmDelete({{ $product->id }})" 
-                                                class="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:from-red-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-red-500 font-bold shadow-md hover:shadow-lg transition-all active:scale-95">
+                                        <button
+                                            type="button"
+                                            onclick="confirmDelete({{ $product->id }})"
+                                            class="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:from-red-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-red-500 font-bold shadow-md hover:shadow-lg transition-all active:scale-95">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
                                             Eliminar
                                         </button>
                                         @endcan
-                                        
+
                                         @cannot('edit-products')
                                         @cannot('delete-products')
                                         <span class="px-4 py-2 bg-gray-100 text-gray-500 text-xs font-semibold italic rounded-xl border border-gray-200">🔒 Solo lectura</span>
@@ -652,11 +686,254 @@
             </div>
         </div>
     </div>
+
+    {{-- MODAL DE VOZ (evento renombrado + guard + x-trap) --}}
+    <div
+        x-data="{
+            open: false,
+            recording: false,
+            recognition: null,
+            transcript: @entangle('voiceTranscript').live,
+            processing: @entangle('voiceProcessing').live,
+            extractedData: @entangle('voiceExtractedData').live,
+
+            init() {
+                this.$watch('open', v => { if (v) { this.transcript=''; this.extractedData=null } });
+
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    this.recognition = new SR();
+                    this.recognition.lang = 'es-CO';
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = false;
+
+                    this.recognition.onresult = (event) => {
+                        const result = event.results[0][0].transcript;
+                        this.transcript = result;
+                        this.recording = false;
+                    };
+
+                    this.recognition.onerror = (event) => {
+                        console.error('Speech recognition error:', event.error);
+                        this.recording = false;
+                        
+                        let errorMsg = 'Error desconocido';
+                        if (event.error === 'not-allowed') {
+                            errorMsg = 'Permiso de micrófono denegado. Por favor permite el acceso al micrófono en tu navegador.';
+                        } else if (event.error === 'no-speech') {
+                            errorMsg = 'No se detectó voz. Intenta de nuevo.';
+                        } else if (event.error === 'network') {
+                            errorMsg = 'Error de red. Verifica tu conexión.';
+                        } else {
+                            errorMsg = 'Error al grabar: ' + event.error;
+                        }
+                        
+                        Swal.fire({
+                            title: 'Error de Grabación',
+                            text: errorMsg,
+                            icon: 'error',
+                            confirmButtonColor: '#EF4444'
+                        });
+                    };
+
+                    this.recognition.onend = () => {
+                        this.recording = false;
+                    };
+                }
+
+                // Asegurar estado cerrado al montar
+                this.open = false;
+            },
+
+            startRecording() {
+                if (!this.recognition) {
+                    Swal.fire({
+                        title: 'No Soportado',
+                        text: 'Tu navegador no soporta reconocimiento de voz. Usa Chrome, Edge o Safari.',
+                        icon: 'error',
+                        confirmButtonColor: '#EF4444'
+                    });
+                    return;
+                }
+
+                this.transcript = '';
+                this.extractedData = null;
+                this.recording = true;
+                
+                try {
+                    this.recognition.start();
+                } catch (error) {
+                    console.error('Error starting recognition:', error);
+                    this.recording = false;
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'No se pudo iniciar la grabación: ' + error.message,
+                        icon: 'error',
+                        confirmButtonColor: '#EF4444'
+                    });
+                }
+            },
+
+            stopRecording() {
+                if (this.recognition && this.recording) {
+                    this.recognition.stop();
+                    this.recording = false;
+                }
+            }
+        }"
+        x-show="open"
+        @open-voice-modal.window="open = true"
+        @keydown.escape.window="open = false"
+        x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto"
+        style="display: none;">
+
+        {{-- Overlay --}}
+        <div
+            x-show="open"
+            x-transition:enter="ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click="open = false"
+            class="fixed inset-0 bg-black bg-opacity-75 backdrop-blur-sm"></div>
+
+        {{-- Modal Content --}}
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div
+                x-show="open"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-90"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-90"
+                @click.stop
+                class="relative bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl max-w-2xl w-full border-4 border-purple-200 overflow-hidden">
+
+                {{-- Header --}}
+                <div class="px-8 py-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                <svg class="w-8 h-8 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-black">Crear Producto por Voz</h3>
+                                <p class="text-sm text-purple-100">Powered by ChatGPT-4o-mini ✨</p>
+                            </div>
+                        </div>
+                        <button @click="open = false" class="text-white/80 hover:text-white hover:bg-white/20 rounded-full p-2 transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Body --}}
+                <div class="p-8 space-y-6">
+
+                    {{-- Instructions --}}
+                    <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="font-bold text-blue-900 mb-2">💡 Ejemplo de lo que puedes decir:</p>
+                                <p class="text-sm text-blue-800 italic">
+                                    "Coca Cola 500ml, categoría bebidas, precio dos mil quinientos, costo mil quinientos, stock cincuenta"
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Recording Button --}}
+                    <div class="flex flex-col items-center justify-center py-8">
+                        <button
+                            type="button"
+                            @click="recording ? stopRecording() : startRecording()"
+                            :disabled="processing"
+                            :class="recording ? 'bg-red-500 hover:bg-red-600 animate-pulse scale-110' : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'"
+                            class="w-32 h-32 rounded-full text-white shadow-2xl transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                            <svg x-show="!recording" class="w-16 h-16" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clip-rule="evenodd"></path>
+                            </svg>
+                            <svg x-show="recording" class="w-16 h-16" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <p class="mt-4 text-lg font-bold text-gray-700" x-text="recording ? '🔴 Grabando... Habla ahora' : (processing ? '⏳ Procesando con IA...' : '👆 Presiona para grabar')"></p>
+                    </div>
+
+                    {{-- Transcript --}}
+                    <div x-show="transcript" class="bg-gray-50 border-2 border-gray-200 rounded-xl p-4">
+                        <p class="text-sm font-bold text-gray-700 mb-2">📝 Texto capturado:</p>
+                        <p class="text-gray-900 italic" x-text="transcript"></p>
+                        <button
+                            @click="$wire.processVoiceInput()"
+                            :disabled="processing"
+                            class="mt-4 w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                            <span x-show="!processing">✨ Procesar con IA</span>
+                            <span x-show="processing">⏳ Procesando...</span>
+                        </button>
+                    </div>
+
+                    {{-- Extracted Data Preview --}}
+                    <div x-show="extractedData" class="bg-green-50 border-2 border-green-300 rounded-xl p-6 space-y-3">
+                        <p class="text-lg font-black text-green-900 mb-4">✅ Producto detectado:</p>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-xs font-bold text-green-700">Nombre:</p>
+                                <p class="text-lg font-bold text-green-900" x-text="extractedData?.nombre || '-'"></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-green-700">Categoría:</p>
+                                <p class="text-lg font-bold text-green-900" x-text="extractedData?.categoria || '-'"></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-green-700">Precio:</p>
+                                <p class="text-lg font-bold text-green-900" x-text="extractedData?.precio ? '$' + extractedData.precio.toLocaleString() : '-'"></p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-green-700">Costo:</p>
+                                <p class="text-lg font-bold text-green-900" x-text="extractedData?.costo ? '$' + extractedData.costo.toLocaleString() : '-'"></p>
+                            </div>
+                            <div class="col-span-2">
+                                <p class="text-xs font-bold text-green-700">Stock:</p>
+                                <p class="text-lg font-bold text-green-900" x-text="(extractedData?.stock || 0) + ' unidades'"></p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3 mt-6">
+                            <button
+                                @click="$wire.createFromVoice(); open = false"
+                                class="flex-1 px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-black text-lg hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg">
+                                ✅ Crear Producto
+                            </button>
+                            <button
+                                @click="transcript = ''; extractedData = null"
+                                class="px-6 py-4 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition-all">
+                                🔄 Grabar de Nuevo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 @script
 <script>
-    // Función para confirmar eliminación de producto
+    // Confirmación de eliminación
     function confirmDelete(productId) {
         Swal.fire({
             title: '¿Eliminar producto?',
@@ -668,12 +945,8 @@
             confirmButtonText: 'Sí, eliminar',
             cancelButtonText: 'Cancelar',
             reverseButtons: true,
-            showClass: {
-                popup: 'animate__animated animate__fadeInDown'
-            },
-            hideClass: {
-                popup: 'animate__animated animate__fadeOutUp'
-            }
+            showClass: { popup: 'animate__animated animate__fadeInDown' },
+            hideClass: { popup: 'animate__animated animate__fadeOutUp' }
         }).then((result) => {
             if (result.isConfirmed) {
                 $wire.delete(productId);
@@ -681,80 +954,90 @@
         });
     }
 
-    // Escuchar evento de Livewire cuando se guarda exitosamente
-    $wire.on('product-saved', (event) => {
-        const message = event.message || 'Producto guardado exitosamente';
-        const isEdit = event.isEdit || false;
-        
-        Swal.fire({
-            title: isEdit ? '¡Actualizado!' : '¡Guardado!',
-            text: message,
-            icon: 'success',
-            confirmButtonColor: '#10B981',
-            timer: 2000,
-            timerProgressBar: true,
-            showClass: {
-                popup: 'animate__animated animate__bounceIn'
-            },
-            hideClass: {
-                popup: 'animate__animated animate__fadeOut'
-            }
-        });
-    });
+    // Listeners de Livewire (v3)
+    if (window.Livewire && typeof window.Livewire.on === 'function') {
+        Livewire.on('product-saved', (event = {}) => {
+            const message = event.message || 'Producto guardado exitosamente';
+            const isEdit = event.isEdit || false;
 
-    // Notificación rápida para "Guardar y Crear Otro"
-    $wire.on('product-created-quick', (event) => {
-        const message = event.message || 'Producto creado! Listo para el siguiente';
-        
-        // Toast notification más discreta
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 1500,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
+            Swal.fire({
+                title: isEdit ? '¡Actualizado!' : '¡Guardado!',
+                text: message,
+                icon: 'success',
+                confirmButtonColor: '#10B981',
+                timer: 2000,
+                timerProgressBar: true,
+                showClass: { popup: 'animate__animated animate__bounceIn' },
+                hideClass: { popup: 'animate__animated animate__fadeOut' }
+            });
         });
 
-        Toast.fire({
-            icon: 'success',
-            title: message,
-            background: '#10B981',
-            color: '#fff'
+        Livewire.on('product-created-quick', (event = {}) => {
+            const message = event.message || '¡Producto creado! Listo para el siguiente';
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+            Toast.fire({
+                icon: 'success',
+                title: message,
+                background: '#10B981',
+                color: '#fff'
+            });
         });
-    });
 
-    // Escuchar evento cuando se elimina
-    $wire.on('product-deleted', () => {
-        Swal.fire({
-            title: '¡Eliminado!',
-            text: 'El producto ha sido eliminado exitosamente',
-            icon: 'success',
-            confirmButtonColor: '#10B981',
-            timer: 2000,
-            timerProgressBar: true,
-            showClass: {
-                popup: 'animate__animated animate__bounceIn'
-            }
+        Livewire.on('voice-product-created', (event = {}) => {
+            const productName = event.productName || 'Producto';
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+            Toast.fire({
+                icon: 'success',
+                title: `✨ ${productName} creado por voz!`,
+                text: 'SKU generado automáticamente'
+            });
         });
-    });
 
-    // Escuchar evento de error
-    $wire.on('product-error', (event) => {
-        const message = event.message || 'Ocurrió un error';
-        
-        Swal.fire({
-            title: 'Error',
-            text: message,
-            icon: 'error',
-            confirmButtonColor: '#EF4444',
-            showClass: {
-                popup: 'animate__animated animate__shakeX'
-            }
+        Livewire.on('product-deleted', () => {
+            Swal.fire({
+                title: '¡Eliminado!',
+                text: 'Producto eliminado correctamente',
+                icon: 'success',
+                confirmButtonColor: '#10B981',
+                timer: 1800,
+                timerProgressBar: true
+            });
         });
+
+        Livewire.on('lw-error', (payload = {}) => {
+            const msg = payload.message || 'Ha ocurrido un error';
+            Swal.fire({
+                title: 'Error',
+                text: msg,
+                icon: 'error',
+                confirmButtonColor: '#EF4444'
+            });
+        });
+    }
+
+    // Compat: Si en algún lugar aún disparan el evento viejo, ciérralo
+    window.addEventListener('open-voice-modal', () => {
+        window.dispatchEvent(new CustomEvent('voice-modal:close'));
     });
 </script>
 @endscript
