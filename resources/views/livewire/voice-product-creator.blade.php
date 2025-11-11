@@ -46,7 +46,14 @@
                         if (event.error === 'not-allowed') {
                             Swal.fire({
                                 title: 'Micrófono Bloqueado',
-                                html: '<p><strong>Pasos para permitir el micrófono:</strong></p><ol style="text-align:left;padding-left:20px;margin-top:10px"><li>Click en el <strong>candado 🔒</strong> en la barra de direcciones</li><li>Busca <strong>"Micrófono"</strong></li><li>Selecciona <strong>"Permitir"</strong></li><li>Recarga la página (F5)</li></ol><p style="margin-top:15px"><strong>Nota:</strong> Asegúrate de estar usando <strong>HTTPS</strong> (candado en la URL)</p>',
+                                html: `<p><strong>Pasos para permitir el micrófono:</strong></p>
+                                       <ol style='text-align:left;padding-left:20px;margin-top:10px'>
+                                         <li>Click en el <strong>candado 🔒</strong> en la barra de direcciones</li>
+                                         <li>Busca <strong>Micrófono</strong></li>
+                                         <li>Selecciona <strong>Permitir</strong></li>
+                                         <li>Recarga la página (F5)</li>
+                                       </ol>
+                                       <p style='margin-top:15px'><strong>Nota:</strong> Asegúrate de usar HTTPS (candado en la URL)</p>`,
                                 icon: 'warning',
                                 confirmButtonText: 'Entendido',
                                 width: '500px'
@@ -54,11 +61,11 @@
                         } else if (event.error === 'no-speech') {
                             Swal.fire({
                                 title: 'No se detectó voz',
-                                text: 'Habla más cerca del micrófono e intenta de nuevo',
+                                text: 'Habla más cerca del micrófono',
                                 icon: 'info'
                             });
                         } else if (event.error !== 'aborted') {
-                            Swal.fire('Error', 'Error de grabación: ' + event.error, 'error');
+                            Swal.fire('Error', 'Error: ' + event.error, 'error');
                         }
                     };
 
